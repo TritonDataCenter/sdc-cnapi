@@ -1,3 +1,11 @@
+* Add the server.js schema from the ZAPI-2 branch of ufds.git in the UFDS zone:
+    /opt/smartdc/ufds/schema/server.js
+
+* And restart UFDS:
+    svcadm restart ufds
+
+
+
 # cat headnode.ldif
 version: 1
 
