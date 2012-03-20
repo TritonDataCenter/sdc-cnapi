@@ -1,0 +1,56 @@
+# cat headnode.ldif
+version: 1
+
+dn: serverid=564d89c4-e368-1a0b-564f-b8a33f47c134, datacenter=coal, o=smartdc
+objectclass: server
+serverid: 564d89c4-e368-1a0b-564f-b8a33f47c134
+hostname: headnode
+ram: 2816
+reserved: true
+cpucores: 2
+os: 20120319T230411Z
+cpuvirtualization: none
+status: running
+vendornumber: VMware-56 4d 89 c4 e3 68 1a 0b-56 4f b8 a3 3f 47 c1 34
+vendormodel: VMware Virtual Platform
+manufacturer: VMware, Inc.
+headnode: true
+lastboot: 2012-03-20T21:49:59+00:00
+bootargs: console=text headnode=true
+
+
+
+# sdc-ldap -v add -f headnode.ldif
+
+  # ldapadd -H ldaps://10.88.88.50:636 -x -D cn=root -w *** -f headnode.ldif
+  adding new entry "serverid=564d89c4-e368-1a0b-564f-b8a33f47c134, datacenter=coal, o=smartdc"
+
+
+
+# sdc-ldap -v search "objectclass=server"
+
+  # ldapsearch -H ldaps://10.88.88.50:636 -x -D cn=root -w *** -LLL -b o=smartdc objectclass=server
+  dn: serverid=564d89c4-e368-1a0b-564f-b8a33f47c134, datacenter=coal, o=smartdc
+  bootargs: console=text headnode=true
+  cpucores: 2
+  cpuvirtualization: none
+  headnode: true
+  hostname: headnode
+  lastboot: 2012-03-20T21:49:59+00:00
+  manufacturer: VMware, Inc.
+  objectclass: server
+  os: 20120319T230411Z
+  ram: 2816
+  reserved: true
+  serverid: 564d89c4-e368-1a0b-564f-b8a33f47c134
+  status: running
+  vendormodel: VMware Virtual Platform
+  vendornumber: VMware-56 4d 89 c4 e3 68 1a 0b-56 4f b8 a3 3f 47 c1 34
+  _ctime: 2012-03-20T21:57:08Z
+  _createdfrom: 10.88.88.200:40746::2
+  _createdby: cn=root
+  _mtime: 2012-03-20T21:57:08Z
+  _modifiedfrom: 10.88.88.200:40746::2
+  _modifiedby: cn=root
+  _parent: datacenter=coal, o=smartdc
+
