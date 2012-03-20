@@ -86,6 +86,7 @@ JSSTYLE		?= jsstyle
 MKDIR		?= mkdir -p
 MV		?= mv
 RESTDOWN	?= restdown
+RESTDOWN_FLAGS	?=
 RMTREE		?= rm -rf
 XMLLINT		?= xmllint --noout
 JSL_FLAGS  	?= --nologo --nosummary
@@ -95,7 +96,9 @@ JSL_FLAGS  	?= --nologo --nosummary
 #
 SMF_DTD		?= tools/service_bundle.dtd.1
 
-DOC_BUILD	= build/docs/public
+BUILD		= build
+CLEAN_FILES	+= $(BUILD)
+DOC_BUILD	= $(BUILD)/docs/public
 
 #
 # Configure JSL_FLAGS_{NODE,WEB} based on JSL_CONF_{NODE,WEB}.
@@ -137,17 +140,17 @@ check-jsl-node: $(JSL_FILES_NODE:%=%.jslnodechk)
 
 check-jsl-web: $(JSL_FILES_WEB:%=%.jslwebchk)
 
-%.jslnodechk: %
-	$(JSL) $(JSL_FLAGS) $(JSL_FLAGS_NODE) $^
+%.jslnodechk: % $(JSL_SCRIPT)
+	$(JSL) $(JSL_FLAGS) $(JSL_FLAGS_NODE) $<
 
-%.jslwebchk: %
-	$(JSL) $(JSL_FLAGS) $(JSL_FLAGS_WEB) $^
+%.jslwebchk: % $(JSL_SCRIPT)
+	$(JSL) $(JSL_FLAGS) $(JSL_FLAGS_WEB) $<
 
 .PHONY: check-jsstyle
 check-jsstyle: $(JSSTYLE_FILES:%=%.jsstylechk)
 
-%.jsstylechk: %
-	$(JSSTYLE) $(JSSTYLE_FLAGS) $^
+%.jsstylechk: % $(JSSTYLE_SCRIPT)
+	$(JSSTYLE) $(JSSTYLE_FLAGS) $<
 
 .PHONY: check-manifests
 check-manifests: $(SMF_MANIFESTS:%=%.smfchk)
@@ -167,8 +170,13 @@ CSCOPE_FILES = cscope.in.out cscope.out cscope.po.out
 CLEAN_FILES += $(CSCOPE_FILES)
 
 .PHONY: xref
-xref:
+xref: cscope.files
 	$(CSCOPE) -bqR
+
+.PHONY: cscope.files
+cscope.files:
+	find . -name '*.c' -o -name '*.h' -o -name '*.cc' -o -name '*.js' \
+	    -o -name '*.s' -o -name '*.cpp' > $@
 
 #
 # The "docs" target is complicated because we do several things here:
@@ -235,7 +243,7 @@ $(DOC_BUILD)/%: docs/% | $(DOC_BUILD)
 	$(CP) $< $@
 
 docs/%.json docs/%.html: docs/%.restdown | $(DOC_BUILD)
-	$(RESTDOWN) -m $(DOC_BUILD) $<
+	$(RESTDOWN) $(RESTDOWN_FLAGS) -m $(DOC_BUILD) $<
 
 $(DOC_BUILD):
 	$(MKDIR) $@

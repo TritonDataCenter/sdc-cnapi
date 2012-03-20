@@ -16,32 +16,33 @@
 #
 # javascriptlint
 #
-JSL_SCRIPT	= deps/javascriptlint/build/install/jsl
+JSL_SCRIPT	= $(REPO_ROOT)/deps/javascriptlint/build/install/jsl
 JSL		= python2.6 $(JSL_SCRIPT)
 
-$(JSL_SCRIPT): | deps/javascriptlint/.git
-	cd deps/javascriptlint && make install
+$(JSL_SCRIPT): | $(REPO_ROOT)/deps/javascriptlint/.git
+	cd $(REPO_ROOT)/deps/javascriptlint && make install
 
-deps/javascriptlint/.git:
-	git submodule update --init deps/javascriptlint
+$(REPO_ROOT)/deps/javascriptlint/.git:
+	cd $(REPO_ROOT) && git submodule update --init $(REPO_ROOT)/deps/javascriptlint
 
 #
 # jsstyle
 #
-JSSTYLE		= deps/jsstyle/jsstyle
+JSSTYLE_SCRIPT  = $(REPO_ROOT)/deps/jsstyle/jsstyle
+JSSTYLE		= $(JSSTYLE_SCRIPT)
 
-deps/jsstyle/jsstyle:
-	git submodule update --init deps/jsstyle
+$(REPO_ROOT)/deps/jsstyle/jsstyle:
+	cd $(REPO_ROOT) && git submodule update --init $(REPO_ROOT)/deps/jsstyle
 
 #
 # restdown
 #
-RESTDOWN	= python2.6 deps/restdown/bin/restdown
+RESTDOWN	= python2.6 $(REPO_ROOT)/deps/restdown/bin/restdown
 
-$(RESTDOWN): | deps/restdown/.git
+$(RESTDOWN): | $(REPO_ROOT)/deps/restdown/.git
 
 deps/restdown/.git:
-	git submodule update --init deps/restdown
+	git submodule update --init $(REPO_ROOT)/deps/restdown
 
 #
 # The restdown submodule should be updated before we build "docs".

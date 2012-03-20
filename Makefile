@@ -23,23 +23,26 @@ TAP		:= ./node_modules/.bin/tap
 #
 # Files
 #
+REPO_ROOT	 = $(shell pwd)
 DOC_FILES	 = index.restdown boilerplateapi.restdown
-JS_FILES	:= $(shell find lib -name '*.js')
-JSL_CONF_NODE	 = tools/jsl.node.conf
-JSL_FILES_NODE   = server.js $(JS_FILES)
+JS_FILES	:= $(shell ls *.js 2>/dev/null) $(shell find bin lib test -name '*.js' 2>/dev/null)
+JSL_CONF_NODE	 = $(REPO_ROOT)/tools/jsl.node.conf
+JSL_FILES_NODE   = $(JS_FILES)
 JSSTYLE_FILES	 = $(JS_FILES)
-SMF_MANIFESTS	 = smf/manifests/bapi.xml
+JSSTYLE_FLAGS    = -o indent=4,doxygen,unparenthesized-return=0
+SMF_MANIFESTS	 = 
+SMF_DTD		 = $(REPO_ROOT)/tools/service_bundle.dtd.1
 
 #
 # Repo-specific targets
 #
 .PHONY: all
 all:
-	$(NPM) install
+	$(NPM) rebuild
 
 .PHONY: test
 test: $(TAP)
 	TAP=1 $(TAP) test/*.test.js
 
-include ./Makefile.deps
-include ./Makefile.targ
+include ./inc/Makefile.deps
+include ./inc/Makefile.targ
