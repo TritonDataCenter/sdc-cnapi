@@ -4,28 +4,43 @@
  * Main entry-point for the CNAPI.
  */
 
-var createUfdsModel = require('../lib/models.js').createUfdsModel;
-var createServer = require('../lib/server.js').createServer;
-var createUfdsClient = require('../lib/ufds.js').createUfdsClient;
+var createUfdsModel = require('../lib/models').createUfdsModel;
+var createServer = require('../lib/server').createServer;
+var async = require('async');
 
 function main() {
-    var ufdsSettings = {
-        host: 'ufds_host',
-        port: 12345,
-        user: 'ufds_user',
-        user: 'ufds_pass'
-    };
-    var ufdsClient = createUfdsClient(ufdsSettings);
+    var server;
+    var model;
 
     var modelOptions = {
-        ufds: ufdsClient
+        ufdsSettings: {
+            host: 'ufds_host',
+            port: 12345,
+            user: 'ufds_user',
+            user: 'ufds_pass'
+        }
     };
 
-    var model = createUfdsModel(modelOptions);
-    var server = createServer(model);
-
-    server.listen(8080, function () {
-      console.log('%s listening at %s', server.name, server.url);
+    async.waterfall([
+        function (wf$callback) {
+            model = createUfdsModel(modelOptions);
+            // model.onError(...);
+            model.connect(function () {
+                return wf$callback();
+            });
+        },
+        function (wf$callback) {
+            var serverOptions = {
+                model: model
+            };
+            server = createServer(serverOptions);
+            return wf$callback();
+        }
+    ],
+    function (error) {
+        server.listen(8080, function () {
+          console.log('%s listening at %s', server.name, server.url);
+        });
     });
 }
 

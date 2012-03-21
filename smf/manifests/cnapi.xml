@@ -7,8 +7,8 @@
 	need to replace @@PREFIX@@ below with the path to this workspace.
  -->
 
-<service_bundle type="manifest" name="smartdc-ca-castashsvc">
-<service name="smartdc/application/bapi" type="service" version="1">
+<service_bundle type="manifest" name="cnapi">
+<service name="smartdc/application/cnapi" type="service" version="1">
 
 <dependency name="network" grouping="require_all" restart_on="error" type="service">
 	<service_fmri value="svc:/network/physical" />
@@ -17,7 +17,7 @@
 	<service_fmri value="svc:/system/filesystem/local" />
 </dependency>
 
-<exec_method type="method" name="start" exec="node @@PREFIX@@/server.js &amp;" timeout_seconds="30" />
+<exec_method type="method" name="start" exec="/usr/bin/ctrun -l child -o noorphan /usr/bin/node @@PREFIX@@/bin/cnapi.js &amp;" timeout_seconds="30" />
 <exec_method type="method" name="stop" exec=":kill" timeout_seconds="30" />
 
 <instance name="default" enabled="true" />
