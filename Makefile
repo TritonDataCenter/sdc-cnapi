@@ -17,14 +17,13 @@
 #
 # Tools
 #
-NPM		:= npm
 TAP		:= ./node_modules/.bin/tap
 
 #
 # Files
 #
 REPO_ROOT	 = $(shell pwd)
-DOC_FILES	 = index.restdown boilerplateapi.restdown
+DOC_FILES	 = index.restdown
 JS_FILES	:= $(shell ls *.js 2>/dev/null) $(shell find bin lib test -name '*.js' 2>/dev/null)
 JSL_CONF_NODE	 = $(REPO_ROOT)/tools/jsl.node.conf
 JSL_FILES_NODE   = $(JS_FILES)
@@ -34,15 +33,28 @@ SMF_MANIFESTS	 =
 SMF_DTD		 = $(REPO_ROOT)/tools/service_bundle.dtd.1
 
 #
+# Included definitions
+#
+include ./tools/mk/Makefile.defs
+include ./tools/mk/Makefile.node.defs
+include ./tools/mk/Makefile.smf.defs
+
+
+#
 # Repo-specific targets
 #
 .PHONY: all
-all:
+all: | $(NPM_EXEC)
 	$(NPM) rebuild
 
 .PHONY: test
 test: $(TAP)
 	TAP=1 $(TAP) test/*.test.js
 
-include ./inc/Makefile.deps
-include ./inc/Makefile.targ
+#
+# Includes
+#
+include ./tools/mk/Makefile.deps
+include ./tools/mk/Makefile.node.targ
+include ./tools/mk/Makefile.smf.targ
+include ./tools/mk/Makefile.targ
