@@ -138,26 +138,34 @@ UFDS appropriately.
 ## Details
 
     GET /servers/:server_uuid
+    GET /datacenters/:datacenter_name/servers/:server_uuid
 
 ## Machines
 
     GET /servers/:server_uuid/machines
+    GET /datacenters/:datacenter_name/servers/:server_uuid/machines
 
     GET /servers/:server_uuid/machines/:machine_uuid
+    GET /datacenters/:datacenter_name/servers/:server_uuid/machines/:machine_uuid/load
 
 ## ZFS Storage Pools
 
     GET /servers/:server_uuid/zpools
+    GET /datacenters/:datacenter_name/servers/:server_uuid/zpools
 
     GET /servers/:server_uuid/zpools/:zpool
+    GET /datacenters/:datacenter_name/servers/:server_uuid/zpools/:zpool
 
 ## ZFS Datasets
 
     GET /servers/:server_uuid/datasets
+    GET /datacenters/:datacenter_name/servers/:server_uuid/datasets
 
     GET /servers/:server_uuid/datasets/:dataset_uuid
+    GET /datacenters/:datacenter_name/servers/:server_uuid/datasets/:dataset_uuid
 
     GET /servers/:server_uuid/zpools/:zpool/datasets/:dataset
+    GET /datacenters/:datacenter_name/servers/:server_uuid/zpools/:zpool/datasets/:dataset
 
 # MAPI Backwards Compatability Layer
 
