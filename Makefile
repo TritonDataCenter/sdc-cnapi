@@ -40,6 +40,9 @@ include ./tools/mk/Makefile.node.defs
 include ./tools/mk/Makefile.node_deps.defs
 include ./tools/mk/Makefile.smf.defs
 
+ROOT            := $(shell pwd)
+RELEASE_TARBALL := cnapi-pkg-$(STAMP).tar.bz2
+TMPDIR          := /tmp/$(STAMP)
 
 #
 # Repo-specific targets
@@ -51,6 +54,37 @@ all: | $(NPM_EXEC)
 .PHONY: test
 test: $(TAP)
 	TAP=1 $(TAP) test/*.test.js
+
+
+.PHONY: release
+release: all deps docs $(SMF_MANIFESTS)
+	@echo "Building $(RELEASE_TARBALL)"
+	@mkdir -p $(TMPDIR)/root/opt/smartdc/cnapi
+	@mkdir -p $(TMPDIR)/site
+	@touch $(TMPDIR)/site/.do-not-delete-me
+	cp -r   $(ROOT)/build \
+    $(ROOT)/bin \
+    $(ROOT)/config \
+    $(ROOT)/lib \
+    $(ROOT)/Makefile \
+    $(ROOT)/node_modules \
+    $(ROOT)/package.json \
+    $(ROOT)/smf \
+    $(ROOT)/tools \
+    $(TMPDIR)/root/opt/smartdc/cnapi/
+	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
+	@rm -rf $(TMPDIR)
+
+
+.PHONY: publish
+publish: release
+	@if [[ -z "$(BITS_DIR)" ]]; then \
+    echo "error: 'BITS_DIR' must be set for 'publish' target"; \
+    exit 1; \
+  fi
+	mkdir -p $(BITS_DIR)/cnapi
+	cp $(ROOT)/$(RELEASE_TARBALL) $(BITS_DIR)/cnapi/$(RELEASE_TARBALL)
+
 
 #
 # Includes
