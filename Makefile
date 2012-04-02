@@ -29,7 +29,7 @@ JSL_CONF_NODE	 = $(REPO_ROOT)/tools/jsl.node.conf
 JSL_FILES_NODE   = $(JS_FILES)
 JSSTYLE_FILES	 = $(JS_FILES)
 JSSTYLE_FLAGS    = -o indent=4,doxygen,unparenthesized-return=0
-SMF_MANIFESTS	 = 
+SMF_MANIFESTS_IN = smf/manifests/cnapi.xml.in
 SMF_DTD		 = $(REPO_ROOT)/tools/service_bundle.dtd.1
 
 #
@@ -37,6 +37,7 @@ SMF_DTD		 = $(REPO_ROOT)/tools/service_bundle.dtd.1
 #
 include ./tools/mk/Makefile.defs
 include ./tools/mk/Makefile.node.defs
+include ./tools/mk/Makefile.node_deps.defs
 include ./tools/mk/Makefile.smf.defs
 
 
@@ -56,5 +57,6 @@ test: $(TAP)
 #
 include ./tools/mk/Makefile.deps
 include ./tools/mk/Makefile.node.targ
+include ./tools/mk/Makefile.node_deps.targ
 include ./tools/mk/Makefile.smf.targ
 include ./tools/mk/Makefile.targ
