@@ -1,5 +1,5 @@
 {
-  "logLevel": "debug",
+  "logLevel": "trace",
   "amqp": {
     "host": "10.99.99.5"
   },
