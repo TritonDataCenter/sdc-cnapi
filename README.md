@@ -1,4 +1,4 @@
-# Joyent Engineering Guide
+# Compute Node API
 
 Repository: <git@git.joyent.com:cnapi.git>
 Browsing: <https://mo.joyent.com/cnapi>
@@ -9,7 +9,9 @@ Tickets/bugs: <https://devhub.joyent.com/jira/browse/CNAPI>
 
 # Overview
 
-TBD
+CNAPI is responsible for maintaining the states and life-cycle stages of a
+compute node. It communicates with compute nodes for the purpose of creating
+and destroying tasks, initiating tasks, etc.
 
 # Repository
 
@@ -33,11 +35,11 @@ TBD
 
 To run the boilerplate API server:
 
-    git clone git@git.joyent.com:eng.git
-    cd eng
+    git clone git@git.joyent.com:cnapi.git
+    cd cnapi
     git submodule update --init
     make all
-    node server.js
+    node bin/cnapi.js
 
 To update the guidelines, edit "docs/index.restdown" and run `make docs`
 to update "docs/index.html".
