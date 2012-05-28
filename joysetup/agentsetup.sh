@@ -26,6 +26,7 @@ setup_agents()
     AGENTS_SHAR_URL=$1
     AGENTS_SHAR_PATH=./agents-installer.sh
 
+    cd /var/run
     /usr/bin/curl --silent --show-error ${AGENTS_SHAR_URL} -o $AGENTS_SHAR_PATH
 
     if [[ ! -f $AGENTS_SHAR_PATH ]]; then

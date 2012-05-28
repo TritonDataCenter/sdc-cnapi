@@ -15,46 +15,34 @@ if [[ -z $1 ]]; then
   exit 1
 fi
 
-CONFIGS=/opt/smartdc/cnapi/node.config
-JOYSETUP=/opt/smartdc/cnapi/joysetup/joysetup.sh
 AGENTSETUP=/opt/smartdc/cnapi/joysetup/agentsetup.sh
 
 JOYDIR=$(dirname $INSTALLER_OUTPUT_PATH)
 FILENAME=$(basename $INSTALLER_OUTPUT_PATH)
-
-TEMP_CONFIGS=$JOYDIR/node.config
-REMOTE_TMP=/var/tmp/joysetup
-
-if [[ ! -d $CONFIGS ]]; then
-  fatal "configs directory doesn't exist"
-  exit 1
-fi
-
-if [[ ! -f $JOYSETUP ]]; then
-  fatal "joysetup.sh doesn't exist"
-  exit 1
-fi
+REMOTE_TMP=/var/tmp
+ASSETS_IP=$(mdata-get assets-ip)
+JOYSETUP=$JOYDIR/joysetup.sh
 
 mkdir -p $JOYDIR
+mkdir -p $JOYDIR/node.config
 
-cp -R $CONFIGS $JOYDIR
 cp $AGENTSETUP $JOYDIR
 
 cd $JOYDIR
+curl -o node.config/node.config http://${ASSETS_IP}/extra/joysetup/node.config
+curl -O http://${ASSETS_IP}/extra/joysetup/joysetup.sh
 
 # Run the script from $REMOTE_TMP in case we need to write to some log later
 (cat <<__EOF__
 #!/bin/bash
-mkdir -p $REMOTE_TMP
 cd $REMOTE_TMP
+ASSETS_IP=$ASSETS_IP
 __EOF__
 )> $FILENAME
 
-(/opt/local/bin/shar -n "Joyent" ./* \
+(/opt/local/bin/shar -n "Joyent" node.config/node.config agentsetup.sh \
     | grep -v '^exit 0')>> $FILENAME
 
 (cat $JOYSETUP)>> $FILENAME
-
-#rm -rf $JOYDIR
 
 echo "Done."
