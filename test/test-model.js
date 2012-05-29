@@ -13,7 +13,8 @@ function MockUfds() {
     this.history = [];
     this.callbackValues = {
         del: [],
-        search: []
+        search: [],
+        add: []
     };
 }
 
@@ -25,7 +26,13 @@ MockUfds.prototype.search = function (baseDn, options, callback) {
 
 MockUfds.prototype.del = function (itemDn, callback) {
     this.history.push(['del', itemDn]);
-    callback.apply(null);
+    callback.apply(null, []);
+    return;
+};
+
+MockUfds.prototype.add = function (baseDn, server, callback) {
+    this.history.push(['add', baseDn, server]);
+    callback.apply(null, []);
     return;
 };
 
@@ -125,6 +132,33 @@ test('delete servers in datacenter', function (t) {
                     ],
                     [ 'del',
                       dn
+                    ]
+                ],
+                mockUfds.history,
+                'ufds command history');
+            t.end();
+        });
+    });
+});
+
+test('create server in datacenter', function (t) {
+    var uuid = '550e8400-e29b-41d4-a716-446655440000';
+    var dn = 'uuid='+uuid+',ou=servers, datacenter=testdc, o=smartdc';
+    var server = {
+        uuid: uuid,
+        ram: '12345'
+    };
+
+    t.plan(1);
+    newModel(function (error, model, mockUfds) {
+        mockUfds.when('add', []);
+
+        model.createServer(server, function (list$error) {
+            t.same(
+                [
+                    [ 'add',
+                      dn,
+                      server
                     ]
                 ],
                 mockUfds.history,
