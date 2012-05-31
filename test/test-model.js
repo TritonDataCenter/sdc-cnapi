@@ -86,6 +86,7 @@ test('list servers in datacenter', function (t) {
     newModel(function (error, model, mockUfds) {
         mockUfds.when('search', [], expSearchResults);
         model.listServers({}, function (list$error, servers) {
+        console.dir(servers);
             t.same(
                 mockUfds.history[0],
                 [ 'search',
@@ -103,6 +104,35 @@ test('list servers in datacenter', function (t) {
     });
 });
 
+test('list multiple servers in datacenter', function (t) {
+    t.plan(2);
+    var expSearchResults = [
+        null,
+        [ { uuid: '1234', ram: '12345' },
+          { uuid: '5678', ram: '56789' }
+        ]
+    ];
+
+    newModel(function (error, model, mockUfds) {
+        mockUfds.when('search', [], expSearchResults);
+        var uuids = ['1234', '5678'];
+        model.listServers({ uuid: uuids }, function (list$error, servers) {
+            t.same(
+                mockUfds.history[0],
+                [ 'search',
+                  'ou=servers, datacenter=testdc, o=smartdc',
+                  { 'scope':'sub', 'filter': '(&(objectclass=server)(|(uuid=1234)(uuid=5678)))' }
+                ],
+                'ufds client parameters');
+
+            t.same(
+                servers,
+                expSearchResults[1],
+                'Server results should match');
+            t.end();
+        });
+    });
+});
 
 test('delete servers in datacenter', function (t) {
     var uuid = '550e8400-e29b-41d4-a716-446655440000';
