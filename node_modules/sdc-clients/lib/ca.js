@@ -3,7 +3,7 @@
 var assert = require('assert');
 
 var restify = require('restify');
-var sprintf = require('sprintf').sprintf;
+var sprintf = require('util').format;
 
 
 

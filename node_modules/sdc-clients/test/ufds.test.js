@@ -1,5 +1,6 @@
 // Copyright 2011 Joyent, Inc.  All rights reserved.
 
+var Logger = require('bunyan');
 var uuid = require('node-uuid');
 
 var UFDS = require('../lib/index').UFDS;
@@ -8,7 +9,7 @@ var UFDS = require('../lib/index').UFDS;
 
 ///--- Globals
 
-var UFDS_URL = 'ldaps://' + (process.env.UFDS_IP || '10.99.99.21');
+var UFDS_URL = process.env.UFDS_URL || 'ldaps://10.99.99.18';
 
 var ufds;
 var ADMIN_UUID = '930896af-bf8c-48d4-885c-6573a94b1853';
@@ -25,10 +26,15 @@ exports.setUp = function(test, assert) {
   ufds = new UFDS({
     url: UFDS_URL,
     bindDN: 'cn=root',
-    bindPassword: 'secret'
+    bindPassword: 'secret',
+    log: new Logger({
+      name: 'ufds_unit_test',
+      stream: process.stderr,
+      level: (process.env.LOG_LEVEL || 'info'),
+      serializers: Logger.stdSerializers
+    })
   });
-  ufds.on('ready', function(bound) {
-    assert.ok(bound);
+  ufds.on('ready', function() {
     test.finish();
   });
   ufds.on('error', function(err) {
@@ -139,7 +145,6 @@ exports.test_list_and_get_keys = function(test, assert) {
 
 
 exports.test_del_key = function(test, assert) {
-  console.log('hi')
   ufds.getUser('admin', function(err, user) {
     assert.ifError(err);
     user.listKeys(function(err, keys) {

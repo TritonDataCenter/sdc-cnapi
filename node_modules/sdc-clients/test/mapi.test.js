@@ -1,5 +1,6 @@
 // Copyright 2011 Joyent, Inc.  All rights reserved.
 
+var Logger = require('bunyan');
 var restify = require('restify');
 var uuid = require('node-uuid');
 
@@ -9,7 +10,7 @@ var MAPI = require('../lib/index').MAPI;
 
 ///--- Globals
 
-var MAPI_URL = 'http://' + (process.env.MAPI_IP || '10.99.99.8') + ':8080';
+var MAPI_URL = 'http://' + (process.env.MAPI_IP || '10.99.99.11') + ':8080';
 
 var mapi = null;
 var DATASET_UUID = null;
@@ -47,7 +48,13 @@ exports.setUp = function(test, assert) {
     retry: {
       retries: 1,
       minTimeout: 1000
-    }
+    },
+    log: new Logger({
+      name: 'ufds_unit_test',
+      stream: process.stderr,
+      level: (process.env.LOG_LEVEL || 'info'),
+      serializers: Logger.stdSerializers
+    })
   });
   test.finish();
 };

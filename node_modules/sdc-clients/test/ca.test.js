@@ -8,7 +8,7 @@ var restify = require('restify');
 
 ///--- Globals
 
-var CA_URL = 'http://' + (process.env.CA_IP || '10.99.99.24') + ':23181';
+var CA_URL = 'http://' + (process.env.CA_IP || '10.99.99.19') + ':23181';
 
 var ca = null;
 var customer = '930896af-bf8c-48d4-885c-6573a94b1853';

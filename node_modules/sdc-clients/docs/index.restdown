@@ -396,3 +396,76 @@ TODO
 # MAPI Client
 
 TODO
+
+# Config Client
+
+The config client can be used by importing sdc-clients.Config, creating a new
+Config object and utilizing it's properties as though it were a simple JS
+object.
+
+    var cfg = new Config({svc: 'capi', ufdsargs: ufds});
+    var url = cfg.url;
+
+The Config client will search the UFDS instance pointed at by **ufdsargs** for
+objectclass=config entries at the LDAP tree beginning with
+svc=*svc*,ou=config,o=smartdc
+
+The Config client respects datacentre and host scoping through the **dc** and
+**host** properties, and will populate it's own properties with fallthrough. For
+instance, if we have the following ldap entries:
+
+    # dc=us-west-1,svc=capi,ou=config,o=smartdc
+    dn: dc=us-west-1,svc=capi,ou=config,o=smartdc
+    svc: capi
+    url: http://10.99.99.5
+    objectclass: config
+
+    # svc=capi,ou=config,o=smartdc
+    dn: svc=capi,ou=config,o=smartdc
+    svc: capi
+    url: http://192.168.1.5
+    foo: bar
+    objectclass: config
+
+calling the "foo" property of a Config object instantiated with *us-west-1*
+scope will yield 'bar', and calling the "url" property will yield
+"http://10.99.99.5", whereas calling it on a non-scoped Config object would
+yield "http://192.168.1.5"
+
+The Config client also supports ldap referrals both to other hosts as well
+as other branches of the tree. Given the following ldap entry
+
+    dn: ref=mapi, svc=capi, ou=config, o=smartdc
+    ref: svc=mapi,ou=config,o=smartdc
+    objectclass: referral
+
+A Config object with **svc** of *capi* could access the *mapi* properties
+through  it's own *mapi* property
+
+  var mapiurl = config.mapi.url;
+
+## Config(options)
+
+Creates a UFDS Config client instance.
+
+Options must be an object that contains
+
+|| *Name* || *Type* || *Description* ||
+|| svc || String || name of the service to fetch configuration for ||
+|| ufdsargs || object || ufds options as documented in the UFDS section above ||
+|| dc || String || optional* the datacentre name, if used for scoping ||
+|| host || String || optional* the host name, if used for scoping ||
+|| nofollowref || Object or *false* || optional* do not follow ldap referrals (to other services) ||
+
+Config objects are a subclass of **EventEmitter**. On changes in LDAP state
+which affect the object, it will update it's properties and emit *"update"*
+
+
+## insert(cfg)
+
+Insert the properties in *cfg* in to the configuration database
+
+|| *Name* || *Type* || *Description* ||
+|| cfg || Object || object containing the key:value pairs of properties to insert ( must be of the form key:*String* ) ||
+
+

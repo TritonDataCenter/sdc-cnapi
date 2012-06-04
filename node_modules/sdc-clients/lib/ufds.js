@@ -8,7 +8,6 @@ var util = require('util');
 var httpSignature = require('http-signature');
 var ldap = require('ldapjs');
 var restify = require('restify');
-var sprintf = require('sprintf').sprintf;
 var uuid = require('node-uuid');
 
 var cache = require('./cache');
@@ -22,6 +21,7 @@ var NotAuthorizedError = restify.NotAuthorizedError;
 var ResourceNotFoundError = restify.ResourceNotFoundError;
 
 var getFingerprint = httpSignature.sshKeyFingerprint;
+var sprintf = util.format;
 
 var HIDDEN = new ldap.Control({
   type: '1.3.6.1.4.1.38678.1',
@@ -94,7 +94,11 @@ function clone(from) {
  */
 function UFDS(options) {
   if (typeof(options) !== 'object')
-    throw new TypeError('options (Object) required');
+      throw new TypeError('options (Object) required');
+  if (typeof(options.bindDN) !== 'string')
+    throw new TypeError('options.bindDN (String) required');
+  if (typeof(options.bindPassword) !== 'string')
+    throw new TypeError('options.bindPassword (String) required');
   if (typeof(options.url) !== 'string')
     throw new TypeError('options.url (String) required');
 
@@ -104,21 +108,25 @@ function UFDS(options) {
   if (options.cache !== false)
     this.cache = cache.createCache(options.cache);
 
+  options.bindCredentials = options.bindCredentials || options.bindPassword;
+  // Force connection pooling
+  if (!options.maxConnections)
+    options.maxConnections = 5;
+
   this.client = ldap.createClient(options);
 
-  if (!options.bindDN || !options.bindPassword) {
-    this.emit('ready', false);
-  } else {
-    this.client.bind(options.bindDN, options.bindPassword, function(err) {
-      if (err)
-        self.emit('error', err);
+  // This will force the underlying ldapjs pool to connect and bind.
+  this.client.search('', '(objectclass=*)', function(err, res) {
+    if (err)
+      return self.emit('error', err);
 
-      self.emit('ready', true);
+    res.on('error', function (e) {
+      self.emit('err');
     });
-  }
 
-  this.client.on('close', function(had_err) {
-    self.emit('close', had_err);
+    res.on('end', function () {
+      self.emit('ready');
+    });
   });
 
   this.__defineGetter__('cacheOptions', function() {
@@ -254,54 +262,35 @@ UFDS.prototype.getUser = function getUser(login, callback) {
 
   var self = this;
 
-  // UFDS is bad at '|' filters, so just fire two searches off
-  var count = 0;
-  var done = false;
-  var error;
-
-  function _callback(err, entries) {
-    if (done)
-      return false;
-
-    if (entries && entries.length) {
-      done = true;
-      return callback(null, self._extendUser(entries[0]));
-    }
-
-    if (err)
-      error = error || err;
-
-    if (++count == 2) {
-      done = true;
-      if (error)
-        return callback(error);
-
-      var msg = login + ' does not exist';
-      return callback(error || new ResourceNotFoundError(msg));
-    }
-
-    return false;
-  }
-
-  var optsLogin = {
+  var opts = {
     scope: 'one',
-    attributes: ['*', 'memberof'],
-    filter: sprintf('(&(login=%s)(objectclass=sdcperson))', login)
+    filter: sprintf('(&(objectclass=sdcperson)(|(login=%s)(uuid=%s)))',
+                    login, login)
   };
 
-  // This is a little goofy; we decide whether or not to issue another
-  // search request based on the status of the callback above
-  this.search(USERS, optsLogin, _callback);
-  if (!done) {
-    var optsUuid = {
-      scope: 'base',
-      attributes: ['*', 'memberof'],
-      filter: sprintf('(&(uuid=%s)(objectclass=sdcperson))', login)
-    };
-    this.search(sprintf(USER_FMT, login), optsUuid, _callback);
-  }
+  return this.search(USERS, opts, function (err, entries) {
+    if (err)
+      return callback(err);
 
-  return false;
+    if (entries.length === 0) {
+      var msg = login + ' does not exist';
+      return callback(new ResourceNotFoundError(msg));
+    }
+
+    // Now load the groups they're in
+    opts = {
+      scope: 'one',
+      filter: sprintf('(&(objectclass=groupofuniquenames)(uniquemember=%s))',
+                      entries[0].dn.toString())
+    };
+    return self.search(GROUPS, opts, function (groupErr, groups) {
+      if (groupErr)
+        return callback(groupErr);
+
+      entries[0].memberof = groups.map(function (v) { return v.dn; });
+      return callback(null, self._extendUser(entries[0]));
+    });
+  });
 };
 
 
@@ -327,7 +316,6 @@ UFDS.prototype.updateUser = function updateUser(user, changes, callback) {
     Object.keys(changes).forEach(function(k) {
       if (k === 'dn' ||
           k === 'objectclass' ||
-          k === 'memberof' ||
           k === 'uuid' ||
           user[k] === changes[k] ||
           typeof(changes[k]) === 'function')
@@ -1038,12 +1026,6 @@ UFDS.prototype._extendUser = function _extendUser(user) {
   assert.equal(typeof(user), 'object');
 
   var self = this;
-
-  if (!user.memberof)
-    user.memberof = [];
-  if (!Array.isArray(user.memberof))
-    user.memberof = [user.memberof];
-
 
   user.authenticate = function authenticate(password, callback) {
     return self.authenticate(user, password, function(err, user) {
