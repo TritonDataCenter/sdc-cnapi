@@ -121,7 +121,10 @@ test('list multiple servers in datacenter', function (t) {
                 mockUfds.history[0],
                 [ 'search',
                   'ou=servers, datacenter=testdc, o=smartdc',
-                  { 'scope':'sub', 'filter': '(&(objectclass=server)(|(uuid=1234)(uuid=5678)))' }
+                  { 'scope':'sub',
+                    'filter':
+                    '(&(objectclass=server)'
+                    + '(|(uuid=1234)(uuid=5678)))' }
                 ],
                 'ufds client parameters');
 
