@@ -137,6 +137,35 @@ test('list multiple servers in datacenter', function (t) {
     });
 });
 
+test('list only setup servers', function (t) {
+    t.plan(1);
+    var expSearchResults = [
+        null,
+        [ { uuid: '1234', setup: 'true' },
+          { uuid: 'abcd', setup: 'true' }
+        ]
+    ];
+
+    newModel(function (error, model, mockUfds) {
+        mockUfds.when('search', [], expSearchResults);
+
+        model.listServers({ setup: 'true' }, function (list$error, servers) {
+            t.same(
+                mockUfds.history[0],
+                [ 'search',
+                  'ou=servers, datacenter=testdc, o=smartdc',
+                  { 'scope':'sub',
+                    'filter':
+                    '(&(objectclass=server)'
+                    + '(uuid=*)(setup=true))' }
+                ],
+                'ufds client parameters');
+
+            t.end();
+        });
+    });
+});
+
 test('delete servers in datacenter', function (t) {
     var uuid = '550e8400-e29b-41d4-a716-446655440000';
     var dn = 'uuid='+uuid+',ou=servers, datacenter=testdc, o=smartdc';
