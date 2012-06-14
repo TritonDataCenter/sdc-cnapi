@@ -22,21 +22,23 @@ TAP		:= ./node_modules/.bin/tap
 #
 # Files
 #
-REPO_ROOT	 = $(shell pwd)
-DOC_FILES	 = index.restdown
-JS_FILES	:= $(shell ls *.js 2>/dev/null) $(shell find bin lib test -name '*.js' 2>/dev/null)
-JSL_CONF_NODE	 = $(REPO_ROOT)/tools/jsl.node.conf
-JSL_FILES_NODE   = $(JS_FILES)
-JSSTYLE_FILES	 = $(JS_FILES)
-JSSTYLE_FLAGS    = -o indent=4,doxygen,unparenthesized-return=0
+REPO_ROOT	= $(shell pwd)
+DOC_FILES	= index.restdown
+JS_FILES := $(shell ls *.js 2>/dev/null) $(shell find bin lib test -name '*.js' 2>/dev/null)
+JSL_CONF_NODE	= $(REPO_ROOT)/tools/jsl.node.conf
+JSL_FILES_NODE = $(JS_FILES)
+JSSTYLE_FILES	= $(JS_FILES)
+JSSTYLE_FLAGS = -o indent=4,doxygen,unparenthesized-return=0
 SMF_MANIFESTS_IN = smf/manifests/cnapi.xml.in
-SMF_DTD		 = $(REPO_ROOT)/tools/service_bundle.dtd.1
+SMF_DTD = $(REPO_ROOT)/tools/service_bundle.dtd.1
+
+NODE_PREBUILT_VERSION = v0.6.19
 
 #
 # Included definitions
 #
 include ./tools/mk/Makefile.defs
-include ./tools/mk/Makefile.node.defs
+include ./tools/mk/Makefile.node_prebuilt.defs
 include ./tools/mk/Makefile.node_deps.defs
 include ./tools/mk/Makefile.smf.defs
 
@@ -91,7 +93,7 @@ publish: release
 # Includes
 #
 include ./tools/mk/Makefile.deps
-include ./tools/mk/Makefile.node.targ
+include ./tools/mk/Makefile.node_prebuilt.targ
 include ./tools/mk/Makefile.node_deps.targ
 include ./tools/mk/Makefile.smf.targ
 include ./tools/mk/Makefile.targ
