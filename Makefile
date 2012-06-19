@@ -33,6 +33,7 @@ SMF_MANIFESTS_IN = smf/manifests/cnapi.xml.in
 SMF_DTD = $(REPO_ROOT)/tools/service_bundle.dtd.1
 
 NODE_PREBUILT_VERSION = v0.6.19
+NODE_PREBUILT_TAG=zone
 
 #
 # Included definitions
