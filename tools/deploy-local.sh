@@ -1,3 +1,4 @@
+set -o xtrace
 DIRNAME=$(cd `dirname $0`/.. && pwd)
 cd $DIRNAME
 #WHAT=bin,lib,node_modules
