@@ -1,5 +1,10 @@
 # sdc-clients Changelog
 
+## sdc-clients 8.0.0
+- Backward incompatible version. Entire repo modified to work with SDC 7.0
+  instead of SDC 6.5. Added clients for all the new API services replacing
+  previous MAPI.
+
 ## sdc-clients 7.0.3
 
 - [Backward incompatible change] entire repo ported to restify1.0. Mapi
