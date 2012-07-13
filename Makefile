@@ -65,6 +65,7 @@ release: all deps docs $(SMF_MANIFESTS)
 	@mkdir -p $(TMPDIR)/root/opt/smartdc/cnapi
 	@mkdir -p $(TMPDIR)/site
 	@touch $(TMPDIR)/site/.do-not-delete-me
+	cd $(ROOT) && $(NPM) install
 	cp -r   $(ROOT)/build \
     $(ROOT)/bin \
     $(ROOT)/config \
