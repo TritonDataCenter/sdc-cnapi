@@ -1,13 +1,22 @@
 {
-  "name": "boilerplateapi",
-  "description": "SmartDataCenter Boilerplate API",
+  "name": "cnapi",
+  "description": "SmartDataCenter Compute Node API",
   "version": "1.0.0",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
     "restify": "https://github.com/mcavage/node-restify/tarball/master#0dfba4fdfd9def5111c29dffd241f344ff1293a8",
     "node-uuid": "1.2.0",
-    "filed": "0.0.5"
+    "filed": "0.0.5",
+    "task_agent": "git+ssh://git@git.joyent.com:task_agent.git",
+    "amqp": "git://github.com/postwait/node-amqp.git#7becb031a3517a22490addc46654e807bce5f37e",
+    "async": "0.1.18",
+    "bunyan": "0.6.9",
+    "filed": "0.0.5",
+    "node-uuid": "1.2.0",
+    "restify": "1.4.2",
+    "sdc-clients": "git+ssh://git@git.joyent.com:node-sdc-clients.git",
+    "sprintf": "0.1.1"
   },
   "devDependencies": {
     "tap": "0.1"
