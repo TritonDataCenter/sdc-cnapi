@@ -133,42 +133,301 @@ layout:
 CNAPI is responsible for listening for compute node heartbeats and updating
 UFDS appropriately.
 
-# Compute Node Endpoints
+# Servers
 
-## Details
+## ListServers (GET /servers)
 
-    GET /servers/:server_uuid
-    GET /datacenters/:datacenter_name/servers/:server_uuid
+Returns servers present in datacenter.
 
-## Machines
+### Inputs
 
-    GET /servers/:server_uuid/machines
-    GET /datacenters/:datacenter_name/servers/:server_uuid/machines
-
-    GET /servers/:server_uuid/machines/:machine_uuid
-    GET /datacenters/:datacenter_name/servers/:server_uuid/machines/:machine_uuid/load
-
-## ZFS Storage Pools
-
-    GET /servers/:server_uuid/zpools
-    GET /datacenters/:datacenter_name/servers/:server_uuid/zpools
-
-    GET /servers/:server_uuid/zpools/:zpool
-    GET /datacenters/:datacenter_name/servers/:server_uuid/zpools/:zpool
-
-## ZFS Datasets
-
-    GET /servers/:server_uuid/datasets
-    GET /datacenters/:datacenter_name/servers/:server_uuid/datasets
-
-    GET /servers/:server_uuid/datasets/:dataset_uuid
-    GET /datacenters/:datacenter_name/servers/:server_uuid/datasets/:dataset_uuid
-
-    GET /servers/:server_uuid/zpools/:zpool/datasets/:dataset
-    GET /datacenters/:datacenter_name/servers/:server_uuid/zpools/:zpool/datasets/:dataset
-
-# MAPI Backwards Compatability Layer
-
-*Note*: these endpoints will also be proxied by MAPI at /servers.
+||**Param**||**Type**||**Description**||**Required?**||
+||uuids||String||Comma seperated list of UUIDs to look up||No||
+||datacenter||String||Datacenter in which to look up Server||No||
+||setup||Boolean||Limit results to servers in which the setup flag is set to given value||No||
 
 
+### Examples
+
+    GET /servers
+    GET /servers?uuids=12494d5e-3960-4d65-a61a-0ca6252d6914,215a6ce1-561f-4a36-8016-c401c759f5fbk
+    GET /servers/datacenter=foxy
+    GET /servers/setup=true
+
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||The servers servers for which given criteria is satisfied||Arrray of Server objects||
+
+## GetServer (GET /servers/:server\_uuid)
+
+Look up a single server by UUID
+
+
+### Input
+
+None
+
+
+### Examples
+
+    GET /servers/12494d5e-3960-4d65-a61a-0ca6252d6914
+
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||A server object for sever with given UUID||Server JSON object||
+||404||Server could not be found||None||
+
+## UpdateServer (POST /servers/:server\_uuid)
+
+Set the value of an attribute in server's record.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||default\_console||String||Console type||No||
+||reserved||Boolean||Indicate whether server is to be considered for provisioning||No||
+||serial||String||Default console device||No||
+||serial\_speed||Number||Serial speed value||No||
+||setup||String||Indicate whether server is set up||No||
+
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Server update successfully||None||
+
+
+### Examples
+
+    POST /servers/12494d5e-3960-4d65-a61a
+      -d default_console=vga
+      -d setup=true
+
+
+## SetupServer (SETUP /servers/:server\_uuid/setup)
+
+Initiate the server setup process for a newly started server.
+
+### Input
+
+None
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Server already existed and was set up||Server JSON object||
+||204||Server set up successfully||None||
+||500||Error attempting to set up server||None||
+
+### Examples
+
+    PUT /servers/12494d5e-3960-4d65-a61a/setup
+
+
+# VMs
+
+--------
+
+## FOO (XXX /servers/:server\_uuid/vms/XYZ)
+
+Description
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||default\_console||String||Console type||No||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Server already existed and was set up||Server JSON object||
+
+### Examples
+
+    PUT /servers/12494d5e-3960-4d65-a61a/setup
+
+-----------
+
+## CreateVm (POST /servers/:server\_uuid/vms)
+
+Provision a VM on the specified server
+
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||jobid||String||CNAPI will post job information to Workflow API with this
+token||Yes||
+
+*Note*: VM creation payload parameters are as defined by the `vmadm create` command.
+
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Task was sent to server||None||
+||404||No such server||None||
+
+
+### Examples
+
+    PUT /servers/12494d5e-3960-4d65-a61a/vms
+
+
+## LoadVm (GET /servers/:server\_uuid/vms/:uuid)
+
+Query the server for the VM's details.
+
+
+### Input
+
+None
+
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Task was sent to server||None||
+||404||No such VM||None||
+||404||No such server||None||
+
+
+### Examples
+
+    GET /servers/12494d5e-3960-4d65-a61a/vms/ed759072-7ef6-41d9-b8d8-6ce247faccd0
+
+
+## UpdateVm (POST /servers/:server\_uuid/vms/:uuid)
+
+Modify the parameters of the vm identified by `:uuid` on server
+`:server_uuid`.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||jobid||String||CNAPI will post job information to Workflow API with this
+token||Yes||
+
+*Note*: VM creation payload parameters are as defined by the `vmadm create` command.
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Task was sent to server||None||
+||404||No such VM||None||
+||404||No such server||None||
+
+### Examples
+
+    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6
+
+
+## StartVm (POST /servers/:server\_uuid/vms/:uuid/start)
+
+Boot up a vm which is in the 'stopped' state.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||jobid||String||CNAPI will post job information to Workflow API with this
+token||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Task was sent to server||None||
+||404||No such VM||None||
+||404||No such server||None||
+
+### Examples
+
+    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/start
+
+
+## StopVm (POST /servers/:server\_uuid/vms/:uuid/stop)
+
+Shut down a vm which is in the 'running' state.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||jobid||String||CNAPI will post job information to Workflow API with this
+token||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Task was sent to server||None||
+
+### Examples
+
+    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/stop
+
+
+## RebootVm (POST /servers/:server\_uuid/vms/:uuid/reboot)
+
+Reboot a VM which is in the 'running' state.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||jobid||String||CNAPI will post job information to Workflow API with this
+token||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Task was sent to server||None||
+||404||No such VM||None||
+||404||No such server||None||
+
+### Examples
+
+    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/stop
+
+
+## DeleteVm (DELETE /servers/:server\_uuid/vms/:uuid)
+
+Delete a VM.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||jobid||String||CNAPI will post job information to Workflow API with this
+token||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Task was sent to server||None||
+||404||No such VM||None||
+||404||No such server||None||
+
+### Examples
+
+    DELETE /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6
+
+# Ur
+
+## UpdateUr (DELETE /ur/:server\_uuid)
+
+Execute a script on a server.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||script||String||A script to be executed on the remote server||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||Script stdout||String||
+
+### Examples
+
+    POST /ur/12494d5e-3960-4d65-a61a
+        -d @script.sh
