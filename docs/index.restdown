@@ -249,7 +249,7 @@ None
 
     GET /servers/12494d5e-3960-4d65-a61a/vms/ed759072-7ef6-41d9-b8d8-6ce247faccd0 
 
-## UpdateVm (POST /servers/:server\_uuid/vms/:uuid)
+## UpdateVm (POST /servers/:server\_uuid/vms/:uuid/update)
 
 Modify the parameters of the vm identified by `:uuid` on server
 `:server_uuid`.
@@ -270,7 +270,7 @@ Modify the parameters of the vm identified by `:uuid` on server
 
 ### Examples
 
-    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6 
+    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/update
 
 ## StartVm (POST /servers/:server\_uuid/vms/:uuid/start)
 
