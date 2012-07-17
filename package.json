@@ -16,7 +16,9 @@
     "node-uuid": "1.2.0",
     "restify": "1.4.2",
     "sdc-clients": "git+ssh://git@git.joyent.com:node-sdc-clients.git",
-    "sprintf": "0.1.1"
+    "sprintf": "0.1.1",
+    "redis": "0.7.2",
+    "hiredis": "0.1.14"
   },
   "devDependencies": {
     "tap": "0.1"

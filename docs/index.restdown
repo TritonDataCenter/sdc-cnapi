@@ -1,5 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
+apisections: Servers, VMs, Ur
 markdown2extras: wiki-tables, code-friendly
 ---
 
@@ -180,7 +181,7 @@ Set the value of an attribute in server's record.
 ### Responses
 
 ||**Code**||**Description**||**Response**||
-||204||Server update successfully||None|| 
+||204||Server updated successfully||None|| 
 
 ### Examples
 
@@ -252,7 +253,7 @@ None
 ## UpdateVm (POST /servers/:server\_uuid/vms/:uuid/update)
 
 Modify the parameters of the vm identified by `:uuid` on server
-`:server_uuid`.
+`:server\_uuid`.
 
 ### Input
 
