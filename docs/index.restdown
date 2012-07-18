@@ -189,7 +189,7 @@ Set the value of an attribute in server's record.
       -d default_console=vga
       -d setup=true
 
-## SetupServer (SETUP /servers/:server\_uuid/setup)
+## SetupServer (PUT /servers/:server\_uuid/setup)
 
 Initiate the server setup process for a newly started server.
 
