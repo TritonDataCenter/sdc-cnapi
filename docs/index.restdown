@@ -133,7 +133,7 @@ Returns servers present in datacenter.
 ||**Param**||**Type**||**Description**||**Required?**||
 ||uuids||String||Comma seperated list of UUIDs to look up||No||
 ||datacenter||String||Datacenter in which to look up Server||No||
-||setup||Boolean||Limit results to servers in which the setup flag is set to given value||No|| 
+||setup||Boolean||Limit results to servers in which the setup flag is set to given value||No||
 
 ### Examples
 
@@ -176,18 +176,18 @@ Set the value of an attribute in server's record.
 ||reserved||Boolean||Indicate whether server is to be considered for provisioning||No||
 ||serial||String||Default console device||No||
 ||serial\_speed||Number||Serial speed value||No||
-||setup||String||Indicate whether server is set up||No|| 
+||setup||String||Indicate whether server is set up||No||
 
 ### Responses
 
 ||**Code**||**Description**||**Response**||
-||204||Server updated successfully||None|| 
+||204||Server updated successfully||None||
 
 ### Examples
 
     POST /servers/12494d5e-3960-4d65-a61a
       -d default_console=vga
-      -d setup=true 
+      -d setup=true
 
 ## SetupServer (SETUP /servers/:server\_uuid/setup)
 
@@ -206,49 +206,49 @@ None
 
 ### Examples
 
-    PUT /servers/12494d5e-3960-4d65-a61a/setup 
+    PUT /servers/12494d5e-3960-4d65-a61a/setup
 
 # VMs
 
 ## CreateVm (POST /servers/:server\_uuid/vms)
 
-Provision a VM on the specified server 
+Provision a VM on the specified server
 
 ### Input
 
 ||**Param**||**Type**||**Description**||**Required?**||
 ||jobid||String||CNAPI will post job information to Workflow API with this token||Yes||
 
-*Note*: VM creation payload parameters are as defined by the `vmadm create` command.  
+*Note*: VM creation payload parameters are as defined by the `vmadm create` command.
 
 ### Responses
 
 ||**Code**||**Description**||**Response**||
 ||204||Task was sent to server||None||
-||404||No such server||None|| 
+||404||No such server||None||
 
 ### Examples
 
-    PUT /servers/12494d5e-3960-4d65-a61a/vms 
+    PUT /servers/12494d5e-3960-4d65-a61a/vms
 
 ## LoadVm (GET /servers/:server\_uuid/vms/:uuid)
 
-Query the server for the VM's details.  
+Query the server for the VM's details.
 
 ### Input
 
-None 
+None
 
 ### Responses
 
 ||**Code**||**Description**||**Response**||
 ||204||Task was sent to server||None||
 ||404||No such VM||None||
-||404||No such server||None|| 
+||404||No such server||None||
 
 ### Examples
 
-    GET /servers/12494d5e-3960-4d65-a61a/vms/ed759072-7ef6-41d9-b8d8-6ce247faccd0 
+    GET /servers/12494d5e-3960-4d65-a61a/vms/ed759072-7ef6-41d9-b8d8-6ce247faccd0
 
 ## UpdateVm (POST /servers/:server\_uuid/vms/:uuid/update)
 
@@ -291,7 +291,7 @@ Boot up a vm which is in the 'stopped' state.
 
 ### Examples
 
-    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/start 
+    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/start
 
 ## StopVm (POST /servers/:server\_uuid/vms/:uuid/stop)
 
@@ -309,7 +309,7 @@ Shut down a vm which is in the 'running' state.
 
 ### Examples
 
-    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/stop 
+    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/stop
 
 ## RebootVm (POST /servers/:server\_uuid/vms/:uuid/reboot)
 
@@ -329,7 +329,7 @@ Reboot a VM which is in the 'running' state.
 
 ### Examples
 
-    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/stop 
+    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/stop
 
 ## DeleteVm (DELETE /servers/:server\_uuid/vms/:uuid)
 
