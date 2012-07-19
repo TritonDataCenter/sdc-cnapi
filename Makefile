@@ -74,6 +74,7 @@ release: all deps docs $(SMF_MANIFESTS)
     $(ROOT)/joysetup \
     $(ROOT)/node_modules \
     $(ROOT)/package.json \
+    $(ROOT)/scripts \
     $(ROOT)/smf \
     $(ROOT)/tools \
     $(TMPDIR)/root/opt/smartdc/cnapi/
