@@ -353,7 +353,7 @@ Delete a VM.
 
 # Ur
 
-## UpdateUr (DELETE /ur/:server\_uuid)
+## UpdateUr (POST /ur/:server\_uuid)
 
 Execute a script on a server.
 
@@ -371,3 +371,125 @@ Execute a script on a server.
 
     POST /ur/12494d5e-3960-4d65-a61a
         -d @script.sh
+
+
+# ZFS
+
+## ListDatasets (GET /datasets/:server\_uuid)
+
+List ZFS datasets on a server.
+
+### Input
+
+None
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||List of datasets||String||
+
+### Examples
+
+    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31
+
+
+## CreateDataset (POST /datasets/:server\_uuid)
+
+Create a ZFS dataset on a server.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||dataset||String||The dataset to be created||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Dataset created successfully||None||
+
+### Examples
+
+    POST /datasets/44454c4c-4800-1034-804a-b2c04f354d31 -d "datasets=zones/myfs"
+
+
+## GetProperties (GET /datasets/:server\_uuid/props)
+
+Get a ZFS dataset's properties.  Since this is a GET reuqeast, the dataset name
+should be URL encoded and passed in the query string.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||dataset||String||The dataset for which to get properties||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||That dataset's properties||None||
+
+### Examples
+
+    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31/props?datasets=zones/myfs
+
+
+## SetProperties (POST /datasets/:server\_uuid/props)
+
+Set one or more properties for a ZFS dataset.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||dataset||String||The name of the dataset||Yes||
+||properties||Object||Properties to be set on this dataset||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Properties were set successfully||None||
+
+### Examples
+
+    POST /datasets/44454c4c-4800-1034-804a-b2c04f354d31/props
+    {
+         "dataset": "zones/myfs",
+         "properties": {
+             "quota": "5G"
+         }
+    }
+
+
+## DestroyDataset (DELETE /datasets/:server\_uuid)
+
+Destroys a ZFS dataset on a server.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||dataset||String||The dataset to be destroyed ||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Dataset destroyed successfully||None||
+
+### Examples
+
+    DELETE  /datasets/44454c4c-4800-1034-804a-b2c04f354d31 -d "datasets=zones/myfs"
+
+
+## ListZpools (GET /zpools/:server\_uuid)
+
+List ZFS pools on a server.
+
+### Input
+
+None
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||ZFS pool information||String||
+
+### Examples
+
+    GET /zpools/44454c4c-4800-1034-804a-b2c04f354d31
