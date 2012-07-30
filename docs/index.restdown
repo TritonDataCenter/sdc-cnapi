@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Servers, VMs, Ur
+apisections: Servers, VMs, Ur, ZFS
 markdown2extras: wiki-tables, code-friendly
 ---
 
