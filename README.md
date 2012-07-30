@@ -48,13 +48,14 @@ Before commiting/pushing run `make prepush` and, if possible, get a code
 review.
 
 
-
 # Testing
 
     make test
 
-If you project has setup steps necessary for testing, then describe those
-here.
+The CNAPI_IP environment variable specifies the URL at which to point the test
+suite.  For example, this would test CNAPI installed on bh1-kvm6:
+
+    CNAPI_IP=10.2.206.13 make test
 
 
 
