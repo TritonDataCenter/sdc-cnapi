@@ -18,13 +18,13 @@
     "sdc-clients": "git+ssh://git@git.joyent.com:node-sdc-clients.git",
     "sprintf": "0.1.1",
     "redis": "0.7.2",
-    "hiredis": "0.1.14"
+    "hiredis": "0.1.14",
+    "wf-client": "git+ssh://git@git.joyent.com:wf-client.git"
   },
   "devDependencies": {
     "tap": "0.1"
   },
   "scripts": {
-    "start": "node ./server.js",
     "start": "node ./server.js"
   }
 }
