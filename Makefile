@@ -71,7 +71,6 @@ release: all deps docs $(SMF_MANIFESTS)
     $(ROOT)/config \
     $(ROOT)/lib \
     $(ROOT)/Makefile \
-    $(ROOT)/joysetup \
     $(ROOT)/node_modules \
     $(ROOT)/package.json \
     $(ROOT)/scripts \
