@@ -84,31 +84,116 @@ test('find created ZFS dataset', function (t) {
     });
 });
 
-test('set ZFS props', function (t) {
+test('set ZFS properties', function (t) {
     var params = {
-        dataset: dataset,
         properties: {
             quota: '5G'
         }
     };
 
-    client.post('/datasets/' + GZ + '/props', params,
-    function (err, req, res) {
+    var uri = '/datasets/' + GZ + '/properties/' + encodeURIComponent(dataset);
+
+    client.post(uri, params, function (err, req, res) {
         t.notOk(err, 'set ZFS quota on ' + dataset);
         t.equal(res.statusCode, 204, 'set properties returned 204');
         t.end();
     });
 });
 
-test('get ZFS props', function (t) {
-    var uri = '/datasets/' + GZ + '/props?' +
-        encodeURIComponent('dataset=' + dataset);
+/* XXX This test is causing a 'maxBuffer exceeded' exception */
+// /* GET /datasets/:server/properties */
+// test('get ZFS properties (all datasets)', {timeout: 60000}, function (t) {
+//    var uri = '/datasets/' + GZ + '/properties';
+//
+//    client.get(uri, function (err, req, res, properties) {
+//        t.notOk(err, 'get ZFS properties for ' + dataset);
+//        t.equal(res.statusCode, 200, 'get properties returned 200');
+//
+//        t.equal(properties[dataset].quota, '5368709120',
+//            dataset + ' has 5G quota');
+//
+//        // Check the properties of the created dataset as well as some
+//        // well-known datasets
+//        var datasets = [ dataset, 'zones/var', 'zones' ];
+//
+//        datasets.forEach(function (ds) {
+//            t.ok(properties[ds].mountpoint,
+//                ds + ' has valid mountpoint');
+//            t.equal(properties[ds].type, 'filesystem',
+//                ds + ' is of type filesystem');
+//        });
+//
+//        t.end();
+//    });
+// });
+
+/* GET /datasets/:server/properties/:dataset */
+test('get ZFS properties (single dataset)', function (t) {
+    var uri = '/datasets/' + GZ + '/properties/' + encodeURIComponent(dataset);
 
     client.get(uri, function (err, req, res, properties) {
         t.notOk(err, 'get ZFS properties for ' + dataset);
         t.equal(res.statusCode, 200, 'get properties returned 200');
 
-        t.equal(properties.quota, '5368709120', dataset + ' has 5G quota');
+        t.equal(properties[dataset].quota, '5368709120',
+            dataset + ' has 5G quota');
+        t.ok(properties[dataset].mountpoint,
+            dataset + ' has valid mountpoint');
+        t.equal(properties[dataset].type, 'filesystem',
+            dataset + ' is of type filesystem');
+
+        t.notOk(properties['zones/var'], 'no properties for other datasets');
+
+        t.end();
+    });
+});
+
+/* GET /datasets/:server/properties?prop1=quota&prop2=mountpoint */
+test('get specific ZFS properties (all datasets)', function (t) {
+    var uri = '/datasets/' + GZ + '/properties?' +
+        'prop1=quota&prop2=mountpoint';
+
+    client.get(uri, function (err, req, res, properties) {
+        t.notOk(err, 'get ZFS properties for ' + dataset);
+        t.equal(res.statusCode, 200, 'get properties returned 200');
+
+        t.equal(properties[dataset].quota, '5368709120',
+            dataset + ' has 5G quota');
+
+        // Check the properties of the created dataset as well as some
+        // well-known datasets
+        var datasets = [ dataset, 'zones/var', 'zones' ];
+
+        datasets.forEach(function (ds) {
+            t.ok(properties[ds].quota, ds + ' has valid quota');
+            t.ok(properties[ds].mountpoint,
+                ds + ' has valid mountpoint');
+            t.notOk(properties[ds].type, ds + ' has extra property "type"');
+        });
+
+        t.end();
+    });
+});
+
+/* GET /datasets/:server/properties/:dataset?prop1=quota&prop2=mountpoint */
+test('get specific ZFS properties (single dataset)', function (t) {
+    var uri = '/datasets/' + GZ + '/properties/' +
+        encodeURIComponent(dataset) +
+        '?prop1=quota&prop2=mountpoint';
+
+    client.get(uri, function (err, req, res, properties) {
+        t.notOk(err, 'get ZFS properties for ' + dataset);
+        t.equal(res.statusCode, 200, 'get properties returned 200');
+
+        t.equal(properties[dataset].quota, '5368709120',
+            dataset + ' has 5G quota');
+        t.ok(properties[dataset].mountpoint,
+            dataset + ' has valid mountpoint');
+        t.notOk(properties[dataset].type,
+            dataset + ' has extra property "type"');
+
+        t.notOk(properties['zones/var'], 'no properties for other datasets');
+
         t.end();
     });
 });
