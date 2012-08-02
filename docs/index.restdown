@@ -375,6 +375,7 @@ Execute a script on a server.
 
 # ZFS
 
+
 ## ListDatasets (GET /datasets/:server\_uuid)
 
 List ZFS datasets on a server.
@@ -386,7 +387,7 @@ None
 ### Responses
 
 ||**Code**||**Description**||**Response**||
-||200||List of datasets||String||
+||200||List of datasets||Array of JSON objects, one per dataset||
 
 ### Examples
 
@@ -412,27 +413,49 @@ Create a ZFS dataset on a server.
     POST /datasets/44454c4c-4800-1034-804a-b2c04f354d31 -d "datasets=zones/myfs"
 
 
-## GetProperties (GET /datasets/:server\_uuid/props)
+## GetProperties (GET /datasets/:server\_uuid/properties/:dataset)
 
-Get a ZFS dataset's properties.  Since this is a GET reuqeast, the dataset name
-should be URL encoded and passed in the query string.
+Get ZFS properties for a dataset.  The specific properties to return can be
+filtered with ?prop1=foo&prop2=bar, etc.
 
 ### Input
 
 ||**Param**||**Type**||**Description**||**Required?**||
 ||dataset||String||The dataset for which to get properties||Yes||
+||prop1 ... propN||String||Specific properties to get||No||
 
 ### Responses
 
 ||**Code**||**Description**||**Response**||
-||200||That dataset's properties||None||
+||200||A list of properties||JSON object, keyed by dataset name||
 
 ### Examples
 
-    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31/props?datasets=zones/myfs
+    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31/properties/zones\/myfs
+    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31/properties/zones\/myfs?prop1=quota&prop2=available
 
 
-## SetProperties (POST /datasets/:server\_uuid/props)
+## GetAllProperties (GET /datasets/:server\_uuid/properties)
+
+Get ZFS properties across all datasets.  The specific properties to return can
+be filtered with ?prop1=foo&prop2=bar, etc.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||prop1 ... propN||String||Specific properties to get||No||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||A list of properties||JSON object, keyed by dataset name||
+
+### Examples
+
+    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31/properties?prop1=mountpoint
+
+
+## SetProperties (POST /datasets/:server\_uuid/properties/:dataset)
 
 Set one or more properties for a ZFS dataset.
 
@@ -449,9 +472,8 @@ Set one or more properties for a ZFS dataset.
 
 ### Examples
 
-    POST /datasets/44454c4c-4800-1034-804a-b2c04f354d31/props
+    POST /datasets/44454c4c-4800-1034-804a-b2c04f354d31/properties/zones\/myfs
     {
-         "dataset": "zones/myfs",
          "properties": {
              "quota": "5G"
          }
