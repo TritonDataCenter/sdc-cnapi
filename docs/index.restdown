@@ -122,6 +122,41 @@ layout:
 CNAPI is responsible for listening for compute node heartbeats and updating
 UFDS appropriately.
 
+# Boot parameters
+
+## GetDefaultBootParams (GET /boot/default)
+
+Returns the default boot parameters.
+
+### Inputs
+
+None.
+
+### Examples
+
+    GET /boot/default
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||The returned parameters||JSON object||
+
+## GetBootParams (GET /boot/:server_uuid)
+
+Returns the boot parameters for a server.
+
+### Inputs
+
+None.
+
+### Examples
+
+    GET /boot/12494d5e-3960-4d65-a61a-0ca6252d6914
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||200||The returned parameters||JSON object||
 # Servers
 
 ## ListServers (GET /servers)
@@ -207,6 +242,24 @@ None
 ### Examples
 
     PUT /servers/12494d5e-3960-4d65-a61a/setup
+
+## FactoryReset (PUT /servers/:server\_uuid/factory-reset)
+
+Reset the server back to factory defaults and clear all ZFS pools.
+
+### Input
+
+None
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Server reset initiated successfully||None||
+||500||Error attempting to set up server||None||
+
+### Examples
+
+    PUT /servers/12494d5e-3960-4d65-a61a/factory-reset
 
 # VMs
 
@@ -391,10 +444,10 @@ None
 
 ### Examples
 
-    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31
+    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets
 
 
-## CreateDataset (POST /datasets/:server\_uuid)
+## CreateDataset (POST /servers/:server\_uuid/datasets)
 
 Create a ZFS dataset on a server.
 
@@ -410,10 +463,10 @@ Create a ZFS dataset on a server.
 
 ### Examples
 
-    POST /datasets/44454c4c-4800-1034-804a-b2c04f354d31 -d "datasets=zones/myfs"
+    POST /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets -d "datasets=zones/myfs"
 
 
-## GetProperties (GET /datasets/:server\_uuid/properties/:dataset)
+## GetProperties (GET /servers/:server\_uuid/datasets/:dataset/properties)
 
 Get ZFS properties for a dataset.  The specific properties to return can be
 filtered with ?prop1=foo&prop2=bar, etc.
@@ -431,11 +484,11 @@ filtered with ?prop1=foo&prop2=bar, etc.
 
 ### Examples
 
-    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31/properties/zones\/myfs
-    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31/properties/zones\/myfs?prop1=quota&prop2=available
+    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs/properties
+    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs?/properties?prop1=quota&prop2=available
 
 
-## GetAllProperties (GET /datasets/:server\_uuid/properties)
+## GetAllProperties (GET /servers/:server\_uuid/dataset-properties)
 
 Get ZFS properties across all datasets.  The specific properties to return can
 be filtered with ?prop1=foo&prop2=bar, etc.
@@ -452,10 +505,10 @@ be filtered with ?prop1=foo&prop2=bar, etc.
 
 ### Examples
 
-    GET /datasets/44454c4c-4800-1034-804a-b2c04f354d31/properties?prop1=mountpoint
+    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/dataset-properties?prop1=mountpoint
 
 
-## SetProperties (POST /datasets/:server\_uuid/properties/:dataset)
+## SetProperties (POST /servers/:server\_uuid/datasets/:dataset/properties)
 
 Set one or more properties for a ZFS dataset.
 
@@ -472,7 +525,7 @@ Set one or more properties for a ZFS dataset.
 
 ### Examples
 
-    POST /datasets/44454c4c-4800-1034-804a-b2c04f354d31/properties/zones\/myfs
+    POST /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs/properties
     {
          "properties": {
              "quota": "5G"
@@ -480,7 +533,7 @@ Set one or more properties for a ZFS dataset.
     }
 
 
-## DestroyDataset (DELETE /datasets/:server\_uuid)
+## DestroyDataset (DELETE /servers/:server\_uuid/datasets/:dataset)
 
 Destroys a ZFS dataset on a server.
 
@@ -496,10 +549,10 @@ Destroys a ZFS dataset on a server.
 
 ### Examples
 
-    DELETE  /datasets/44454c4c-4800-1034-804a-b2c04f354d31 -d "datasets=zones/myfs"
+    DELETE  /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs
 
 
-## ListZpools (GET /zpools/:server\_uuid)
+## ListZpools (GET /servers/:server\_uuid/zpools)
 
 List ZFS pools on a server.
 
@@ -514,4 +567,4 @@ None
 
 ### Examples
 
-    GET /zpools/44454c4c-4800-1034-804a-b2c04f354d31
+    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/zpools
