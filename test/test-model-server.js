@@ -71,6 +71,9 @@ function testListServersByUuids(test) {
 
     mock.newModel(function (error, model, mockUfds) {
         test.equal(error, null, 'should not encounter an error');
+
+        ModelServer.init(model);
+
         mockUfds.when('search', [], expSearchResults);
 
         var options = {
@@ -117,6 +120,7 @@ function testListServersSetup(test) {
     mock.newModel(function (error, model, mockUfds) {
         test.equal(error, null, 'should not encounter an error');
         mockUfds.when('search', [], expSearchResults);
+        ModelServer.init(model);
 
         var options = {
             setup: 'true'
@@ -141,10 +145,10 @@ function testListServersSetup(test) {
 }
 
 function testCreateServer(test) {
-    test.expect(1);
+    test.expect(3);
 
     var dn = 'uuid=' + uuids[0] + ',ou=servers, datacenter=testdc, o=smartdc';
-    var server = {
+    var serverToAdd = {
         uuid: uuids[0],
         ram: '12345'
     };
@@ -152,18 +156,71 @@ function testCreateServer(test) {
     var server = new ModelServer(uuids[0]);
 
     mock.newModel(function (error, model, mockUfds) {
+        test.equal(error, null, 'should not encounter an error');
+        //mockUfds.when('search', [], expSearchResults);
         mockUfds.when('add', []);
+        ModelServer.init(model);
 
-        server.addServerToUfds(server, function (list$error) {
+        server.addServerToUfds(serverToAdd, function (listError) {
+            test.equal(listError, null, 'should not encounter an error');
             test.deepEqual(
                 [
                     [ 'add',
                       dn,
-                      server
+                      serverToAdd
                     ]
                 ],
                 mockUfds.history,
                 'ufds command history');
+            test.done();
+        });
+    });
+}
+
+function testModifyServer(test) {
+    test.expect(6);
+
+    var uuid = uuids[0];
+    var dn = 'uuid=' + uuid + ',ou=servers, datacenter=testdc, o=smartdc';
+
+    var serverToModify = {
+        uuid: uuids[0],
+        ram: '12345'
+    };
+
+    var server = new ModelServer(uuids[0]);
+
+    mock.newModel(function (error, model, mockUfds) {
+        test.equal(error, null, 'should not encounter an error');
+
+        mockUfds.when('add', []);
+
+        var bootPlatform = '123Z';
+        var changes = [
+            {
+                type: 'replace',
+                modification: {
+                    boot_platform: bootPlatform
+                }
+            }
+        ];
+        ModelServer.init(model);
+
+        mockUfds.when('replace', []);
+
+        server.modify(changes, function (modifyError) {
+            test.equal(modifyError, null, 'should not encounter an error');
+            test.deepEqual('replace', mockUfds.history[0][0], 'op should be replace');
+            test.deepEqual(dn, mockUfds.history[0][1], 'dn should match');
+            test.deepEqual(
+                bootPlatform,
+                mockUfds.history[0][2][0].modification.boot_platform,
+                'boot platform should match');
+            test.ok(
+                bootPlatform,
+                mockUfds.history[0][2][1].modification.last_updated,
+                'last_platform date should be set');
+
             test.done();
         });
     });
@@ -176,5 +233,5 @@ module.exports = nodeunit.testCase({
     'list multiple servers by uuid':          testListServersByUuids,
     'list servers which are marked as setup': testListServersSetup,
     'create server':                          testCreateServer,
-    'delete server':                          testDeleteServer
+    'modify server':                          testModifyServer
 });

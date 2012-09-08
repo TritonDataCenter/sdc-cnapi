@@ -8,9 +8,6 @@ var configFilename = path.join(__dirname, '..', '..', 'config', 'test.json');
 function MockUfds() {
     this.history = [];
     this.callbackValues = {
-        del: [],
-        search: [],
-        add: []
     };
 }
 
@@ -32,7 +29,16 @@ MockUfds.prototype.add = function (baseDn, server, callback) {
     return;
 };
 
+MockUfds.prototype.modify = function (baseDn, changes, callback) {
+    this.history.push(['replace', baseDn, changes]);
+    callback.apply(null, []);
+    return;
+};
+
 MockUfds.prototype.when = function (fn, arguments, results) {
+    if (!this.callbackValues[fn]) {
+        this.callbackValues[fn] = [];
+    }
     this.callbackValues[fn].push(results);
 };
 
@@ -68,6 +74,7 @@ function newModel(callback) {
     var logFn = function () {};
     var log = {
         debug: logFn,
+        trace: logFn,
         info: logFn
     };
 
