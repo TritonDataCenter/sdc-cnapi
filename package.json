@@ -19,6 +19,7 @@
     "sprintf": "0.1.1",
     "redis": "0.7.2",
     "hiredis": "0.1.14",
+    "nodeunit": "0.7.4",
     "wf-client": "git+ssh://git@git.joyent.com:wf-client.git#ad56271ecfd9bda47a63cf2a9b2fff4cd4ba42d0"
   },
   "devDependencies": {
