@@ -1,0 +1,148 @@
+#!/bin/bash
+#
+# Copyright (c) 2012, Joyent, Inc. All rights reserved.
+#
+# Run the TODONAME tests.
+# Run `./runtests -h` for usage info.
+#
+
+if [ "$TRACE" != "" ]; then
+    export PS4='${BASH_SOURCE}:${LINENO}: ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+    set -o xtrace
+fi
+set -o errexit
+set -o pipefail
+
+
+
+#---- guard
+
+# if [[ ! -f "/lib/sdc/.sdc-test-no-production-data" ]]; then
+#     cat <<EOF
+# To run this test you must create the file:
+# 
+#     /lib/sdc/.sdc-test-no-production-data
+# 
+# after ensuring you have no production data on this SDC.
+# EOF
+#     exit 2
+# fi
+
+
+
+#---- config
+
+NAME=cnapi
+TOP=$(cd $(dirname $0)/../; pwd)
+
+
+
+#---- support functions
+
+function fatal
+{
+    echo "$(basename $0): fatal error: $*"
+    exit 1
+}
+
+function usage
+{
+    echo "Usage:"
+    echo "  runtests [OPTIONS...]"
+    echo ""
+    echo "Options:"
+    echo "  -f FILTER   Filter pattern (substring match) for test files to run."
+}
+
+
+if [[ "$(zonename)" == "global" ]]; then
+    fatal "$0 must be run within the $NAME zone"
+fi
+
+
+#---- mainline
+
+start_time=$(date +%s)
+
+# Options.
+opt_test_pattern=test/test-*.js
+opt_reporter=tap
+
+while getopts "hf:r:c:" opt
+do
+    case "$opt" in
+        h)
+            usage
+            exit 0
+            ;;
+        f)
+            opt_test_pattern=$OPTARG
+            ;;
+        r)
+            opt_reporter=$OPTARG
+            ;;
+        c)
+            cnapi_ip=$OPTARG
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+OUTPUT_DIR=/var/tmp/${NAME}test
+echo "# Create output dir ($OUTPUT_DIR)."
+rm -rf $OUTPUT_DIR
+mkdir -p $OUTPUT_DIR
+
+
+
+#---- start tests
+
+# TODO
+# Project specific setup and test running goes here.
+# - TAP output should be redirected or tee'd to $OUTPUT_DIR/*.tap
+#   This is used (a) to summarize below and (b) for the Jenkins Job TAP
+#   parsing/reporting.
+# - If reasonable, use $opt_test_pattern to filter the set of test files run.
+#
+# Some examples:
+# - https://mo.joyent.com/amon/blob/master/test/runtests
+# - https://mo.joyent.com/smartos-live/blob/master/src/vm/runtests
+# TODO
+
+
+if [[ -z "$cnapi_ip" ]]; then
+		cnapi_ip=`sysinfo | json "Virtual Network Interfaces"."net0"."ip4addr"`
+fi
+
+export CNAPI_IP=$cnapi_ip
+
+cd ${TOP} && PATH=${TOP}/build/node/bin node ./node_modules/.bin/nodeunit --reporter tap $opt_test_pattern | tee $OUTPUT_DIR/cnapi-tests.tap
+
+
+#---- summary
+
+echo ""
+echo "# test results:"
+
+end_time=$(date +%s)
+elapsed=$((${end_time} - ${start_time}))
+
+tests=$(grep "^# tests [0-9]" $OUTPUT_DIR/*.tap | cut -d ' ' -f3 | xargs | tr ' ' '+' | bc)
+passed=$(grep "^# pass  [0-9]" $OUTPUT_DIR/*.tap | tr -s ' ' | cut -d ' ' -f3 | xargs | tr ' ' '+' | bc)
+[[ -z ${tests} ]] && tests=0
+[[ -z ${passed} ]] && passed=0
+fail=$((${tests} - ${passed}))
+
+echo "# Completed in ${elapsed} seconds."
+echo -e "# \033[32mPASS: ${passed} / ${tests}\033[39m"
+if [[ ${fail} -gt 0 ]]; then
+    echo -e "# \033[31mFAIL: ${fail} / ${tests}\033[39m"
+fi
+echo ""
+
+if [[ ${tests} != ${passed} ]]; then
+    exit 1
+fi
