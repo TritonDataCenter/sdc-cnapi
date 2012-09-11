@@ -56,7 +56,8 @@ all: | $(NPM_EXEC)
 
 .PHONY: test
 test: $(TAP)
-	TAP=1 $(TAP) test/*.test.js
+	TAP=1 PATH=$(REPO_ROOT)/build/node/bin node $(TAP) test/zfs.test.js
+	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-model-server.js
 
 
 .PHONY: release
