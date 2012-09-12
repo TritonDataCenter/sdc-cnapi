@@ -157,7 +157,7 @@ function testCreateServer(test) {
 
     mock.newModel(function (error, model, mockUfds) {
         test.equal(error, null, 'should not encounter an error');
-        //mockUfds.when('search', [], expSearchResults);
+
         mockUfds.when('add', []);
         ModelServer.init(model);
 
@@ -183,11 +183,6 @@ function testModifyServer(test) {
     var uuid = uuids[0];
     var dn = 'uuid=' + uuid + ',ou=servers, datacenter=testdc, o=smartdc';
 
-    var serverToModify = {
-        uuid: uuids[0],
-        ram: '12345'
-    };
-
     var server = new ModelServer(uuids[0]);
 
     mock.newModel(function (error, model, mockUfds) {
@@ -210,7 +205,10 @@ function testModifyServer(test) {
 
         server.modify(changes, function (modifyError) {
             test.equal(modifyError, null, 'should not encounter an error');
-            test.deepEqual('replace', mockUfds.history[0][0], 'op should be replace');
+            test.deepEqual(
+                'replace',
+                mockUfds.history[0][0],
+                'op should be replace');
             test.deepEqual(dn, mockUfds.history[0][1], 'dn should match');
             test.deepEqual(
                 bootPlatform,

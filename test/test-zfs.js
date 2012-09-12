@@ -4,7 +4,6 @@
  * zfs.test.js: Tests for ZFS endpoints
  */
 
-// var test = require('tap').test;
 var Logger = require('bunyan');
 var restify = require('restify');
 
@@ -37,11 +36,6 @@ function teardown(callback) {
 }
 
 
-function test() {
-
-}
-
-
 function testListServers(test) {
     test.expect(4);
     client.get('/servers', function (err, req, res, servers) {
@@ -56,17 +50,18 @@ function testListServers(test) {
 
 
 function testListDatasets(test) {
-    client.get('/servers/' + GZ + '/datasets', function (err, req, res, datasets) {
+    var uri = '/servers/' + GZ + '/datasets';
+    client.get(uri, function (err, req, res, datasets) {
         test.equal(err, null, 'valid response from GET datasets');
         test.equal(res.statusCode, 200, 'GET datasets returned 200');
 
         datasets.forEach(function (d) {
-            test.equal(typeof d.name, 'string');
-            test.equal(typeof d.type, 'string');
-            test.equal(typeof d.used, 'string');
-            test.equal(typeof d.avail, 'string');
-            test.equal(typeof d.refer, 'string');
-            test.equal(typeof d.mountpoint, 'string');
+            test.equal(typeof (d.name), 'string');
+            test.equal(typeof (d.type), 'string');
+            test.equal(typeof (d.used), 'string');
+            test.equal(typeof (d.avail), 'string');
+            test.equal(typeof (d.refer), 'string');
+            test.equal(typeof (d.mountpoint), 'string');
         });
 
         test.done();
@@ -85,7 +80,8 @@ function testCreateZFSDataset(test) {
 
 
 function testFindCreatedZFSDataset(test) {
-    client.get('/servers/' + GZ + '/datasets', function (err, req, res, datasets) {
+    var uri = '/servers/' + GZ + '/datasets';
+    client.get(uri, function (err, req, res, datasets) {
         test.equal(err, null, 'valid response from GET datasets');
         test.equal(res.statusCode, 200, 'GET datasets returned 200');
 
@@ -109,7 +105,8 @@ function testSetZFSProperties(test) {
         }
     };
 
-    var uri = '/servers/' + GZ + '/datasets/' + encodeURIComponent(dataset) + '/properties';
+    var uri = '/servers/' + GZ + '/datasets/'
+        + encodeURIComponent(dataset) + '/properties';
 
     client.post(uri, params, function (err, req, res) {
         test.equal(err, null, 'set ZFS quota on ' + dataset);
@@ -120,7 +117,8 @@ function testSetZFSProperties(test) {
 
 /* GET /datasets/:server/properties/:dataset */
 function testGetZfsPropertySingle(test) {
-    var uri = '/servers/' + GZ + '/datasets/' + encodeURIComponent(dataset) + '/properties';
+    var uri = '/servers/' + GZ + '/datasets/'
+        + encodeURIComponent(dataset) + '/properties';
 
     client.get(uri, function (err, req, res, properties) {
         test.equal(err, null, 'get ZFS properties for ' + dataset);
@@ -162,7 +160,9 @@ function testGetZfsPropertySpecificAll(test) {
             test.ok(properties[ds].quota, ds + ' has valid quota');
             test.ok(properties[ds].mountpoint,
                 ds + ' has valid mountpoint');
-            test.equal(properties[ds].type, undefined, ds + ' has extra property "type"');
+            test.equal(
+                properties[ds].type, undefined,
+                ds + ' has extra property "type"');
         });
 
         test.done();
@@ -206,20 +206,23 @@ function testDestroyZFSDataset(test) {
 }
 
 function testLookupDeletedZFSDataset(test) {
-    client.get('/servers/' + GZ + '/datasets', function (err, req, res, datasets) {
-        test.equal(err, null, 'valid response from GET datasets');
-        test.equal(res.statusCode, 200, 'GET datasets returned 200');
+    client.get('/servers/' + GZ + '/datasets',
+        function (err, req, res, datasets) {
+            test.equal(err, null, 'valid response from GET datasets');
+            test.equal(res.statusCode, 200, 'GET datasets returned 200');
 
-        var found = false;
+            var found = false;
 
-        datasets.forEach(function (d) {
-            if (d.name === dataset)
-                found = true;
+            datasets.forEach(function (d) {
+                if (d.name === dataset)
+                    found = true;
+            });
+
+            test.equal(
+                found, false,
+                'deleted dataset ' + dataset + ' not found in list');
+            test.done();
         });
-
-        test.equal(found, false,'deleted dataset ' + dataset + ' not found in list');
-        test.done();
-    });
 }
 
 function testGetZFSPools(test) {
@@ -228,12 +231,12 @@ function testGetZFSPools(test) {
         test.equal(res.statusCode, 200, 'GET zpools returned 200');
 
         zpools.forEach(function (z) {
-            test.equal(typeof z.name, 'string');
-            test.equal(typeof z.size, 'string');
-            test.equal(typeof z.allocated, 'string');
-            test.equal(typeof z.free, 'string');
-            test.equal(typeof z.cap, 'string');
-            test.equal(typeof z.health, 'string');
+            test.equal(typeof (z.name), 'string');
+            test.equal(typeof (z.size), 'string');
+            test.equal(typeof (z.allocated), 'string');
+            test.equal(typeof (z.free), 'string');
+            test.equal(typeof (z.cap), 'string');
+            test.equal(typeof (z.health), 'string');
         });
 
         test.done();
@@ -285,5 +288,3 @@ module.exports = {
 //        t.end();
 //    });
 // });
-
-
