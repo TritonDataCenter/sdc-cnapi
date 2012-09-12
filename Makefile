@@ -68,16 +68,17 @@ release: all deps docs $(SMF_MANIFESTS)
 	@touch $(TMPDIR)/site/.do-not-delete-me
 	cd $(ROOT) && $(NPM) install
 	cp -r   $(ROOT)/build \
-    $(ROOT)/bin \
-    $(ROOT)/config \
-    $(ROOT)/lib \
-    $(ROOT)/Makefile \
-    $(ROOT)/node_modules \
-    $(ROOT)/package.json \
-    $(ROOT)/scripts \
-    $(ROOT)/smf \
-    $(ROOT)/tools \
-    $(TMPDIR)/root/opt/smartdc/cnapi/
+		$(ROOT)/bin \
+		$(ROOT)/config \
+		$(ROOT)/lib \
+		$(ROOT)/Makefile \
+		$(ROOT)/node_modules \
+		$(ROOT)/package.json \
+		$(ROOT)/scripts \
+		$(ROOT)/smf \
+		$(ROOT)/test \
+		$(ROOT)/tools \
+		$(TMPDIR)/root/opt/smartdc/cnapi/
 	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
 	@rm -rf $(TMPDIR)
 
