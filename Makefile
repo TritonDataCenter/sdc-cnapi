@@ -56,8 +56,8 @@ all: | $(NPM_EXEC)
 
 .PHONY: test
 test: $(TAP)
-	TAP=1 PATH=$(REPO_ROOT)/build/node/bin node $(TAP) test/zfs.test.js
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-model-server.js
+	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-zfs.js
 
 
 .PHONY: release
@@ -74,7 +74,6 @@ release: all deps docs $(SMF_MANIFESTS)
 		$(ROOT)/Makefile \
 		$(ROOT)/node_modules \
 		$(ROOT)/package.json \
-		$(ROOT)/scripts \
 		$(ROOT)/smf \
 		$(ROOT)/test \
 		$(ROOT)/tools \
