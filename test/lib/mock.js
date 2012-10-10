@@ -5,6 +5,12 @@ var createModel = require('../../lib/models').createModel;
 
 var configFilename = path.join(__dirname, '..', '..', 'config', 'test.json');
 
+/**
+ *
+ * UFDS
+ *
+ */
+
 function MockUfds() {
     this.history = [];
     this.callbackValues = {
@@ -42,6 +48,12 @@ MockUfds.prototype.when = function (fn, arguments, results) {
     this.callbackValues[fn].push(results);
 };
 
+/**
+ *
+ * Redis
+ *
+ */
+
 function MockRedis() {
     this.history = [];
     this.callbackValues = {
@@ -67,6 +79,34 @@ MockRedisWrapper.prototype.getClient = function () {
     return this.client;
 };
 
+/**
+ *
+ * Ur
+ *
+ */
+
+function MockUr() {
+    this.history = [];
+    this.callbackValues = {
+        execute: []
+    };
+}
+
+MockUr.prototype.when = function (fn, arguments, results) {
+    if (!this.callbackValues[fn]) {
+        this.callbackValues[fn] = [];
+    }
+    this.callbackValues[fn].push(results);
+};
+
+
+MockUr.prototype.execute = function (opts, callback) {
+    this.history.push(['execute', opts]);
+    callback.apply(null, this.callbackValues.execute.pop());
+    return this;
+};
+
+
 function newModel(callback) {
     var config;
     var model;
@@ -80,6 +120,7 @@ function newModel(callback) {
 
     var ufds = new MockUfds();
     var redis = new MockRedisWrapper();
+    var ur = new MockUr();
 
     async.waterfall([
         function (wf$callback) {
@@ -96,11 +137,12 @@ function newModel(callback) {
             });
             model.setUfds(ufds);
             model.setRedis(redis);
+            model.setUr(ur);
             wf$callback();
         }
     ],
     function (error) {
-        return callback(error, model, ufds);
+        return callback(error, model, ufds, ur);
     });
 }
 
