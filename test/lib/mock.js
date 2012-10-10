@@ -41,7 +41,7 @@ MockUfds.prototype.modify = function (baseDn, changes, callback) {
     return;
 };
 
-MockUfds.prototype.when = function (fn, arguments, results) {
+MockUfds.prototype.when = function (fn, args, results) {
     if (!this.callbackValues[fn]) {
         this.callbackValues[fn] = [];
     }
@@ -71,6 +71,12 @@ MockRedis.prototype.hmset = function (key, values, callback) {
     return this;
 };
 
+MockRedis.prototype.hgetall = function (key, callback) {
+    this.history.push(['hgetall', key]);
+    callback();
+    return this;
+};
+
 function MockRedisWrapper() {
     this.client = new MockRedis();
 }
@@ -92,7 +98,7 @@ function MockUr() {
     };
 }
 
-MockUr.prototype.when = function (fn, arguments, results) {
+MockUr.prototype.when = function (fn, args, results) {
     if (!this.callbackValues[fn]) {
         this.callbackValues[fn] = [];
     }
@@ -133,7 +139,10 @@ function newModel(callback) {
             model = createModel({
                 log: log,
                 ufds: config.ufds,
-                datacenter: config.datacenter_name
+                datacenter: config.datacenter_name,
+                amqp: {
+                    host: 'localhost'
+                }
             });
             model.setUfds(ufds);
             model.setRedis(redis);

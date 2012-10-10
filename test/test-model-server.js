@@ -153,7 +153,6 @@ function testCreateServer(test) {
         ram: '12345'
     };
 
-    var server = new ModelServer(uuids[0]);
 
     mock.newModel(function (error, model, mockUfds) {
         test.equal(error, null, 'should not encounter an error');
@@ -161,6 +160,7 @@ function testCreateServer(test) {
         mockUfds.when('add', []);
         ModelServer.init(model);
 
+        var server = new ModelServer(uuids[0]);
         server.addServerToUfds(serverToAdd, function (listError) {
             test.equal(listError, null, 'should not encounter an error');
             test.deepEqual(
@@ -183,7 +183,6 @@ function testModifyServer(test) {
     var uuid = uuids[0];
     var dn = 'uuid=' + uuid + ',ou=servers, datacenter=testdc, o=smartdc';
 
-    var server = new ModelServer(uuids[0]);
 
     mock.newModel(function (error, model, mockUfds) {
         test.equal(error, null, 'should not encounter an error');
@@ -200,6 +199,7 @@ function testModifyServer(test) {
             }
         ];
         ModelServer.init(model);
+        var server = new ModelServer(uuids[0]);
 
         mockUfds.when('replace', []);
 
@@ -224,6 +224,118 @@ function testModifyServer(test) {
     });
 }
 
+function testSetBootParameters(test) {
+    test.expect(9);
+    var uuid = uuids[0];
+
+    var server;
+    var mockUfds;
+    var mockRedis;
+    var history;
+
+    var newBootParameters = {
+        simple: 'ronny',
+        equal_quotes: 'sauce="apple"',
+        commas: 'fee,fi,fo,fum',
+        backslash: 'fruit\\cake'
+    };
+
+    async.waterfall([
+        function (callback) {
+            mock.newModel(function (error, model, ufds, redis) {
+                mockUfds = ufds;
+                mockRedis = redis;
+                history = mockUfds.history;
+
+                test.equal(error, null, 'should not encounter an error');
+
+                mockUfds.when('replace', []);
+
+                ModelServer.init(model);
+
+                server = new ModelServer(uuid);
+                callback();
+            });
+        },
+        function (callback) {
+            server.setBootParams(newBootParameters, function (modifyError) {
+                test.equal(
+                    modifyError,
+                    null,
+                    'There should be no error');
+
+                test.equal(
+                    history[0][0],
+                    'replace',
+                    'Function should be replace');
+                test.equal(
+                    history[0][0],
+                    'replace',
+                    'Function should be replace');
+                test.equal(
+                    history[0][2][0].type,
+                    'replace',
+                    'Change operation should be replace');
+                test.ok(
+                    history[0][2][0].modification.boot_params,
+                    'boot_params should be set');
+                test.deepEqual(
+                    JSON.parse(history[0][2][0].modification.boot_params),
+                    newBootParameters,
+                    'boot_params JSON should match');
+
+                callback();
+            });
+        },
+        function (callback) {
+            var expSearchResults = [
+                null,
+                [
+                    {
+                        uuid: uuid,
+                        boot_params: JSON.stringify(newBootParameters),
+                        setup: 'true',
+                        boot_platform: '123Z',
+                        hostname: 'testbox',
+                        sysinfo: '{ "setup": true }'
+                    }
+                ]
+            ];
+            mockUfds.when('search', [], expSearchResults);
+            mockRedis.when('hgetall', [], {});
+
+            server.getBootParams(function (getError, params) {
+                test.equal(
+                     getError,
+                     null,
+                'There should be no error');
+
+//                 console.log(util.inspect(mockUfds.history, null, Infinity));
+//                 console.log(util.inspect(params, null, Infinity));
+
+                test.deepEqual(
+                    params,
+                    {
+                        platform: '123Z',
+                        kernel_args: {
+                            rabbitmq: 'guest:guest:localhost:5672',
+                            hostname: 'testbox',
+                            simple: 'ronny',
+                            equal_quotes: 'sauce="apple"',
+                            commas: 'fee,fi,fo,fum',
+                            backslash: 'fruit\\cake'
+                        },
+                    });
+
+                callback();
+            });
+        }
+    ],
+    function () {
+         test.done();
+    });
+}
+
 module.exports = nodeunit.testCase({
     setUp: setup,
     tearDown: teardown,
@@ -231,5 +343,6 @@ module.exports = nodeunit.testCase({
     'list multiple servers by uuid':          testListServersByUuids,
     'list servers which are marked as setup': testListServersSetup,
     'create server':                          testCreateServer,
-    'modify server':                          testModifyServer
+    'modify server':                          testModifyServer,
+    'modify server boot parameters':          testSetBootParameters
 });
