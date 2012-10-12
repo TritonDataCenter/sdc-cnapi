@@ -57,6 +57,7 @@ MockUfds.prototype.when = function (fn, args, results) {
 function MockRedis() {
     this.history = [];
     this.callbackValues = {
+        get: [],
         del: [],
         hmset: [],
         hmgetall: [],
@@ -72,6 +73,12 @@ MockRedis.prototype.hmset = function (key, values, callback) {
 };
 
 MockRedis.prototype.hgetall = function (key, callback) {
+    this.history.push(['hgetall', key]);
+    callback();
+    return this;
+};
+
+MockRedis.prototype.get = function (key, callback) {
     this.history.push(['hgetall', key]);
     callback();
     return this;

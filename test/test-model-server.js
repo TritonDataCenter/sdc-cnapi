@@ -144,6 +144,25 @@ function testListServersSetup(test) {
     });
 }
 
+function testFetchServer(test) {
+    var expSearchResults = [
+        null,
+        [ { uuid: uuids[0], setup: 'true', sysinfo: '{ "setup": true }' } ]
+    ];
+    mock.newModel(function (error, model, mockUfds) {
+        test.equal(error, null, 'should not encounter an error');
+
+        mockUfds.when('search', [], expSearchResults);
+        ModelServer.init(model);
+
+        var server = new ModelServer(uuids[0]);
+
+        server.get(function (getError, server) {
+            test.done();
+        });
+    });
+}
+
 function testCreateServer(test) {
     test.expect(3);
 
@@ -310,9 +329,6 @@ function testSetBootParameters(test) {
                      null,
                 'There should be no error');
 
-//                 console.log(util.inspect(mockUfds.history, null, Infinity));
-//                 console.log(util.inspect(params, null, Infinity));
-
                 test.deepEqual(
                     params,
                     {
@@ -324,7 +340,7 @@ function testSetBootParameters(test) {
                             equal_quotes: 'sauce="apple"',
                             commas: 'fee,fi,fo,fum',
                             backslash: 'fruit\\cake'
-                        },
+                        }
                     });
 
                 callback();
@@ -342,6 +358,7 @@ module.exports = nodeunit.testCase({
     'list all servers':                       testListServersAll,
     'list multiple servers by uuid':          testListServersByUuids,
     'list servers which are marked as setup': testListServersSetup,
+    'fetch a particular server':              testFetchServer,
     'create server':                          testCreateServer,
     'modify server':                          testModifyServer,
     'modify server boot parameters':          testSetBootParameters
