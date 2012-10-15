@@ -157,7 +157,7 @@ function testFetchServer(test) {
 
         var server = new ModelServer(uuids[0]);
 
-        server.get(function (getError, server) {
+        server.get(function (getError, s) {
             test.done();
         });
     });

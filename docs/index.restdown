@@ -224,6 +224,26 @@ Set the value of an attribute in server's record.
       -d default_console=vga
       -d setup=true
 
+## BootParamsSet
+
+Set a server's kernel boot parameters.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||params||JSON String||A JSON string containing parameter key/values||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Server kernel parameters updated successfully||None||
+
+### Examples
+
+    PUT /boot/12494d5e-3960-4d65-a61a
+      -d params='{ foo: "bar" }'
+
+
 ## SetupServer (PUT /servers/:server\_uuid/setup)
 
 Initiate the server setup process for a newly started server.
@@ -550,6 +570,46 @@ Destroys a ZFS dataset on a server.
 ### Examples
 
     DELETE  /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs
+
+
+## CreateSnapshot (POST /servers/:server\_uuid/datasets/:dataset/snapshot)
+
+Create a ZFS snapshot of a dataset on a server.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||dataset||String||The dataset to be snapshotted||Yes||
+||name||String||The name of the snapshot to be created||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Snapshot created successfully||None||
+
+### Examples
+
+    POST /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones%2Fmyfs/snapshot -d "name=backup"
+
+
+## RollbackSnapshot (POST /servers/:server\_uuid/datasets/:dataset/snapshot)
+
+Revert a ZFS dataset to back to a previous state captured by a snapshot.
+
+### Input
+
+||**Param**||**Type**||**Description**||**Required?**||
+||dataset||String||The dataset to be snapshotted||Yes||
+||name||String||The name of the snapshot to be created||Yes||
+
+### Responses
+
+||**Code**||**Description**||**Response**||
+||204||Dataset successfully rolled back||None||
+
+### Examples
+
+    POST /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones%2Fmyfs/rollback -d "name=backup"
 
 
 ## ListZpools (GET /servers/:server\_uuid/zpools)

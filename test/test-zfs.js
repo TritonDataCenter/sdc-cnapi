@@ -20,7 +20,7 @@ var client;
 var GZ;
 
 var dataset = 'zones/' + uuid.v4();
-
+var snapshotName = 'snappy';
 
 function setup(callback) {
     client = restify.createJsonClient({
@@ -79,6 +79,42 @@ function testCreateZFSDataset(test) {
 }
 
 
+function testSnapshotZFSDataset(test) {
+    client.post('/servers/' + GZ + '/datasets/'
+        + encodeURIComponent(dataset) + '/snapshot',
+    { name: snapshotName },
+    function (err, req, res, datasets) {
+        test.equal(err, null, 'create ' + dataset);
+        test.equal(res.statusCode, 204, 'create returned 204');
+        test.done();
+    });
+}
+
+
+function testRollbackZFSDataset(test) {
+    client.post('/servers/' + GZ + '/datasets/'
+        + encodeURIComponent(dataset) + '/rollback',
+    { name: snapshotName },
+    function (err, req, res, datasets) {
+        test.equal(err, null, 'create ' + dataset);
+        test.equal(res.statusCode, 204, 'create returned 204');
+        test.done();
+    });
+}
+
+
+function testDestroyZFSSnapshot(test) {
+    var uri = '/servers/' + GZ + '/datasets/'
+        + encodeURIComponent(dataset + '@' + snapshotName);
+
+    client.del(uri, function (err, req, res, datasets) {
+        test.equal(err, null, 'destroy ' + dataset);
+        test.equal(res.statusCode, 204, 'destroy returned 204');
+        test.done();
+    });
+}
+
+
 function testFindCreatedZFSDataset(test) {
     var uri = '/servers/' + GZ + '/datasets';
     client.get(uri, function (err, req, res, datasets) {
@@ -98,6 +134,7 @@ function testFindCreatedZFSDataset(test) {
     });
 }
 
+
 function testSetZFSProperties(test) {
     var params = {
         properties: {
@@ -114,6 +151,7 @@ function testSetZFSProperties(test) {
         test.done();
     });
 }
+
 
 /* GET /datasets/:server/properties/:dataset */
 function testGetZfsPropertySingle(test) {
@@ -205,6 +243,7 @@ function testDestroyZFSDataset(test) {
     });
 }
 
+
 function testLookupDeletedZFSDataset(test) {
     client.get('/servers/' + GZ + '/datasets',
         function (err, req, res, datasets) {
@@ -225,6 +264,7 @@ function testLookupDeletedZFSDataset(test) {
         });
 }
 
+
 function testGetZFSPools(test) {
     client.get('/servers/' + GZ + '/zpools', function (err, req, res, zpools) {
         test.equal(err, null, 'valid response from GET zpools');
@@ -243,12 +283,16 @@ function testGetZFSPools(test) {
     });
 }
 
+
 module.exports = {
     setUp: setup,
     tearDown: teardown,
     'list servers': testListServers,
     'list datasets': testListDatasets,
     'create ZFS dataset': testCreateZFSDataset,
+    'create snapshot': testSnapshotZFSDataset,
+    'rollback snapshot': testRollbackZFSDataset,
+    'destroy snapshot': testDestroyZFSSnapshot,
     'find created ZFS dataset': testFindCreatedZFSDataset,
     'set ZFS properties': testSetZFSProperties,
     'get ZFS properties (single dataset)': testGetZfsPropertySingle,
