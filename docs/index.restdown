@@ -21,17 +21,6 @@ CNAPI is responsible for Compute Node setup, machine life-cycle operations
 (creation, state transitions, destruction, etc.) In general, everything should
 talk to CNs through CNAPI.
 
-### Dataset Manager
-
-- listing datasets and snapshots on server
-- removing datasets from server
-    * provisioner (all tasks)
-    * Ur
-- keeping compute node data up-to-date in UFDS
-    * consume heartbeater messages
-
-- manage CN setup process
-
 ### Provisioner
 
 - interfacing with vmadm
