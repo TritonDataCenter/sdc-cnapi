@@ -74,7 +74,7 @@
       "version": "0.1.18"
     },
     "bunyan": {
-      "version": "0.6.9"
+      "version": "0.14.5"
     },
     "sdc-clients": {
       "version": "8.0.0",
@@ -240,7 +240,7 @@
               "version": "0.3.4"
             },
             "difflet": {
-              "version": "0.2.2",
+              "version": "0.2.3",
               "dependencies": {
                 "traverse": {
                   "version": "0.6.3"
