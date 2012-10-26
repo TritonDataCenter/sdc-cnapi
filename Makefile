@@ -17,20 +17,20 @@
 #
 # Tools
 #
-TAP		:= ./node_modules/.bin/tap
+NODEUNIT	:= ./node_modules/nodeunit/bin/nodeunit
 
 #
 # Files
 #
 REPO_ROOT	= $(shell pwd)
 DOC_FILES	= index.restdown
-JS_FILES := $(shell ls *.js 2>/dev/null) $(shell find bin lib test -name '*.js' 2>/dev/null)
+JS_FILES	:= $(shell ls *.js 2>/dev/null) $(shell find bin lib test -name '*.js' 2>/dev/null)
 JSL_CONF_NODE	= $(REPO_ROOT)/tools/jsl.node.conf
-JSL_FILES_NODE = $(JS_FILES)
+JSL_FILES_NODE	= $(JS_FILES)
 JSSTYLE_FILES	= $(JS_FILES)
-JSSTYLE_FLAGS = -o indent=4,doxygen,unparenthesized-return=0
+JSSTYLE_FLAGS	= -o indent=4,doxygen,unparenthesized-return=0
 SMF_MANIFESTS_IN = smf/manifests/cnapi.xml.in
-SMF_DTD = $(REPO_ROOT)/tools/service_bundle.dtd.1
+SMF_DTD		= $(REPO_ROOT)/tools/service_bundle.dtd.1
 
 NODE_PREBUILT_VERSION=v0.8.9
 NODE_PREBUILT_TAG=zone
@@ -55,7 +55,7 @@ all: | $(NPM_EXEC)
 	$(NPM) rebuild
 
 .PHONY: test
-test: $(TAP)
+test: $(NODEUNIT)
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-model-server.js
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-zfs.js
 
