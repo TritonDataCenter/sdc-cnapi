@@ -4,6 +4,7 @@ var util = require('util');
 var common = require('../lib/common');
 var mock = require('./lib/mock');
 var nodeunit = require('nodeunit');
+var sprintf = require('sprintf').sprintf;
 
 var ModelServer = require('../lib/models/server');
 
@@ -26,15 +27,16 @@ function testListServersAll(test) {
     test.expect(4);
 
     var expSearchResults = [
-        null,
-        [ { uuid: uuids[0], ram: '12345', sysinfo: '{ "setup": true }' },
-          { uuid: uuids[1], ram: '56789', sysinfo: '{ "setup": true }' }
-        ]
+        { uuid: uuids[0], ram: '12345', sysinfo: { 'setup': true } },
+        { uuid: uuids[1], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
-    mock.newModel(function (error, model, mockUfds) {
+    mock.newModel(function (error, model, components) {
         test.equal(error, null, 'should not encounter an error');
-        mockUfds.when('search', [], expSearchResults);
+
+        var moray = components.moray;
+
+        moray.when('findObjects');
 
         ModelServer.init(model);
 
@@ -42,39 +44,51 @@ function testListServersAll(test) {
 
         ModelServer.list(options, function (listError, servers) {
             test.equal(listError, null, 'should not encounter an error');
-            test.deepEqual(
-                mockUfds.history[0],
-                [ 'search',
-                  'ou=servers, datacenter=testdc, o=smartdc',
-                  { 'scope':'sub', 'filter': '(&(objectclass=server)(uuid=*))' }
-                ],
-                'ufds client parameters');
+            var expected =  [
+                {
+                    uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
+                    ram: '12345',
+                    sysinfo: { setup: true }
+                },
+                {
+                    uuid: '6e8eb888-f8e0-11e1-b1a8-5f74056f9365',
+                    ram: '56789',
+                    sysinfo: { setup: true }
+                }
+            ];
 
+            test.deepEqual(servers, expected, 'list results should match');
             test.deepEqual(
-                servers,
-                expSearchResults[1],
-                'Server results should match');
+                moray.history[0],
+                [
+                    'findObjects',
+                    'cnapi_servers',
+                    '(uuid=*)',
+                    { sort: { attribute: 'uuid', order: 'ASC' } }
+                ],
+                'moray history should match');
             test.done();
         });
+
+        moray._emitResults(expSearchResults);
     });
 }
 
 function testListServersByUuids(test) {
-    test.expect(5);
+    test.expect(4);
 
     var expSearchResults = [
-        null,
-        [ { uuid: uuids[0], ram: '12345', sysinfo: '{ "setup": true }' },
-          { uuid: uuids[1], ram: '56789', sysinfo: '{ "setup": true }' }
-        ]
+        { uuid: uuids[0], ram: '12345', sysinfo: { 'setup': true } },
+        { uuid: uuids[2], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
-    mock.newModel(function (error, model, mockUfds) {
+    mock.newModel(function (error, model, components) {
         test.equal(error, null, 'should not encounter an error');
 
-        ModelServer.init(model);
+        var moray = components.moray;
+        moray.when('findObjects');
 
-        mockUfds.when('search', [], expSearchResults);
+        ModelServer.init(model);
 
         var options = {
             uuid: [uuids[0], uuids[2]]
@@ -83,81 +97,135 @@ function testListServersByUuids(test) {
         ModelServer.list(options, function (listError, servers) {
             test.equal(listError, null, 'should not encounter an error');
 
-            test.equal(
-                servers.length, 2, 'correct number of results returned');
+            var expected =  [
+                {
+                    uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
+                    ram: '12345',
+                    sysinfo: { setup: true }
+                },
+                {
+                    uuid: 'b31695ce-f8e6-11e1-b252-fb742866284b',
+                    ram: '56789',
+                    sysinfo: { setup: true }
+                }
+            ];
+
+           test.deepEqual(
+               servers,
+               expected,
+               'Server results should match');
+
+            var filter
+                = expSearchResults
+                    .sort(function (a, b) {
+                        return a.uuid > b.uuid;
+                    })
+                    .map(function (i) {
+                        return sprintf('(uuid=%s)', i.uuid);
+                    })
+                    .join('');
+
+            filter = sprintf('(|%s)', filter);
 
             test.deepEqual(
-                mockUfds.history[0],
-                [ 'search',
-                  'ou=servers, datacenter=testdc, o=smartdc',
-                  { 'scope':'sub',
-                    'filter':
-                    '(&(objectclass=server)'
-                    + '(|(uuid=' + uuids[0] + ')(uuid=' + uuids[2] + ')))' }
+                moray.history[0],
+                [
+                    'findObjects',
+                    'cnapi_servers',
+                    filter,
+                    { sort: { attribute: 'uuid', order: 'ASC' } }
                 ],
-                'ufds client parameters');
+                'moray history should match');
 
-            test.deepEqual(
-                servers,
-                expSearchResults[1],
-                'Server results should match');
 
             test.done();
         });
+
+        moray._emitResults(expSearchResults);
     });
 }
 
 function testListServersSetup(test) {
-    test.expect(3);
+    test.expect(4);
 
     var expSearchResults = [
-        null,
-        [ { uuid: uuids[0], setup: 'true', sysinfo: '{ "setup": true }' },
-          { uuid: uuids[1], setup: 'true', sysinfo: '{ "setup": true }' }
-        ]
+        { uuid: uuids[0], ram: '12345', sysinfo: { 'setup': true } },
+        { uuid: uuids[1], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
-    mock.newModel(function (error, model, mockUfds) {
+    mock.newModel(function (error, model, components) {
         test.equal(error, null, 'should not encounter an error');
-        mockUfds.when('search', [], expSearchResults);
+
+        var moray = components.moray;
+
+        moray.when('findObjects');
+
         ModelServer.init(model);
 
         var options = {
-            setup: 'true'
+            setup: true
         };
 
         ModelServer.list(options, function (listError, servers) {
             test.equal(listError, null, 'should not encounter an error');
 
+            var expected =  [
+                {
+                    uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
+                    ram: '12345',
+                    sysinfo: { setup: true }
+                },
+                {
+                    uuid: '6e8eb888-f8e0-11e1-b1a8-5f74056f9365',
+                    ram: '56789',
+                    sysinfo: { setup: true }
+                }
+            ];
+
+            test.deepEqual(servers, expected, 'list results should match');
+
             test.deepEqual(
-                mockUfds.history[0],
-                [ 'search',
-                  'ou=servers, datacenter=testdc, o=smartdc',
-                  { 'scope':'sub',
-                    'filter':
-                    '(&(objectclass=server)'
-                    + '(uuid=*)(setup=true))' }
+                moray.history[0],
+                [
+                    'findObjects',
+                    'cnapi_servers',
+                    '(&(uuid=*)(setup=true))',
+                    { sort: { attribute: 'uuid', order: 'ASC' } }
                 ],
-                'ufds client parameters');
+                'moray history should match');
             test.done();
         });
+
+        moray._emitResults(expSearchResults);
     });
 }
 
 function testFetchServer(test) {
     var expSearchResults = [
-        null,
-        [ { uuid: uuids[0], setup: 'true', sysinfo: '{ "setup": true }' } ]
+        { uuid: uuids[0], setup: true, sysinfo: { "setup": true } }
     ];
-    mock.newModel(function (error, model, mockUfds) {
+
+    mock.newModel(function (error, model, components) {
         test.equal(error, null, 'should not encounter an error');
 
-        mockUfds.when('search', [], expSearchResults);
+        var moray = components.moray;
+        moray.when('getObject', [], { value: expSearchResults[0] });
+
         ModelServer.init(model);
 
         var server = new ModelServer(uuids[0]);
 
-        server.get(function (getError, s) {
+        server.getRaw(function (getError, s) {
+            test.equal(getError, null, 'should not encounter an error');
+            test.deepEqual(s, expSearchResults[0], 'results should match');
+            test.deepEqual(
+                moray.history[0],
+                [
+                    'getObject',
+                    'cnapi_servers',
+                    uuids[0]
+                ],
+                'moray history should match');
             test.done();
         });
     });
@@ -166,78 +234,68 @@ function testFetchServer(test) {
 function testCreateServer(test) {
     test.expect(3);
 
-    var dn = 'uuid=' + uuids[0] + ',ou=servers, datacenter=testdc, o=smartdc';
-    var serverToAdd = {
-        uuid: uuids[0],
-        ram: '12345'
-    };
+    var serverToAdd = { uuid: uuids[0], ram: '12345' };
 
-
-    mock.newModel(function (error, model, mockUfds) {
+    mock.newModel(function (error, model, components) {
         test.equal(error, null, 'should not encounter an error');
 
-        mockUfds.when('add', []);
+        var moray = components.moray;
+        moray.when('putObject', []);
         ModelServer.init(model);
 
         var server = new ModelServer(uuids[0]);
-        server.addServerToUfds(serverToAdd, function (listError) {
-            test.equal(listError, null, 'should not encounter an error');
+        server.setRaw(serverToAdd);
+        server.store(serverToAdd, function (storeError) {
+            test.equal(storeError, null, 'should not encounter an error');
             test.deepEqual(
+                moray.history[0],
                 [
-                    [ 'add',
-                      dn,
-                      serverToAdd
-                    ]
+                    'putObject',
+                    'cnapi_servers',
+                    uuids[0],
+                    serverToAdd
                 ],
-                mockUfds.history,
-                'ufds command history');
+            'moray command history');
             test.done();
         });
     });
 }
 
 function testModifyServer(test) {
-    test.expect(6);
+    test.expect(3);
 
     var uuid = uuids[0];
-    var dn = 'uuid=' + uuid + ',ou=servers, datacenter=testdc, o=smartdc';
 
-
-    mock.newModel(function (error, model, mockUfds) {
+    mock.newModel(function (error, model, components) {
         test.equal(error, null, 'should not encounter an error');
 
-        mockUfds.when('add', []);
+        var moray = components.moray;
+        moray.when('putObject', []);
 
-        var bootPlatform = '123Z';
-        var changes = [
-            {
-                type: 'replace',
-                modification: {
-                    boot_platform: bootPlatform
-                }
-            }
-        ];
         ModelServer.init(model);
+
         var server = new ModelServer(uuids[0]);
 
-        mockUfds.when('replace', []);
+        var change = {
+            uuid: uuid,
+            setup: false
+        };
 
-        server.modify(changes, function (modifyError) {
-            test.equal(modifyError, null, 'should not encounter an error');
+        server.modify(change, function (modifyError) {
             test.deepEqual(
-                'replace',
-                mockUfds.history[0][0],
-                'op should be replace');
-            test.deepEqual(dn, mockUfds.history[0][1], 'dn should match');
+                moray.history[0],
+                [
+                    'putObject',
+                    'cnapi_servers',
+                    uuid,
+                    change
+                ],
+            'moray command history');
+
             test.deepEqual(
-                bootPlatform,
-                mockUfds.history[0][2][0].modification.boot_platform,
+                moray.history[0][3].setup,
+                false,
                 'boot platform should match');
-            test.ok(
-                bootPlatform,
-                mockUfds.history[0][2][1].modification.last_updated,
-                'last_platform date should be set');
-
             test.done();
         });
     });
@@ -313,7 +371,7 @@ function testSetBootParameters(test) {
                     {
                         uuid: uuid,
                         boot_params: JSON.stringify(newBootParameters),
-                        setup: 'true',
+                        setup: true,
                         boot_platform: '123Z',
                         hostname: 'testbox',
                         sysinfo: '{ "setup": true }'
@@ -348,7 +406,7 @@ function testSetBootParameters(test) {
         }
     ],
     function () {
-         test.done();
+        test.done();
     });
 }
 

@@ -48,6 +48,61 @@ MockUfds.prototype.when = function (fn, args, results) {
     this.callbackValues[fn].push(results);
 };
 
+
+/**
+ * 
+ * Moray
+ *
+ */
+
+function MockMoray() {
+    this.history = [];
+    this.callbackValues = {
+        putObject: [],
+        findObjects: [],
+        getObjects: []
+    };
+    this.reqs = [];
+}
+
+MockMoray.prototype.when = function (fn, args, results) {
+    if (!this.callbackValues[fn]) {
+        this.callbackValues[fn] = [];
+    }
+    this.callbackValues[fn].push(results);
+};
+
+MockMoray.prototype._emitResults = function (list) {
+    var self = this;
+    list.forEach(function (i) {
+        self._lastReq().emit('record', { value: i });
+    });
+    self._lastReq().emit('end');
+};
+
+MockMoray.prototype._lastReq = function () {
+    return this.reqs[this.reqs.length-1];
+};
+
+MockMoray.prototype.getObject = function (bucket, key, callback) {
+    this.history.push(['getObject', bucket, key]);
+    callback.apply(null, [ null, this.callbackValues.getObject.pop() ]);
+    return this;
+};
+
+MockMoray.prototype.putObject = function (bucket, key, value, callback) {
+    this.history.push(['putObject', bucket, key, value]);
+    callback.apply(null, [ null ]);
+    return this;
+};
+
+MockMoray.prototype.findObjects = function (bucket, filter, opts) {
+    this.history.push(['findObjects', bucket, filter, opts]);
+    var req = new process.EventEmitter();
+    this.reqs.push(req);
+    return req;
+};
+
 /**
  *
  * Redis
@@ -131,7 +186,7 @@ function newModel(callback) {
         info: logFn
     };
 
-    var ufds = new MockUfds();
+    var moray = new MockMoray();
     var redis = new MockRedisWrapper();
     var ur = new MockUr();
 
@@ -145,26 +200,29 @@ function newModel(callback) {
         function (wf$callback) {
             model = createModel({
                 log: log,
-                ufds: config.ufds,
                 datacenter: config.datacenter_name,
                 amqp: {
                     host: 'localhost'
                 }
             });
-            model.setUfds(ufds);
+            model.setMoray(moray);
             model.setRedis(redis);
             model.setUr(ur);
             wf$callback();
         }
     ],
     function (error) {
-        return callback(error, model, ufds, ur);
+        var components = {
+            moray: moray,
+            redis: redis,
+            ur: ur
+        };
+        return callback(error, model, components);
     });
 }
 
 module.exports = {
     MockRedis: MockRedis,
     MockRedisWrapper: MockRedisWrapper,
-    MockUfds: MockUfds,
     newModel: newModel
 };
