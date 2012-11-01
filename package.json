@@ -5,24 +5,22 @@
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
-    "restify": "https://github.com/mcavage/node-restify/tarball/master#0dfba4fdfd9def5111c29dffd241f344ff1293a8",
-    "node-uuid": "1.2.0",
-    "filed": "0.0.5",
-    "task_agent": "git+ssh://git@git.joyent.com:task_agent.git#26efacc0d68c189124ee90077605e1e3b5bc6c9a",
     "amqp": "git://github.com/postwait/node-amqp.git#7becb031a3517a22490addc46654e807bce5f37e",
     "async": "0.1.18",
     "bunyan": "0.14.5",
     "filed": "0.0.5",
+    "filed": "0.0.5",
+    "hiredis": "0.1.14",
+    "moray": "git+ssh://git@git.joyent.com:node-moray.git#93f4a47",
     "node-uuid": "1.2.0",
+    "node-uuid": "1.2.0",
+    "nodeunit": "0.7.4",
+    "redis": "0.7.2",
     "restify": "1.4.2",
+    "restify": "https://github.com/mcavage/node-restify/tarball/master#0dfba4fdfd9def5111c29dffd241f344ff1293a8",
     "sdc-clients": "git+ssh://git@git.joyent.com:node-sdc-clients.git#980a466f5ce66fa20bcbb7fedf0c65921db9f1ed",
     "sprintf": "0.1.1",
-    "redis": "0.7.2",
-    "hiredis": "0.1.14",
-    "nodeunit": "0.7.4",
+    "task_agent": "git+ssh://git@git.joyent.com:task_agent.git#26efacc0d68c189124ee90077605e1e3b5bc6c9a",
     "wf-client": "git+ssh://git@git.joyent.com:wf-client.git#ad56271ecfd9bda47a63cf2a9b2fff4cd4ba42d0"
-  },
-  "devDependencies": {
-    "tap": "0.1"
   }
 }
