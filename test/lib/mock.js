@@ -50,7 +50,7 @@ MockUfds.prototype.when = function (fn, args, results) {
 
 
 /**
- * 
+ *
  * Moray
  *
  */
@@ -86,7 +86,8 @@ MockMoray.prototype._lastReq = function () {
 
 MockMoray.prototype.getObject = function (bucket, key, callback) {
     this.history.push(['getObject', bucket, key]);
-    callback.apply(null, [ null, this.callbackValues.getObject.pop() ]);
+    var val = this.callbackValues.getObject.pop();
+    callback.apply(null, [ null, val ]);
     return this;
 };
 
@@ -120,6 +121,13 @@ function MockRedis() {
         exists: []
     };
 }
+
+MockRedis.prototype.when = function (fn, args, results) {
+    if (!this.callbackValues[fn]) {
+        this.callbackValues[fn] = [];
+    }
+    this.callbackValues[fn].push(results);
+};
 
 MockRedis.prototype.hmset = function (key, values, callback) {
     this.history.push(['hmset', key, values]);

@@ -202,7 +202,7 @@ function testListServersSetup(test) {
 
 function testFetchServer(test) {
     var expSearchResults = [
-        { uuid: uuids[0], setup: true, sysinfo: { "setup": true } }
+        { uuid: uuids[0], setup: true, sysinfo: { 'setup': true } }
     ];
 
     mock.newModel(function (error, model, components) {
@@ -302,13 +302,12 @@ function testModifyServer(test) {
 }
 
 function testSetBootParameters(test) {
-    test.expect(9);
+//     test.expect(9);
     var uuid = uuids[0];
 
     var server;
-    var mockUfds;
-    var mockRedis;
-    var history;
+    var moray;
+    var redis;
 
     var newBootParameters = {
         simple: 'ronny',
@@ -317,16 +316,25 @@ function testSetBootParameters(test) {
         backslash: 'fruit\\cake'
     };
 
+    var expSearchResults = {
+        uuid: uuid,
+        boot_params: {},
+        setup: true,
+        boot_platform: '123Z',
+        hostname: 'testbox',
+        sysinfo: { 'setup': true }
+    };
+
     async.waterfall([
         function (callback) {
-            mock.newModel(function (error, model, ufds, redis) {
-                mockUfds = ufds;
-                mockRedis = redis;
-                history = mockUfds.history;
+            mock.newModel(function (error, model, components) {
+                moray = components.moray;
+                redis = components.redis;
 
                 test.equal(error, null, 'should not encounter an error');
 
-                mockUfds.when('replace', []);
+                moray.when('putObject', []);
+                moray.when('getObject', [], { value: expSearchResults });
 
                 ModelServer.init(model);
 
@@ -341,46 +349,38 @@ function testSetBootParameters(test) {
                     null,
                     'There should be no error');
 
-                test.equal(
-                    history[0][0],
-                    'replace',
-                    'Function should be replace');
-                test.equal(
-                    history[0][0],
-                    'replace',
-                    'Function should be replace');
-                test.equal(
-                    history[0][2][0].type,
-                    'replace',
-                    'Change operation should be replace');
-                test.ok(
-                    history[0][2][0].modification.boot_params,
-                    'boot_params should be set');
-                test.deepEqual(
-                    JSON.parse(history[0][2][0].modification.boot_params),
-                    newBootParameters,
-                    'boot_params JSON should match');
-
+            test.deepEqual(
+                moray.history[1],
+                [
+                    'putObject',
+                    'cnapi_servers',
+                    uuid,
+                    {
+                        uuid: uuid,
+                        boot_params: newBootParameters,
+                        setup: true,
+                        boot_platform: '123Z',
+                        hostname: 'testbox',
+                        sysinfo: { 'setup': true }
+                    }
+                ],
+                'moray command history');
                 callback();
             });
         },
         function (callback) {
-            var expSearchResults = [
-                null,
-                [
-                    {
-                        uuid: uuid,
-                        boot_params: JSON.stringify(newBootParameters),
-                        setup: true,
-                        boot_platform: '123Z',
-                        hostname: 'testbox',
-                        sysinfo: '{ "setup": true }'
-                    }
-                ]
-            ];
-            mockUfds.when('search', [], expSearchResults);
-            mockRedis.when('hgetall', [], {});
+            moray.when('getObject', [], { value: expSearchResults });
+            delete server.value;
+            redis.client.when('hgetall', [], {});
 
+            expSearchResults = {
+                uuid: uuid,
+                boot_params: newBootParameters,
+                setup: true,
+                boot_platform: '123Z',
+                hostname: 'testbox',
+                sysinfo: { 'setup': true }
+            };
             server.getBootParams(function (getError, params) {
                 test.equal(
                      getError,
