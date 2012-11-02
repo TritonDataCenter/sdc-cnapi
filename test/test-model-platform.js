@@ -54,7 +54,7 @@ function testListPlatformsAll(test) {
             test.done();
         });
 
-        setTimeout(function () { 
+        setTimeout(function () {
             moray._emitResults(expSearchResults);
         }, 100);
     });
@@ -93,7 +93,7 @@ function testListPlatformsAllNoLatest(test) {
             test.done();
         });
 
-        setTimeout(function () { 
+        setTimeout(function () {
             moray._emitResults(expSearchResults);
         }, 100);
     });
