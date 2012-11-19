@@ -104,6 +104,15 @@ MockMoray.prototype.findObjects = function (bucket, filter, opts) {
     return req;
 };
 
+function MockMorayWrapper() {
+    this.client = new MockMoray();
+}
+
+MockMorayWrapper.prototype.getClient = function () {
+    return this.client;
+};
+
+
 /**
  *
  * Redis
@@ -194,7 +203,7 @@ function newModel(callback) {
         info: logFn
     };
 
-    var moray = new MockMoray();
+    var moray = new MockMorayWrapper();
     var redis = new MockRedisWrapper();
     var ur = new MockUr();
 
@@ -232,5 +241,6 @@ function newModel(callback) {
 module.exports = {
     MockRedis: MockRedis,
     MockRedisWrapper: MockRedisWrapper,
+    MockMorayWrapper: MockMorayWrapper,
     newModel: newModel
 };

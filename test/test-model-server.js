@@ -36,7 +36,7 @@ function testListServersAll(test) {
 
         var moray = components.moray;
 
-        moray.when('findObjects');
+        moray.client.when('findObjects');
 
         ModelServer.init(model);
 
@@ -59,7 +59,7 @@ function testListServersAll(test) {
 
             test.deepEqual(servers, expected, 'list results should match');
             test.deepEqual(
-                moray.history[0],
+                moray.client.history[0],
                 [
                     'findObjects',
                     'cnapi_servers',
@@ -70,7 +70,7 @@ function testListServersAll(test) {
             test.done();
         });
 
-        moray._emitResults(expSearchResults);
+        moray.client._emitResults(expSearchResults);
     });
 }
 
@@ -86,7 +86,7 @@ function testListServersByUuids(test) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
-        moray.when('findObjects');
+        moray.client.when('findObjects');
 
         ModelServer.init(model);
 
@@ -128,7 +128,7 @@ function testListServersByUuids(test) {
             filter = sprintf('(|%s)', filter);
 
             test.deepEqual(
-                moray.history[0],
+                moray.client.history[0],
                 [
                     'findObjects',
                     'cnapi_servers',
@@ -141,7 +141,7 @@ function testListServersByUuids(test) {
             test.done();
         });
 
-        moray._emitResults(expSearchResults);
+        moray.client._emitResults(expSearchResults);
     });
 }
 
@@ -158,7 +158,7 @@ function testListServersSetup(test) {
 
         var moray = components.moray;
 
-        moray.when('findObjects');
+        moray.client.when('findObjects');
 
         ModelServer.init(model);
 
@@ -185,7 +185,7 @@ function testListServersSetup(test) {
             test.deepEqual(servers, expected, 'list results should match');
 
             test.deepEqual(
-                moray.history[0],
+                moray.client.history[0],
                 [
                     'findObjects',
                     'cnapi_servers',
@@ -196,7 +196,7 @@ function testListServersSetup(test) {
             test.done();
         });
 
-        moray._emitResults(expSearchResults);
+        moray.client._emitResults(expSearchResults);
     });
 }
 
@@ -209,7 +209,7 @@ function testFetchServer(test) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
-        moray.when('getObject', [], { value: expSearchResults[0] });
+        moray.client.when('getObject', [], { value: expSearchResults[0] });
 
         ModelServer.init(model);
 
@@ -219,7 +219,7 @@ function testFetchServer(test) {
             test.equal(getError, null, 'should not encounter an error');
             test.deepEqual(s, expSearchResults[0], 'results should match');
             test.deepEqual(
-                moray.history[0],
+                moray.client.history[0],
                 [
                     'getObject',
                     'cnapi_servers',
@@ -240,7 +240,7 @@ function testCreateServer(test) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
-        moray.when('putObject', []);
+        moray.client.when('putObject', []);
         ModelServer.init(model);
 
         var server = new ModelServer(uuids[0]);
@@ -248,7 +248,7 @@ function testCreateServer(test) {
         server.store(serverToAdd, function (storeError) {
             test.equal(storeError, null, 'should not encounter an error');
             test.deepEqual(
-                moray.history[0],
+                moray.client.history[0],
                 [
                     'putObject',
                     'cnapi_servers',
@@ -270,7 +270,7 @@ function testModifyServer(test) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
-        moray.when('putObject', []);
+        moray.client.when('putObject', []);
 
         ModelServer.init(model);
 
@@ -283,7 +283,7 @@ function testModifyServer(test) {
 
         server.modify(change, function (modifyError) {
             test.deepEqual(
-                moray.history[0],
+                moray.client.history[0],
                 [
                     'putObject',
                     'cnapi_servers',
@@ -293,7 +293,7 @@ function testModifyServer(test) {
             'moray command history');
 
             test.deepEqual(
-                moray.history[0][3].setup,
+                moray.client.history[0][3].setup,
                 false,
                 'boot platform should match');
             test.done();
@@ -333,8 +333,8 @@ function testSetBootParameters(test) {
 
                 test.equal(error, null, 'should not encounter an error');
 
-                moray.when('putObject', []);
-                moray.when('getObject', [], { value: expSearchResults });
+                moray.client.when('putObject', []);
+                moray.client.when('getObject', [], { value: expSearchResults });
 
                 ModelServer.init(model);
 
@@ -350,7 +350,7 @@ function testSetBootParameters(test) {
                     'There should be no error');
 
             test.deepEqual(
-                moray.history[1],
+                moray.client.history[1],
                 [
                     'putObject',
                     'cnapi_servers',
@@ -369,7 +369,7 @@ function testSetBootParameters(test) {
             });
         },
         function (callback) {
-            moray.when('getObject', [], { value: expSearchResults });
+            moray.client.when('getObject', [], { value: expSearchResults });
             delete server.value;
             redis.client.when('hgetall', [], {});
 
