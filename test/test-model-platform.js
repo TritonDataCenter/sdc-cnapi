@@ -43,7 +43,7 @@ function testListPlatformsAll(test) {
         ModelServer.init(model);
         ModelPlatform.init(model);
 
-        moray.when('findObjects');
+        moray.client.when('findObjects');
 
         ur.when('execute', [], expUrResult);
 
@@ -55,7 +55,7 @@ function testListPlatformsAll(test) {
         });
 
         setTimeout(function () {
-            moray._emitResults(expSearchResults);
+            moray.client._emitResults(expSearchResults);
         }, 100);
     });
 }
@@ -83,7 +83,7 @@ function testListPlatformsAllNoLatest(test) {
         ModelServer.init(model);
         ModelPlatform.init(model);
 
-        moray.when('findObjects');
+        moray.client.when('findObjects');
         ur.when('execute', [], expUrResult);
 
         ModelPlatform.list({}, function (listError, platforms) {
@@ -94,7 +94,7 @@ function testListPlatformsAllNoLatest(test) {
         });
 
         setTimeout(function () {
-            moray._emitResults(expSearchResults);
+            moray.client._emitResults(expSearchResults);
         }, 100);
     });
 }
