@@ -135,7 +135,7 @@
     },
     "restify": {
       "version": "2.0.0",
-      "from": "https://github.com/mcavage/node-restify/tarball/master#0dfba4fdfd9def5111c29dffd241f344ff1293a8",
+      "from": "git://github.com/mcavage/node-restify.git#de1fc77",
       "dependencies": {
         "bunyan": {
           "version": "0.16.4"
