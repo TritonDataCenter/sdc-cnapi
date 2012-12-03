@@ -66,7 +66,7 @@
       "version": "0.7.4",
       "dependencies": {
         "tap": {
-          "version": "0.3.2",
+          "version": "0.3.3",
           "dependencies": {
             "inherits": {
               "version": "1.0.0"
@@ -171,6 +171,9 @@
         },
         "node-uuid": {
           "version": "1.4.0"
+        },
+        "once": {
+          "version": "1.1.1"
         },
         "qs": {
           "version": "0.5.1"
