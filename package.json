@@ -19,7 +19,7 @@
     "sdc-clients": "git+ssh://git@git.joyent.com:node-sdc-clients.git#980a466f5ce66fa20bcbb7fedf0c65921db9f1ed",
     "sprintf": "0.1.1",
     "task_agent": "git+ssh://git@git.joyent.com:task_agent.git#26efacc0d68c189124ee90077605e1e3b5bc6c9a",
-    "wf-client": "git+ssh://git@git.joyent.com:wf-client.git#ad56271ecfd9bda47a63cf2a9b2fff4cd4ba42d0",
+    "wf-client": "git+ssh://git@git.joyent.com:wf-client.git#212a6f",
     "verror": "1.3.4"
   }
 }
