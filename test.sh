@@ -12,7 +12,7 @@ else
 fi
 
 RSYNC_CMD="rsync --recursive --partial -l ./{config,bin,lib,test} /zones/`sdc-login cnapi zonename`/root/opt/smartdc/cnapi"
-RUNTEST_CMD="cd /opt/smartdc/cnapi && ./test/runtest -r default"
+RUNTEST_CMD="cd /opt/smartdc/cnapi && ./test/runtests -r default"
 RUNTEST_CMD_ZONE="sdc-login cnapi '$RUNTEST_CMD'"
 
 if [[ "$ZONENAME" == "global" ]]; then

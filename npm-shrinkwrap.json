@@ -297,11 +297,15 @@
       "version": "0.1.1"
     },
     "task_agent": {
-      "version": "0.0.3",
-      "from": "git+ssh://git@git.joyent.com:task_agent.git#26efacc0d68c189124ee90077605e1e3b5bc6c9a",
+      "version": "0.1.0",
+      "from": "git+ssh://git@git.joyent.com:task_agent.git#658a5e1d0d3c351ac179e8a7b4c8919695d1f1b4",
       "dependencies": {
         "JSV": {
           "version": "3.5.0"
+        },
+        "amqp-plus": {
+          "version": "1.0.0",
+          "from": "git://github.com/orlandov/node-amqp-plus.git#a67f9547c116bf991b974ce5b9cd090c8b222fdb"
         },
         "yaml": {
           "version": "0.2.3"
