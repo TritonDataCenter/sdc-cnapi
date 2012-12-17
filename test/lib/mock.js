@@ -60,7 +60,8 @@ function MockMoray() {
     this.callbackValues = {
         putObject: [],
         findObjects: [],
-        getObjects: []
+        getObjects: [],
+        delObject: []
     };
     this.reqs = [];
 }
@@ -97,6 +98,12 @@ MockMoray.prototype.putObject = function (bucket, key, value, callback) {
     return this;
 };
 
+MockMoray.prototype.delObject = function (bucket, key, callback) {
+    this.history.push(['delObject', bucket, key]);
+    callback.apply(null, [ null ]);
+    return this;
+};
+
 MockMoray.prototype.findObjects = function (bucket, filter, opts) {
     this.history.push(['findObjects', bucket, filter, opts]);
     var req = new process.EventEmitter();
@@ -127,7 +134,8 @@ function MockRedis() {
         hmset: [],
         hmgetall: [],
         exec: [],
-        exists: []
+        exists: [],
+        keys: []
     };
 }
 
@@ -151,7 +159,19 @@ MockRedis.prototype.hgetall = function (key, callback) {
 };
 
 MockRedis.prototype.get = function (key, callback) {
-    this.history.push(['hgetall', key]);
+    this.history.push(['get', key]);
+    callback();
+    return this;
+};
+
+MockRedis.prototype.keys = function (key, callback) {
+    this.history.push(['keys', key]);
+    callback.apply(null, this.callbackValues.keys.pop());
+    return this;
+};
+
+MockRedis.prototype.del = function (key, callback) {
+    this.history.push(['del', key]);
     callback();
     return this;
 };
@@ -196,10 +216,11 @@ function newModel(callback) {
     var config;
     var model;
 
-    var logFn = function () {};
+    var logFn = function () { console.log.apply(null, arguments); };
     var log = {
         debug: logFn,
         trace: logFn,
+        error: logFn,
         info: logFn
     };
 

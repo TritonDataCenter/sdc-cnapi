@@ -261,6 +261,53 @@ function testCreateServer(test) {
     });
 }
 
+function testDeleteServer(test) {
+    mock.newModel(function (error, model, components) {
+        test.equal(error, null, 'should not encounter an error');
+        ModelServer.init(model);
+        var redis = components.redis;
+
+        var server = new ModelServer(uuids[0]);
+
+        redis.client.when(
+            'keys',
+            [],
+            [
+                null,
+                [
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:vms',
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:memory',
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:status'
+                ]
+            ]);
+        server.del(function (delError) {
+            test.equal(delError, null, 'should not encounter an error');
+
+            test.deepEqual(
+                redis.client.history,
+                [ [ 'keys',
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58*'
+                  ],
+                  [ 'del',
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58'
+                  ],
+                  [ 'del',
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:vms'
+                  ],
+                  [ 'del',
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:memory'
+                  ],
+                  [ 'del',
+                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:status'
+                  ]
+                ], 'redis history');
+            test.done();
+        });
+    });
+}
+
+
 function testModifyServer(test) {
     test.expect(3);
 
@@ -418,6 +465,7 @@ module.exports = nodeunit.testCase({
     'list servers which are marked as setup': testListServersSetup,
     'fetch a particular server':              testFetchServer,
     'create server':                          testCreateServer,
+    'delete a server':                        testDeleteServer,
     'modify server':                          testModifyServer,
     'modify server boot parameters':          testSetBootParameters
 });
