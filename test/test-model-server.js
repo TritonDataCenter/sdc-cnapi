@@ -201,6 +201,8 @@ function testListServersSetup(test) {
 }
 
 function testFetchServer(test) {
+    test.expect(4);
+
     var expSearchResults = [
         { uuid: uuids[0], setup: true, sysinfo: { 'setup': true } }
     ];
@@ -262,6 +264,8 @@ function testCreateServer(test) {
 }
 
 function testDeleteServer(test) {
+    test.expect(3);
+
     mock.newModel(function (error, model, components) {
         test.equal(error, null, 'should not encounter an error');
         ModelServer.init(model);
@@ -349,7 +353,8 @@ function testModifyServer(test) {
 }
 
 function testSetBootParameters(test) {
-//     test.expect(9);
+    test.expect(5);
+
     var uuid = uuids[0];
 
     var server;
@@ -462,6 +467,122 @@ function testSetBootParameters(test) {
     });
 }
 
+function testUpdateBootParameters(test) {
+    test.expect(5);
+
+    var uuid = uuids[0];
+
+    var server;
+    var moray;
+    var redis;
+
+    var update = {
+        updated: 'shazbot'
+    };
+
+    var updatedBootParams = {
+        original: 'value',
+        updated: 'shazbot'
+    };
+
+    var expSearchResults = {
+        uuid: uuid,
+        boot_params: { 'original': 'value' },
+        setup: true,
+        boot_platform: '123Z',
+        hostname: 'testbox',
+        sysinfo: { 'setup': true }
+    };
+
+    async.waterfall([
+        function (callback) {
+            mock.newModel(function (error, model, components) {
+                moray = components.moray;
+                redis = components.redis;
+
+                test.equal(error, null, 'should not encounter an error');
+
+                moray.client.when('putObject', []);
+                moray.client.when('getObject', [], { value: expSearchResults });
+                moray.client.when('putObject', []);
+
+                ModelServer.init(model);
+
+                server = new ModelServer(uuid);
+                callback();
+            });
+        },
+        function (callback) {
+            server.updateBootParams(
+                {
+                    boot_params: update,
+                    boot_platform: 'newer'
+                },
+                function (modifyError) {
+                    test.equal(
+                        modifyError,
+                        null,
+                        'There should be no error');
+
+                    test.deepEqual(
+                        moray.client.history[1],
+                        [
+                            'putObject',
+                            'cnapi_servers',
+                            uuid,
+                            {
+                                uuid: uuid,
+                                boot_params: updatedBootParams,
+                                setup: true,
+                                boot_platform: 'newer',
+                                hostname: 'testbox',
+                                sysinfo: { 'setup': true }
+                            }
+                        ],
+                        'moray command history');
+                        callback();
+                });
+        },
+        function (callback) {
+            moray.client.when('getObject', [], { value: expSearchResults });
+            delete server.value;
+            redis.client.when('hgetall', [], {});
+
+            expSearchResults = {
+                uuid: uuid,
+                boot_params: updatedBootParams,
+                setup: true,
+                boot_platform: 'newer',
+                hostname: 'testbox',
+                sysinfo: { 'setup': true }
+            };
+            server.getBootParams(function (getError, params) {
+                test.equal(
+                     getError,
+                     null,
+                'There should be no error');
+
+                test.deepEqual(
+                    params,
+                    {
+                        platform: 'newer',
+                        kernel_args: {
+                            rabbitmq: 'guest:guest:localhost:5672',
+                            hostname: 'testbox',
+                            original: 'value',
+                            updated: 'shazbot'
+                        }
+                    });
+
+                callback();
+            });
+        }
+    ],
+    function () {
+        test.done();
+    });
+}
+
 module.exports = nodeunit.testCase({
     setUp: setup,
     tearDown: teardown,
@@ -472,5 +593,6 @@ module.exports = nodeunit.testCase({
     'create server':                          testCreateServer,
     'delete a server':                        testDeleteServer,
     'modify server':                          testModifyServer,
-    'modify server boot parameters':          testSetBootParameters
+    'set server boot parameters':             testSetBootParameters,
+    'update server boot parameters':          testUpdateBootParameters
 });
