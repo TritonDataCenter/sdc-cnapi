@@ -171,23 +171,6 @@ Returns servers present in datacenter.
 ||**Code**||**Description**||**Response**||
 ||200||The servers servers for which given criteria is satisfied||Arrray of Server objects||
 
-## GetServer (GET /servers/:server\_uuid)
-
-Look up a single server by UUID
-
-### Input
-
-None
-
-### Examples
-
-    GET /servers/12494d5e-3960-4d65-a61a-0ca6252d6914
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||200||A server object for sever with given UUID||Server JSON object||
-||404||Server could not be found||None||
 
 ## UpdateServer (POST /servers/:server\_uuid)
 
