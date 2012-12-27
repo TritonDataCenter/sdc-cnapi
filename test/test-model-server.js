@@ -63,7 +63,7 @@ function testListServersAll(test) {
                 [
                     'findObjects',
                     'cnapi_servers',
-                    '(uuid=*)',
+                    '(&(uuid=*)!(uuid=default))',
                     { sort: { attribute: 'uuid', order: 'ASC' } }
                 ],
                 'moray history should match');
@@ -125,7 +125,7 @@ function testListServersByUuids(test) {
                     })
                     .join('');
 
-            filter = sprintf('(|%s)', filter);
+            filter = sprintf('(&(|%s)!(uuid=default))', filter);
 
             test.deepEqual(
                 moray.client.history[0],
@@ -189,7 +189,7 @@ function testListServersSetup(test) {
                 [
                     'findObjects',
                     'cnapi_servers',
-                    '(&(uuid=*)(setup=true))',
+                    '(&(uuid=*)(&(setup=true)!(uuid=default)))',
                     { sort: { attribute: 'uuid', order: 'ASC' } }
                 ],
                 'moray history should match');
@@ -390,30 +390,35 @@ function testSetBootParameters(test) {
             });
         },
         function (callback) {
-            server.setBootParams(newBootParameters, function (modifyError) {
-                test.equal(
-                    modifyError,
-                    null,
-                    'There should be no error');
+            server.setBootParams(
+                {
+                    boot_params: newBootParameters,
+                    boot_platform: 'newer'
+                },
+                function (modifyError) {
+                    test.equal(
+                        modifyError,
+                        null,
+                        'There should be no error');
 
-            test.deepEqual(
-                moray.client.history[1],
-                [
-                    'putObject',
-                    'cnapi_servers',
-                    uuid,
-                    {
-                        uuid: uuid,
-                        boot_params: newBootParameters,
-                        setup: true,
-                        boot_platform: '123Z',
-                        hostname: 'testbox',
-                        sysinfo: { 'setup': true }
-                    }
-                ],
-                'moray command history');
-                callback();
-            });
+                    test.deepEqual(
+                        moray.client.history[1],
+                        [
+                            'putObject',
+                            'cnapi_servers',
+                            uuid,
+                            {
+                                uuid: uuid,
+                                boot_params: newBootParameters,
+                                setup: true,
+                                boot_platform: 'newer',
+                                hostname: 'testbox',
+                                sysinfo: { 'setup': true }
+                            }
+                        ],
+                        'moray command history');
+                        callback();
+                });
         },
         function (callback) {
             moray.client.when('getObject', [], { value: expSearchResults });
@@ -424,7 +429,7 @@ function testSetBootParameters(test) {
                 uuid: uuid,
                 boot_params: newBootParameters,
                 setup: true,
-                boot_platform: '123Z',
+                boot_platform: 'newer',
                 hostname: 'testbox',
                 sysinfo: { 'setup': true }
             };
@@ -437,7 +442,7 @@ function testSetBootParameters(test) {
                 test.deepEqual(
                     params,
                     {
-                        platform: '123Z',
+                        platform: 'newer',
                         kernel_args: {
                             rabbitmq: 'guest:guest:localhost:5672',
                             hostname: 'testbox',
