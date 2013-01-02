@@ -6,7 +6,7 @@ var async = require('async');
 var path = require('path');
 
 function parse(document) {
-    var blocks = [];
+    var parsed = {};
 
     for (var idx in document) {
         var chunk = document[idx];
@@ -22,12 +22,15 @@ function parse(document) {
             handleTag(block, chunk, tagIdx);
         }
         if (block.name) {
-            blocks.push(block);
+            if (!parsed[block.section]) {
+                parsed[block.section] = [];
+            }
+            parsed[block.section].push(block);
         }
 
     }
 
-    return blocks;
+    return parsed;
 }
 
 function handleTag(block, chunk, idx) {
@@ -39,6 +42,9 @@ function handleTag(block, chunk, idx) {
             break;
         case 'endpoint':
             block.endpoint = tag.string;
+            break;
+        case 'section':
+            block.section = tag.string;
             break;
         case 'params':
             m = (/^(\w+?)\s+(\w+?)\s+(.*)/g).exec(tag.string);
@@ -64,17 +70,9 @@ function handleTag(block, chunk, idx) {
 function processFile(fn) {
     var contents = fs.readFileSync(fn).toString();
     var a = dox.parseComments(contents, { raw: true });
-    var blocks = parse(a);
+    var doc = parse(a);
 
-    if (!blocks.length) {
-        return '';
-    }
-
-    var ejs = require('ejs');
-    var template = ejs.render(fs.readFileSync(
-        __dirname + '/../docs/index/index.md.ejs').toString(),
-        { blocks: blocks });
-    return template;
+    return doc;
 }
 
 function main() {
@@ -86,9 +84,22 @@ function main() {
             }
         });
     });
+
+    var parsed = {};
+
     files.forEach(function (fn) {
-        process.stdout.write(processFile(fn));
+        var doc = processFile(fn);
+
+        for (var s in doc) {
+            parsed[s] = doc[s];
+        }
     });
+
+    var ejs = require('ejs');
+    var expanded = ejs.render(fs.readFileSync(
+        __dirname + '/../docs/index/index.md.ejs').toString(),
+        { doc: parsed });
+    process.stdout.write(expanded);
 }
 
 main();

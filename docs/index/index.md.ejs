@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Servers, VMs, Ur, ZFS
+apisections: <%= Object.keys(doc).join(", ") %>
 markdown2extras: wiki-tables, code-friendly
 ---
 
@@ -34,15 +34,16 @@ sysinfo utility. This broadcast message is picked up by CNAPI.
 
 # Resetting to factory defaults
 
-# Provisioner
+# Provisioner Tasks
 
-# VMs
+# Virtual Machine Actions
 
-# Ur
+# Ur Messages
 
-# HTTP Endpoint Reference
 
-<% blocks.forEach(function (block) { %>## <%= block.name %> (<%= block.endpoint %>)
+<% Object.keys(doc).forEach(function (section) { %><% var blocks = doc[section]; %># <%= section %> 
+
+<% doc[section].forEach(function (block) { %>## <%= block.name %> (<%= block.endpoint %>)
 
 <%= block.summary %><% if (block.body) { %>
 
@@ -61,4 +62,5 @@ sysinfo utility. This broadcast message is picked up by CNAPI.
 <% block.responses.forEach(function (resp) { %>||<%= resp.code %>||<%= resp.type %>||<%= resp.description %>||
 <% }); %><% } else { %>_None_
 <% } %>
+<% }); %>
 <% }); %>
