@@ -1,0 +1,64 @@
+---
+title: CNAPI (Compute Node API) Design
+apisections: Servers, VMs, Ur, ZFS
+markdown2extras: wiki-tables, code-friendly
+---
+
+# Who
+
+Orlando
+Josh
+Bill
+
+# Overview
+
+CNAPI is the 'Compute Node API' which presents an API to communicate and
+interact with Compute Nodes (CNs).
+
+# Responsibilities
+
+CNAPI provides a unified interface to common Compute Node operations, such as
+server setup, factory-resetting, virtual machine life-cycle actions (creation,
+state transitions, destruction, etc.) In general, if it needs to talk to
+compute nodes, it should happen through CNAPI.
+
+# Compute Node Startup
+
+When a compute node is started up from a shutdown state, regardless if it has
+been set up, it will broadcast a message containing the payload from the
+sysinfo utility. This broadcast message is picked up by CNAPI.
+
+# Setup
+
+# Heartbeats
+
+# Resetting to factory defaults
+
+# Provisioner
+
+# VMs
+
+# Ur
+
+# HTTP Endpoint Reference
+
+<% blocks.forEach(function (block) { %>## <%= block.name %> (<%= block.endpoint %>)
+
+<%= block.summary %><% if (block.body) { %>
+
+<%= block.body %><% } %>
+
+### Inputs
+
+<% if (block.params.length) { %>||**Param**||**Type**||**Description**||**Required?**||
+<% block.params.forEach(function (input) { %>||<%= input.name %>||<%= input.type %>||<%= input.description %>||<%= input.required ? 'true' : 'false' %>||
+<% }); %><% } else { %>_None_
+<% } %>
+
+### Responses
+
+<% if (block.responses.length) { %>||*Code*||*Type*||*Description*||
+<% block.responses.forEach(function (resp) { %>||<%= resp.code %>||<%= resp.type %>||<%= resp.description %>||
+<% }); %><% } else { %>_None_
+<% } %>
+<% }); %>
