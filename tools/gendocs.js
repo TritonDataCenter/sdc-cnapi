@@ -86,7 +86,6 @@ function main() {
             }
         });
     });
-    console.dir(files);
     files.forEach(function (fn) {
         process.stdout.write(processFile(fn));
     });

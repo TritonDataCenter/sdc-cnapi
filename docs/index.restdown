@@ -12,591 +12,827 @@ Bill
 
 # Overview
 
-CNAPI is the 'Compute Node API' which presents an API that workflow jobs can
-use to talk to Compute Nodes (CNs).
+CNAPI is the 'Compute Node API' which presents an API to communicate and
+interact with Compute Nodes (CNs).
 
 # Responsibilities
 
-CNAPI is responsible for Compute Node setup, machine life-cycle operations
-(creation, state transitions, destruction, etc.) In general, everything should
-talk to CNs through CNAPI.
+CNAPI provides a unified interface to common Compute Node operations, such as
+server setup, factory-resetting, virtual machine life-cycle actions (creation,
+state transitions, destruction, etc.) In general, if it needs to talk to
+compute nodes, it should happen through CNAPI.
 
-### Provisioner
+# Compute Node Startup
 
-- interfacing with vmadm
-- interacting with and querying the compute nodes
+When a compute node is started up from a shutdown state, regardless if it has
+been set up, it will broadcast a message containing the payload from the
+sysinfo utility. This broadcast message is picked up by CNAPI.
 
-# Data
+# Setup
 
-CNAPI manages or uses the following data:
+# Heartbeats
 
-- CN resources
-    * zpool avail/used/free
-    * provisioning ZFS filesystems/volumes
-    * configuring shares on said ZFS filesystems
-    * memory avail/used/free
-    * sysinfo data (uuid, nics, CPUs, extensions, etc)
-    * state (unsetup, setting up, up, down, unknown, etc)
-    * network info (nic tags)
-    * limits (max mem, max disk)
-    * platform: current, target
-    * currently existing KVMs/Zones
-    * server roles and info
-- Config:
-    * rabbitmq host / creds
-    * ufds host / creds
-    * service IP
-    * Other requirements
-    * must use rabbitmq
-    * must support 6.5.latest agents/platform as well as master agents/platform
+# Resetting to factory defaults
 
-# Compute Node Properties
-
-Compute Node Properties from MAPI:
-
-belongs_to: :server_role :platform_image
-has: n, :zones, n, :vms, n, :storage_devices n, :zfs_storage_pools n, :ips, n, :comments, n, :nics, n, :provisioner_messages, n, :physical_nics, n, :vnics, n, :nic_tags,
-
-    hostname
-    server_role_id
-    ram_in_megabytes
-    target_utilization_in_megabytes
-    min_available_rmem
-    min_arcsize
-    reserved
-    setting_up_at
-    setup_at
-    cpu_cores
-    current_status
-    public_interface
-    private_interface
-    vendor_number
-    vendor_model
-    manufacturer
-    operating_system
-    is_headnode
-    latest_boot_at
-    platform_image_id
-    target_image_set_at
-    swap_in_gigabytes
-    boot_args
-    vm_capable
-    cpu_virtualization
-    uuid
-    hardware_uuid
-
-# UFDS Server Schema
-
-Each server in UFDS will be represented by an object with the following
-layout:
-
-||*Property*             ||*Type*||
-||uuid                   ||String||
-||datacenter             ||String||
-||default_console        ||String||
-||headnode               ||Boolean||
-||hostname               ||String||
-||last_boot              ||ISO Date||
-||last_updated           ||ISO Date||
-||reserved               ||Boolean||
-||serial                 ||String||
-||serial_speed           ||String||
-||setup                  ||Boolean||
-||status                 ||String||
-||memory_arc_bytes       ||Number||
-||memory_available_bytes ||Number||
-||memory_total_bytes     ||Number||
-
-
-CNAPI is responsible for listening for compute node heartbeats and updating
-UFDS appropriately.
-
-# Boot parameters
-
-## GetDefaultBootParams (GET /boot/default)
-
-Returns the default boot parameters.
-
-### Inputs
-
-None.
-
-### Examples
-
-    GET /boot/default
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||200||The returned parameters||JSON object||
-
-## GetBootParams (GET /boot/:server_uuid)
-
-Returns the boot parameters for a server.
-
-### Inputs
-
-None.
-
-### Examples
-
-    GET /boot/12494d5e-3960-4d65-a61a-0ca6252d6914
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||200||The returned parameters||JSON object||
-# Servers
-
-## ListServers (GET /servers)
-
-Returns servers present in datacenter.
-
-### Inputs
-
-||**Param**||**Type**||**Description**||**Required?**||
-||uuids||String||Comma seperated list of UUIDs to look up||No||
-||datacenter||String||Datacenter in which to look up Server||No||
-||setup||Boolean||Limit results to servers in which the setup flag is set to given value||No||
-
-### Examples
-
-    GET /servers
-    GET /servers?uuids=12494d5e-3960-4d65-a61a-0ca6252d6914,215a6ce1-561f-4a36-8016-c401c759f5fbk
-    GET /servers/datacenter=foxy
-    GET /servers/setup=true
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||200||The servers servers for which given criteria is satisfied||Arrray of Server objects||
-
-
-## UpdateServer (POST /servers/:server\_uuid)
-
-Set the value of an attribute in server's record.
-
-### Input
-
-||**Param**||**Type**||**Description**||**Required?**||
-||default\_console||String||Console type||No||
-||reserved||Boolean||Indicate whether server is to be considered for provisioning||No||
-||serial||String||Default console device||No||
-||serial\_speed||Number||Serial speed value||No||
-||setup||String||Indicate whether server is set up||No||
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||204||Server updated successfully||None||
-
-### Examples
-
-    POST /servers/12494d5e-3960-4d65-a61a
-      -d default_console=vga
-      -d setup=true
-
-## BootParamsSet
-
-Set a server's kernel boot parameters.
-
-### Input
-
-||**Param**||**Type**||**Description**||**Required?**||
-||params||JSON String||A JSON string containing parameter key/values||Yes||
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||204||Server kernel parameters updated successfully||None||
-
-### Examples
-
-    PUT /boot/12494d5e-3960-4d65-a61a
-      -d params='{ foo: "bar" }'
-
-
-## SetupServer (PUT /servers/:server\_uuid/setup)
-
-Initiate the server setup process for a newly started server.
-
-### Input
-
-None
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||204||Server already existed and was set up||Server JSON object||
-||204||Server set up successfully||None||
-||500||Error attempting to set up server||None||
-
-### Examples
-
-    PUT /servers/12494d5e-3960-4d65-a61a/setup
-
-## FactoryReset (PUT /servers/:server\_uuid/factory-reset)
-
-Reset the server back to factory defaults and clear all ZFS pools.
-
-### Input
-
-None
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||204||Server reset initiated successfully||None||
-||500||Error attempting to set up server||None||
-
-### Examples
-
-    PUT /servers/12494d5e-3960-4d65-a61a/factory-reset
+# Provisioner
 
 # VMs
 
-## CreateVm (POST /servers/:server\_uuid/vms)
+# Ur
 
-Provision a VM on the specified server
+# HTTP Endpoint Reference
 
-### Input
+## BootParamsGetDefault (GET /boot/default)
 
-||**Param**||**Type**||**Description**||**Required?**||
-||jobid||String||CNAPI will post job information to Workflow API with this token||Yes||
+Returns the default boot parameters.
 
-*Note*: VM creation payload parameters are as defined by the `vmadm create` command.
 
-### Responses
+### Inputs
 
-||**Code**||**Description**||**Response**||
-||204||Task was sent to server||None||
-||404||No such server||None||
+_None_
 
-### Examples
-
-    PUT /servers/12494d5e-3960-4d65-a61a/vms
-
-## LoadVm (GET /servers/:server\_uuid/vms/:uuid)
-
-Query the server for the VM's details.
-
-### Input
-
-None
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||204||Task was sent to server||None||
-||404||No such VM||None||
-||404||No such server||None||
+||*Code*||*Type*||*Description*||
+||200||Object||Default boot parameters and kernel_args||
+||404||None||No such Server||
 
-### Examples
+## BootParamsSetDefault (PUT /boot/default)
 
-    GET /servers/12494d5e-3960-4d65-a61a/vms/ed759072-7ef6-41d9-b8d8-6ce247faccd0
+Set the default boot parameters.
 
-## UpdateVm (POST /servers/:server\_uuid/vms/:uuid/update)
+Completely override the existing boot parameter values with the given
+payload. Any values not present in the payload will effectively be deleted.
 
-Modify the parameters of the vm identified by `:uuid` on server
-`:server\_uuid`.
 
-### Input
+### Inputs
 
-||**Param**||**Type**||**Description**||**Required?**||
-||jobid||String||CNAPI will post job information to Workflow API with this token||Yes||
+_None_
 
-*Note*: VM creation payload parameters are as defined by the `vmadm create` command.
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||204||Task was sent to server||None||
-||404||No such VM||None||
-||404||No such server||None||
+||*Code*||*Type*||*Description*||
+||204||None||Boot parameters successfully set.||
+||404||None||No such Server||
 
-### Examples
+## BootParamsUpdateDefault (POST /boot/default)
 
-    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/update
+Modify the default boot parameters.
 
-## StartVm (POST /servers/:server\_uuid/vms/:uuid/start)
+If a value is present in the default boot parameters, but no new value is
+passed in, the currently effective value will remain unchanged.
 
-Boot up a vm which is in the 'stopped' state.
 
-### Input
+### Inputs
 
-||**Param**||**Type**||**Description**||**Required?**||
-||jobid||String||CNAPI will post job information to Workflow API with this token||Yes||
+_None_
 
-### Responses
-
-||**Code**||**Description**||**Response**||
-||204||Task was sent to server||None||
-||404||No such VM||None||
-||404||No such server||None||
-
-### Examples
-
-    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/start
-
-## StopVm (POST /servers/:server\_uuid/vms/:uuid/stop)
-
-Shut down a vm which is in the 'running' state.
-
-### Input
-
-||**Param**||**Type**||**Description**||**Required?**||
-||jobid||String||CNAPI will post job information to Workflow API with this token||Yes||
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||204||Task was sent to server||None||
+||*Code*||*Type*||*Description*||
+||204||None||Boot parameters successfully set||
+||404||None||No such Server||
 
-### Examples
+## BootParamsGet (GET /boot/:server_uuid)
 
-    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/stop
+Returns the boot parameters for a particular server.
 
-## RebootVm (POST /servers/:server\_uuid/vms/:uuid/reboot)
+Returns the platform to be booted on the next reboot in addition to what
+kernel parameters will be used to boot the server.
 
-Reboot a VM which is in the 'running' state.
 
-### Input
+### Inputs
 
-||**Param**||**Type**||**Description**||**Required?**||
-||jobid||String||CNAPI will post job information to Workflow API with this token||Yes||
+_None_
 
-### Responses
-
-||**Code**||**Description**||**Response**||
-||204||Task was sent to server||None||
-||404||No such VM||None||
-||404||No such server||None||
-
-### Examples
-
-    POST /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6/stop
-
-## DeleteVm (DELETE /servers/:server\_uuid/vms/:uuid)
-
-Delete a VM.
-
-### Input
-
-||**Param**||**Type**||**Description**||**Required?**||
-||jobid||String||CNAPI will post job information to Workflow API with this token||Yes||
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||204||Task was sent to server||None||
-||404||No such VM||None||
-||404||No such server||None||
+||*Code*||*Type*||*Description*||
+||200||Object||Default boot parameters and kernel_args||
+||404||None||No such Server||
 
-### Examples
+## BootParamsSet (POST /boot/:server_uuid)
 
-    DELETE /servers/12494d5e-3960-4d65-a61a/vms/98112f32-64bc-4064-b8ad-726b2bd598a6
+Set the boot parameters of a server.
+
+Completely overrides the platform and boot parameters of a server. If a
+value is not set in the new object but is in the old one, it will be
+effectively deleted when the new object replaces the old.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||202||None||No content||
+||404||None||No such Server||
+
+## BootParamsUpdate (POST /boot/:server_uuid)
+
+Update only the given boot configuration values.
+
+Does not overwrite any values which are not given.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||202||None||No content||
+
+
+---
+title: CNAPI (Compute Node API) Design
+apisections: Servers, VMs, Ur, ZFS
+markdown2extras: wiki-tables, code-friendly
+---
+
+# Who
+
+Orlando
+Josh
+Bill
+
+# Overview
+
+CNAPI is the 'Compute Node API' which presents an API to communicate and
+interact with Compute Nodes (CNs).
+
+# Responsibilities
+
+CNAPI provides a unified interface to common Compute Node operations, such as
+server setup, factory-resetting, virtual machine life-cycle actions (creation,
+state transitions, destruction, etc.) In general, if it needs to talk to
+compute nodes, it should happen through CNAPI.
+
+# Compute Node Startup
+
+When a compute node is started up from a shutdown state, regardless if it has
+been set up, it will broadcast a message containing the payload from the
+sysinfo utility. This broadcast message is picked up by CNAPI.
+
+# Setup
+
+# Heartbeats
+
+# Resetting to factory defaults
+
+# Provisioner
+
+# VMs
 
 # Ur
 
-## UpdateUr (POST /ur/:server\_uuid)
+# HTTP Endpoint Reference
 
-Execute a script on a server.
+## ServerList (GET /platforms)
 
-### Input
+Returns avaiable platform images in datacenter.
 
-||**Param**||**Type**||**Description**||**Required?**||
-||script||String||A script to be executed on the remote server||Yes||
+
+### Inputs
+
+_None_
+
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||200||Script stdout||String||
-
-### Examples
-
-    POST /ur/12494d5e-3960-4d65-a61a
-        -d @script.sh
+||*Code*||*Type*||*Description*||
+||200||Array||The returned servers||
 
 
-# ZFS
+---
+title: CNAPI (Compute Node API) Design
+apisections: Servers, VMs, Ur, ZFS
+markdown2extras: wiki-tables, code-friendly
+---
+
+# Who
+
+Orlando
+Josh
+Bill
+
+# Overview
+
+CNAPI is the 'Compute Node API' which presents an API to communicate and
+interact with Compute Nodes (CNs).
+
+# Responsibilities
+
+CNAPI provides a unified interface to common Compute Node operations, such as
+server setup, factory-resetting, virtual machine life-cycle actions (creation,
+state transitions, destruction, etc.) In general, if it needs to talk to
+compute nodes, it should happen through CNAPI.
+
+# Compute Node Startup
+
+When a compute node is started up from a shutdown state, regardless if it has
+been set up, it will broadcast a message containing the payload from the
+sysinfo utility. This broadcast message is picked up by CNAPI.
+
+# Setup
+
+# Heartbeats
+
+# Resetting to factory defaults
+
+# Provisioner
+
+# VMs
+
+# Ur
+
+# HTTP Endpoint Reference
+
+## ServerList (GET /servers)
+
+Returns Servers present in datacenter.
 
 
-## ListDatasets (GET /datasets/:server\_uuid)
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Array||The returned servers||
+
+## ServerGet (GET /servers/:server\_uuid)
+
+Look up a single Server by UUID.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Object||The server object&gt;||
+
+## ServerUpdate (POST /servers/:server_uuid)
+
+Set the value of a Server's attribute.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||The value was set successfuly||
+
+## ServerFactoryReset (PUT /servers/:server\_uuid/setup)
+
+Reset the server back to a factory state.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Server reset initiated successfully||
+||500||None||Error attempting to set up server||
+
+## ServerSetup (PUT /servers/:server_uuid/factory-reset)
+
+Initiate the server setup process for a newly started server.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Object||Returns object containing workflow id||
+||500||None||Error while processing request||
+
+## ServerDelete (DELETE /servers/:server_uuid)
+
+Remove all references to given server. Does not change anything on the
+actual server.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Server was deleted successfully||
+||500||Error||Could not process request||
+
+
+---
+title: CNAPI (Compute Node API) Design
+apisections: Servers, VMs, Ur, ZFS
+markdown2extras: wiki-tables, code-friendly
+---
+
+# Who
+
+Orlando
+Josh
+Bill
+
+# Overview
+
+CNAPI is the 'Compute Node API' which presents an API to communicate and
+interact with Compute Nodes (CNs).
+
+# Responsibilities
+
+CNAPI provides a unified interface to common Compute Node operations, such as
+server setup, factory-resetting, virtual machine life-cycle actions (creation,
+state transitions, destruction, etc.) In general, if it needs to talk to
+compute nodes, it should happen through CNAPI.
+
+# Compute Node Startup
+
+When a compute node is started up from a shutdown state, regardless if it has
+been set up, it will broadcast a message containing the payload from the
+sysinfo utility. This broadcast message is picked up by CNAPI.
+
+# Setup
+
+# Heartbeats
+
+# Resetting to factory defaults
+
+# Provisioner
+
+# VMs
+
+# Ur
+
+# HTTP Endpoint Reference
+
+## TaskGet (GET /tasks/:task_id)
+
+Returns the details of the given task.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Object||Task details||
+||404||None||No such task found||
+
+
+---
+title: CNAPI (Compute Node API) Design
+apisections: Servers, VMs, Ur, ZFS
+markdown2extras: wiki-tables, code-friendly
+---
+
+# Who
+
+Orlando
+Josh
+Bill
+
+# Overview
+
+CNAPI is the 'Compute Node API' which presents an API to communicate and
+interact with Compute Nodes (CNs).
+
+# Responsibilities
+
+CNAPI provides a unified interface to common Compute Node operations, such as
+server setup, factory-resetting, virtual machine life-cycle actions (creation,
+state transitions, destruction, etc.) In general, if it needs to talk to
+compute nodes, it should happen through CNAPI.
+
+# Compute Node Startup
+
+When a compute node is started up from a shutdown state, regardless if it has
+been set up, it will broadcast a message containing the payload from the
+sysinfo utility. This broadcast message is picked up by CNAPI.
+
+# Setup
+
+# Heartbeats
+
+# Resetting to factory defaults
+
+# Provisioner
+
+# VMs
+
+# Ur
+
+# HTTP Endpoint Reference
+
+## CommandExecute (POST /servers/:server_uuid/execute)
+
+Synchronously execute a command on the target server.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||404||None||No such server||
+
+
+---
+title: CNAPI (Compute Node API) Design
+apisections: Servers, VMs, Ur, ZFS
+markdown2extras: wiki-tables, code-friendly
+---
+
+# Who
+
+Orlando
+Josh
+Bill
+
+# Overview
+
+CNAPI is the 'Compute Node API' which presents an API to communicate and
+interact with Compute Nodes (CNs).
+
+# Responsibilities
+
+CNAPI provides a unified interface to common Compute Node operations, such as
+server setup, factory-resetting, virtual machine life-cycle actions (creation,
+state transitions, destruction, etc.) In general, if it needs to talk to
+compute nodes, it should happen through CNAPI.
+
+# Compute Node Startup
+
+When a compute node is started up from a shutdown state, regardless if it has
+been set up, it will broadcast a message containing the payload from the
+sysinfo utility. This broadcast message is picked up by CNAPI.
+
+# Setup
+
+# Heartbeats
+
+# Resetting to factory defaults
+
+# Provisioner
+
+# VMs
+
+# Ur
+
+# HTTP Endpoint Reference
+
+## VmLoad (GET /servers/:server_uuid/vms/:uuid)
+
+Query the server for the VM's details.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||Object||Task was sent to server||
+||404||Object||No such VM||
+||404||Object||No such server||
+
+## VmUpdate (POST /servers/:server\_uuid/vms/:uuid/update)
+
+Modify the system parameters of the VM identified by `:uuid` on server with
+UUID `:server_uuid`.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such VM||
+||404||Error||No such server||
+
+## VmStart (POST /servers/:server_uuid/vms/:uuid/start)
+
+Boot up a vm which is in the 'stopped' state.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such VM||
+||404||Error||No such server||
+
+## VmStop (POST /servers/:server\_uuid/vms/:uuid/stop)
+
+Shut down a VM which is in the 'running' state.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such VM||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+## VmReboot (POST /servers/:server\_uuid/vms/:uuid/reboot)
+
+Reboot a VM which is in the 'running' state.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such VM||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+## VmCreate (POST /servers/:server_uuid/vms/:uuid/reboot)
+
+Create a VM on the specified server.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+## VmDestroy (DELEETE /servers/:server_uuid/vms/:uuid)
+
+Delete the specified VM.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+
+---
+title: CNAPI (Compute Node API) Design
+apisections: Servers, VMs, Ur, ZFS
+markdown2extras: wiki-tables, code-friendly
+---
+
+# Who
+
+Orlando
+Josh
+Bill
+
+# Overview
+
+CNAPI is the 'Compute Node API' which presents an API to communicate and
+interact with Compute Nodes (CNs).
+
+# Responsibilities
+
+CNAPI provides a unified interface to common Compute Node operations, such as
+server setup, factory-resetting, virtual machine life-cycle actions (creation,
+state transitions, destruction, etc.) In general, if it needs to talk to
+compute nodes, it should happen through CNAPI.
+
+# Compute Node Startup
+
+When a compute node is started up from a shutdown state, regardless if it has
+been set up, it will broadcast a message containing the payload from the
+sysinfo utility. This broadcast message is picked up by CNAPI.
+
+# Setup
+
+# Heartbeats
+
+# Resetting to factory defaults
+
+# Provisioner
+
+# VMs
+
+# Ur
+
+# HTTP Endpoint Reference
+
+## DatasetsList (GET GET /servers/:server_uuid/datasets)
 
 List ZFS datasets on a server.
 
-### Input
 
-None
+### Inputs
+
+_None_
+
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||200||List of datasets||Array of JSON objects, one per dataset||
+||*Code*||*Type*||*Description*||
+||200||Array||Array of objects, one per dataset on server||
 
-### Examples
-
-    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets
-
-
-## CreateDataset (POST /servers/:server\_uuid/datasets)
+## DatasetCreate (POST /servers/:server_uuid/datasets)
 
 Create a ZFS dataset on a server.
 
-### Input
 
-||**Param**||**Type**||**Description**||**Required?**||
-||dataset||String||The dataset to be created||Yes||
+### Inputs
+
+_None_
+
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||204||Dataset created successfully||None||
+||*Code*||*Type*||*Description*||
+||204||None||Dataset successfully created||
 
-### Examples
-
-    POST /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets -d "datasets=zones/myfs"
-
-
-## GetProperties (GET /servers/:server\_uuid/datasets/:dataset/properties)
-
-Get ZFS properties for a dataset.  The specific properties to return can be
-filtered with ?prop1=foo&prop2=bar, etc.
-
-### Input
-
-||**Param**||**Type**||**Description**||**Required?**||
-||dataset||String||The dataset for which to get properties||Yes||
-||prop1 ... propN||String||Specific properties to get||No||
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||200||A list of properties||JSON object, keyed by dataset name||
-
-### Examples
-
-    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs/properties
-    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs?/properties?prop1=quota&prop2=available
-
-
-## GetAllProperties (GET /servers/:server\_uuid/dataset-properties)
-
-Get ZFS properties across all datasets.  The specific properties to return can
-be filtered with ?prop1=foo&prop2=bar, etc.
-
-### Input
-
-||**Param**||**Type**||**Description**||**Required?**||
-||prop1 ... propN||String||Specific properties to get||No||
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||200||A list of properties||JSON object, keyed by dataset name||
-
-### Examples
-
-    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/dataset-properties?prop1=mountpoint
-
-
-## SetProperties (POST /servers/:server\_uuid/datasets/:dataset/properties)
-
-Set one or more properties for a ZFS dataset.
-
-### Input
-
-||**Param**||**Type**||**Description**||**Required?**||
-||dataset||String||The name of the dataset||Yes||
-||properties||Object||Properties to be set on this dataset||Yes||
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||204||Properties were set successfully||None||
-
-### Examples
-
-    POST /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs/properties
-    {
-         "properties": {
-             "quota": "5G"
-         }
-    }
-
-
-## DestroyDataset (DELETE /servers/:server\_uuid/datasets/:dataset)
-
-Destroys a ZFS dataset on a server.
-
-### Input
-
-||**Param**||**Type**||**Description**||**Required?**||
-||dataset||String||The dataset to be destroyed ||Yes||
-
-### Responses
-
-||**Code**||**Description**||**Response**||
-||204||Dataset destroyed successfully||None||
-
-### Examples
-
-    DELETE  /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones\/myfs
-
-
-## CreateSnapshot (POST /servers/:server\_uuid/datasets/:dataset/snapshot)
+## SnapshotCreate (POST /servers/:server_uuid/datasets/:dataset/snapshot)
 
 Create a ZFS snapshot of a dataset on a server.
 
-### Input
 
-||**Param**||**Type**||**Description**||**Required?**||
-||dataset||String||The dataset to be snapshotted||Yes||
-||name||String||The name of the snapshot to be created||Yes||
+### Inputs
+
+_None_
+
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||204||Snapshot created successfully||None||
+||*Code*||*Type*||*Description*||
+||204||None||Snapshot successfully created||
 
-### Examples
-
-    POST /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones%2Fmyfs/snapshot -d "name=backup"
-
-
-## RollbackSnapshot (POST /servers/:server\_uuid/datasets/:dataset/snapshot)
+## SnapshotRollback (POST /servers/:server_uuid/datasets/:dataset/rollback)
 
 Revert a ZFS dataset to back to a previous state captured by a snapshot.
 
-### Input
 
-||**Param**||**Type**||**Description**||**Required?**||
-||dataset||String||The dataset to be snapshotted||Yes||
-||name||String||The name of the snapshot to be created||Yes||
+### Inputs
+
+_None_
+
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||204||Dataset successfully rolled back||None||
+||*Code*||*Type*||*Description*||
+||204||None||Snapshot successfully rolled back||
 
-### Examples
+## SnapshotList (GET /servers/:server_uuid/datasets/:dataset/snapshots)
 
-    POST /servers/44454c4c-4800-1034-804a-b2c04f354d31/datasets/zones%2Fmyfs/rollback -d "name=backup"
+List all snapshots on a dataset
 
 
-## ListZpools (GET /servers/:server\_uuid/zpools)
+### Inputs
 
-List ZFS pools on a server.
+_None_
 
-### Input
-
-None
 
 ### Responses
 
-||**Code**||**Description**||**Response**||
-||200||ZFS pool information||String||
+||*Code*||*Type*||*Description*||
+||200||Array||Array of snapshot objects||
 
-### Examples
+## DatasetPropertiesGetAll (GET /servers/:server_uuid/dataset-properties)
 
-    GET /servers/44454c4c-4800-1034-804a-b2c04f354d31/zpools
+Get ZFS properties across all datasets on a server.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Object||list of property details||
+
+## DatasetPropertiesGet (GET /servers/:server_uuid/datasets/:dataset/properties)
+
+Get ZFS properties for a dataset.  The specific properties to return can be
+filtered with ?prop1=foo&amp;prop2=bar, etc.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Array||List of dataset property details||
+
+## DatasetPropertiesSet (POST /servers/:server_uuid/datasets/:dataset/properties)
+
+Set one or more properties for a ZFS dataset.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Properties were set successfully||
+
+## DatasetDestroy (DELETE /servers/:server_uuid/datasets/:dataset)
+
+Destroy a ZFS dataset on a server.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Dataset successfully deleted||
+
+## ZpoolList (GET /servers/:server_uuid/zpools)
+
+List the ZFS pools on a server.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Array||List of zpool detail objects||
+
+
