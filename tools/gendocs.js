@@ -46,14 +46,11 @@ function handleTag(block, chunk, idx) {
         case 'section':
             block.section = tag.string;
             break;
-        case 'params':
-            m = (/^(\w+?)\s+(\w+?)\s+(.*)/g).exec(tag.string);
-            block.params.push({ name: m[1], type: m[2], description: m[3] });
-            break;
-        case 'required-params':
-            m = (/^(\w+?)\s+(\w+?)\s+(.*)/g).exec(tag.string);
+        case 'param':
             block.params.push({
-                name: m[1], type: m[2], required: false, description: m[3]
+                name: tag.name,
+                type: tag.types[0],
+                description: tag.description
             });
             break;
         case 'response':
@@ -76,6 +73,12 @@ function processFile(fn) {
 }
 
 function main() {
+    if (process.argv.length < 3) {
+        console.error('Error: Insufficient number of arguments');
+        console.error('%s %s <directory>', process.argv[0], process.argv[1]);
+        process.exit(1);
+    }
+
     var files = [];
     file.walkSync(process.argv[2], function (dir, dirs, filenames) {
         filenames.forEach(function (fn) {

@@ -41,7 +41,7 @@ sysinfo utility. This broadcast message is picked up by CNAPI.
 # Ur Messages
 
 
-<% Object.keys(doc).forEach(function (section) { %><% var blocks = doc[section]; %># <%= section %> 
+<% Object.keys(doc).forEach(function (section) { %><% var blocks = doc[section]; %># <%= section %>
 
 <% doc[section].forEach(function (block) { %>## <%= block.name %> (<%= block.endpoint %>)
 
@@ -51,8 +51,8 @@ sysinfo utility. This broadcast message is picked up by CNAPI.
 
 ### Inputs
 
-<% if (block.params.length) { %>||**Param**||**Type**||**Description**||**Required?**||
-<% block.params.forEach(function (input) { %>||<%= input.name %>||<%= input.type %>||<%= input.description %>||<%= input.required ? 'true' : 'false' %>||
+<% if (block.params.length) { %>||**Param**||**Type**||**Description**||
+<% block.params.forEach(function (input) { %>||<%= input.name %>||<%= input.type %>||<%= input.description %>||
 <% }); %><% } else { %>_None_
 <% } %>
 

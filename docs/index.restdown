@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Boot Parameters, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, ZFS
+apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, ZFS
 markdown2extras: wiki-tables, code-friendly
 ---
 
@@ -41,7 +41,7 @@ sysinfo utility. This broadcast message is picked up by CNAPI.
 # Ur Messages
 
 
-# Boot Parameters 
+# Boot Parameters
 
 ## BootParamsGetDefault (GET /boot/default)
 
@@ -88,7 +88,9 @@ passed in, the currently effective value will remain unchanged.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||kernel_args||Object||Boot parms to update||
+||platform||String||Set platform as the bootable platform||
 
 
 ### Responses
@@ -127,7 +129,9 @@ effectively deleted when the new object replaces the old.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||kernel_args||Object||Boot parms to update||
+||platform||String||Set platform as the bootable platform||
 
 
 ### Responses
@@ -145,7 +149,9 @@ Does not overwrite any values which are not given.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||kernel_args||Object||Boot parms to update||
+||platform||String||Set platform as the bootable platform||
 
 
 ### Responses
@@ -154,7 +160,25 @@ _None_
 ||202||None||No content||
 
 
-# Platforms 
+# Ping
+
+## Ping (GET /ping)
+
+Return CNAPI's service status details.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Object||Status details.||
+
+
+# Platforms
 
 ## ServerList (GET /platforms)
 
@@ -172,7 +196,7 @@ _None_
 ||200||Array||The returned servers||
 
 
-# Servers 
+# Servers
 
 ## ServerList (GET /servers)
 
@@ -181,7 +205,9 @@ Returns Servers present in datacenter.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||uuids||String||Comma seperated list of UUIDs to look up||
+||setup||Boolean||Return only setup servers||
 
 
 ### Responses
@@ -211,7 +237,14 @@ Set the value of a Server's attribute.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||boot_platform||String||The platform image to be used on next boot||
+||default_console||String||Console type||
+||reserved||Boolean||Server is available for provisioning||
+||serial||String||Serial device||
+||serial_speed||Number||Serial speed value||
+||setup||String||Indicate whether server is set up||
+||traits||String||Server traits||
 
 
 ### Responses
@@ -269,7 +302,7 @@ _None_
 ||500||Error||Could not process request||
 
 
-# Provisioner Tasks 
+# Provisioner Tasks
 
 ## TaskGet (GET /tasks/:task_id)
 
@@ -288,7 +321,7 @@ _None_
 ||404||None||No such task found||
 
 
-# Remote Execution 
+# Remote Execution
 
 ## CommandExecute (POST /servers/:server_uuid/execute)
 
@@ -297,7 +330,10 @@ Synchronously execute a command on the target server.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||args||Array||Array containing arguments to be passed in to command||
+||env||Object||Object containing environment variables to be passed in||
+||script||String||Script to be executed. Must have a shebang line||
 
 
 ### Responses
@@ -306,7 +342,7 @@ _None_
 ||404||None||No such server||
 
 
-# Virtual Machines 
+# Virtual Machines
 
 ## VmLoad (GET /servers/:server_uuid/vms/:uuid)
 
@@ -315,7 +351,8 @@ Query the server for the VM's details.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||jobid||String||Post information to workflow with this id||
 
 
 ### Responses
@@ -333,7 +370,8 @@ UUID `:server_uuid`.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||jobid||String||Post information to workflow with this id||
 
 
 ### Responses
@@ -350,7 +388,8 @@ Boot up a vm which is in the 'stopped' state.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||jobid||String||Post information to workflow with this id||
 
 
 ### Responses
@@ -367,7 +406,8 @@ Shut down a VM which is in the 'running' state.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||jobid||String||Post information to workflow with this id||
 
 
 ### Responses
@@ -385,7 +425,8 @@ Reboot a VM which is in the 'running' state.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||jobid||String||Post information to workflow with this id||
 
 
 ### Responses
@@ -403,7 +444,8 @@ Create a VM on the specified server.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||jobid||String||Post information to workflow with this id||
 
 
 ### Responses
@@ -413,7 +455,7 @@ _None_
 ||404||Error||No such server||
 ||500||Error||Error encountered while attempting to fulfill request||
 
-## VmDestroy (DELEETE /servers/:server_uuid/vms/:uuid)
+## VmDestroy (DELETE /servers/:server_uuid/vms/:uuid)
 
 Delete the specified VM.
 
@@ -431,7 +473,7 @@ _None_
 ||500||Error||Error encountered while attempting to fulfill request||
 
 
-# ZFS 
+# ZFS
 
 ## DatasetsList (GET GET /servers/:server_uuid/datasets)
 
@@ -470,7 +512,8 @@ Create a ZFS snapshot of a dataset on a server.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||name||String||The name of the snapshot to create||
 
 
 ### Responses
@@ -485,7 +528,8 @@ Revert a ZFS dataset to back to a previous state captured by a snapshot.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||name||String||The name of the snapshot to be created||
 
 
 ### Responses
@@ -515,7 +559,10 @@ Get ZFS properties across all datasets on a server.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||&lt;prop1&gt;||String||Get the property given by the &quot;prop1&quot; value||
+||&lt;prop2&gt;||String||Get the property given by the &quot;prop2&quot; value||
+||&lt;propN&gt;||String||Get the property given by the &quot;propN&quot; value||
 
 
 ### Responses
@@ -531,7 +578,10 @@ filtered with ?prop1=foo&amp;prop2=bar, etc.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||&lt;prop1&gt;||String||Get the property given by the &quot;prop1&quot; value||
+||&lt;prop2&gt;||String||Get the property given by the &quot;prop2&quot; value||
+||&lt;propN&gt;||String||Get the property given by the &quot;propN&quot; value||
 
 
 ### Responses
@@ -546,7 +596,8 @@ Set one or more properties for a ZFS dataset.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||properties||Object||Object containing string property values||
 
 
 ### Responses
