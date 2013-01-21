@@ -79,6 +79,9 @@ function main() {
         process.exit(1);
     }
 
+    var data = fs.readFileSync(__dirname + '/../package.json');
+    var pkg = JSON.parse(data.toString());
+
     var files = [];
     file.walkSync(process.argv[2], function (dir, dirs, filenames) {
         filenames.forEach(function (fn) {
@@ -101,7 +104,7 @@ function main() {
     var ejs = require('ejs');
     var expanded = ejs.render(fs.readFileSync(
         __dirname + '/../docs/index/index.md.ejs').toString(),
-        { doc: parsed });
+        { package: pkg, doc: parsed });
     process.stdout.write(expanded);
 }
 

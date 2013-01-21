@@ -4,6 +4,9 @@ apisections: <%= Object.keys(doc).join(", ") %>
 markdown2extras: wiki-tables, code-friendly
 ---
 
+version: <%= package.version %>
+date: <%= (new Date()).toString() %>
+
 # Who
 
 Orlando

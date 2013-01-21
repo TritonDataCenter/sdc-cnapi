@@ -4,6 +4,9 @@ apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remot
 markdown2extras: wiki-tables, code-friendly
 ---
 
+version: 1.0.0
+date: Mon Jan 21 2013 20:58:40 GMT+0000 (UTC)
+
 # Who
 
 Orlando
@@ -244,8 +247,8 @@ Set the value of a Server's attribute.
 ||reserved||Boolean||Server is available for provisioning||
 ||serial||String||Serial device||
 ||serial_speed||Number||Serial speed value||
-||setup||Boolean||Indicate whether server is set up||
-||setting_up||Boolean||Indicate whether server is in the process of setting up||
+||setup||Boolean||True if server has been set up||
+||setting_up||Boolean||True if server is in the process of setting up||
 ||traits||String||Server traits||
 
 
