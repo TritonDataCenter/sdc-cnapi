@@ -240,10 +240,12 @@ Set the value of a Server's attribute.
 ||**Param**||**Type**||**Description**||
 ||boot_platform||String||The platform image to be used on next boot||
 ||default_console||String||Console type||
+||rack_identifier||String||The id of the server's rack||
 ||reserved||Boolean||Server is available for provisioning||
 ||serial||String||Serial device||
 ||serial_speed||Number||Serial speed value||
-||setup||String||Indicate whether server is set up||
+||setup||Boolean||Indicate whether server is set up||
+||setting_up||Boolean||Indicate whether server is in the process of setting up||
 ||traits||String||Server traits||
 
 
@@ -252,7 +254,7 @@ Set the value of a Server's attribute.
 ||*Code*||*Type*||*Description*||
 ||204||None||The value was set successfuly||
 
-## ServerFactoryReset (PUT /servers/:server\_uuid/setup)
+## ServerFactoryReset (PUT /servers/:server\_uuid/factory-reset)
 
 Reset the server back to a factory state.
 
@@ -265,10 +267,10 @@ _None_
 ### Responses
 
 ||*Code*||*Type*||*Description*||
-||204||None||Server reset initiated successfully||
+||204||Object||Setup initated, returns object containing workflow id||
 ||500||None||Error attempting to set up server||
 
-## ServerSetup (PUT /servers/:server_uuid/factory-reset)
+## ServerSetup (PUT /servers/:server_uuid/setup)
 
 Initiate the server setup process for a newly started server.
 
@@ -281,7 +283,7 @@ _None_
 ### Responses
 
 ||*Code*||*Type*||*Description*||
-||200||Object||Returns object containing workflow id||
+||200||Object||Setup initated, returns object containing workflow id||
 ||500||None||Error while processing request||
 
 ## ServerDelete (DELETE /servers/:server_uuid)
