@@ -45,6 +45,8 @@ function fatal
     exit 1
 }
 
+opt_reporter=junit
+
 function usage
 {
     echo "Usage:"
@@ -52,7 +54,7 @@ function usage
     echo ""
     echo "Options:"
     echo "  -f FILTER    Filter pattern (substring match) for test files to run."
-    echo "  -r REPORTER  Nodeunit test reporter to use (default is 'tap')."
+    echo "  -r REPORTER  Nodeunit test reporter to use (default is '$opt_reporter')."
     echo "  -c CNAPI-IP  CNAPI IP to test. Defaults to the current net0 IP."
 }
 
@@ -68,7 +70,6 @@ start_time=$(date +%s)
 
 # Options.
 opt_test_pattern=
-opt_reporter=tap
 while getopts "hf:r:c:" opt
 do
     case "$opt" in
@@ -113,8 +114,8 @@ if [[ -n "$opt_test_pattern" ]]; then
     test_files=$(echo "$test_files" | grep "$opt_test_pattern" || true)
     echo "# Running filtered set of test files: $test_files"
 fi
-PATH=${TOP}/build/node/bin node ./node_modules/.bin/nodeunit --reporter tap \
-    $test_files | tee $OUTPUT_DIR/cnapi-tests.tap
+PATH=${TOP}/build/node/bin node ./node_modules/.bin/nodeunit --reporter junit \
+    $test_files --output $OUTPUT_DIR
 
 
 
@@ -126,17 +127,17 @@ echo "# test results:"
 end_time=$(date +%s)
 elapsed=$((${end_time} - ${start_time}))
 
-tests=$(grep "^# tests [0-9]" $OUTPUT_DIR/*.tap | cut -d ' ' -f3 | xargs | tr ' ' '+' | bc)
-passed=$(grep "^# pass  [0-9]" $OUTPUT_DIR/*.tap | tr -s ' ' | cut -d ' ' -f3 | xargs | tr ' ' '+' | bc)
-[[ -z ${tests} ]] && tests=0
-[[ -z ${passed} ]] && passed=0
-fail=$((${tests} - ${passed}))
+#tests=$(grep "^# tests [0-9]" $OUTPUT_DIR/*.xml | cut -d ' ' -f3 | xargs | tr ' ' '+' | bc)
+#passed=$(grep "^# pass  [0-9]" $OUTPUT_DIR/*.xml | tr -s ' ' | cut -d ' ' -f3 | xargs | tr ' ' '+' | bc)
+#[[ -z ${tests} ]] && tests=0
+#[[ -z ${passed} ]] && passed=0
+#fail=$((${tests} - ${passed}))
 
 echo "# Completed in ${elapsed} seconds."
-echo -e "# \033[32mPASS: ${passed} / ${tests}\033[39m"
-if [[ ${fail} -gt 0 ]]; then
-    echo -e "# \033[31mFAIL: ${fail} / ${tests}\033[39m"
-fi
+#echo -e "# \033[32mPASS: ${passed} / ${tests}\033[39m"
+#if [[ ${fail} -gt 0 ]]; then
+#    echo -e "# \033[31mFAIL: ${fail} / ${tests}\033[39m"
+#fi
 echo ""
 
 if [[ ${tests} != ${passed} ]]; then
