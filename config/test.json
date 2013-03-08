@@ -26,16 +26,10 @@
   "cnapi": {
     "url": "http://10.99.99.18"
   },
+  "imgapi": {
+    "url": "http://10.99.99.17"
+  },
   "redis": {
     "host": "10.99.99.19"
-  },
-  "ufds": {
-    "url": "ldaps://localhost",
-    "bindDN": "cn=root",
-    "bindPassword": "secret",
-    "cache": {
-      "size": 1000,
-      "expiry": 300
-    }
   }
 }

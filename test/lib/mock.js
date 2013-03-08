@@ -7,50 +7,6 @@ var configFilename = path.join(__dirname, '..', '..', 'config', 'test.json');
 
 /**
  *
- * UFDS
- *
- */
-
-function MockUfds() {
-    this.history = [];
-    this.callbackValues = {
-    };
-}
-
-MockUfds.prototype.search = function (baseDn, options, callback) {
-    this.history.push(['search', baseDn, options]);
-    callback.apply(null, this.callbackValues.search.pop());
-    return;
-};
-
-MockUfds.prototype.del = function (itemDn, callback) {
-    this.history.push(['del', itemDn]);
-    callback.apply(null, []);
-    return;
-};
-
-MockUfds.prototype.add = function (baseDn, server, callback) {
-    this.history.push(['add', baseDn, server]);
-    callback.apply(null, []);
-    return;
-};
-
-MockUfds.prototype.modify = function (baseDn, changes, callback) {
-    this.history.push(['replace', baseDn, changes]);
-    callback.apply(null, []);
-    return;
-};
-
-MockUfds.prototype.when = function (fn, args, results) {
-    if (!this.callbackValues[fn]) {
-        this.callbackValues[fn] = [];
-    }
-    this.callbackValues[fn].push(results);
-};
-
-
-/**
- *
  * Moray
  *
  */
