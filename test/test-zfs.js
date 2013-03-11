@@ -38,7 +38,7 @@ function teardown(callback) {
 
 function testListServers(test) {
     test.expect(4);
-    client.get('/servers', function (err, req, res, servers) {
+    client.get('/servers?headnode=true', function (err, req, res, servers) {
         test.equal(err, null, 'valid response from GET /servers');
         test.ok(res, 'got a response');
         test.equal(res.statusCode, 200, 'GET /servers returned 200');
