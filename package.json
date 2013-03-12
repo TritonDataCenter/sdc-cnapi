@@ -11,7 +11,7 @@
     "bunyan": "0.14.5",
     "filed": "0.0.5",
     "hiredis": "0.1.14",
-    "moray": "git+ssh://git@git.joyent.com:node-moray.git#b6f1d121e0de48e2b2e8187483208be352508d56",
+    "moray": "git+ssh://git@git.joyent.com:node-moray.git#6248cbe",
     "node-uuid": "1.2.0",
     "nodeunit": "0.7.4",
     "redis": "0.7.2",
