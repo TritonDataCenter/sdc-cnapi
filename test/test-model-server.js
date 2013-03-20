@@ -343,7 +343,7 @@ function testRebootServer(test) {
                   { type: 'script',
                     script: '#!/bin/bash\nexit 113',
                     args: [],
-                    env: {} } } ]]); 
+                    env: {} } } ]]);
             test.done();
         });
     });
@@ -493,9 +493,6 @@ function testSetBootParameters(test) {
                      getError,
                      null,
                 'There should be no error');
-
-                console.log("PARAMS");
-                console.dir(params);
 
                 test.deepEqual(
                     params,
