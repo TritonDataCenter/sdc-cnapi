@@ -311,6 +311,43 @@ function testDeleteServer(test) {
     });
 }
 
+function testRebootServer(test) {
+    test.expect(2);
+
+    mock.newModel(function (error, model, components) {
+        test.equal(error, null, 'should not encounter an error');
+
+        var moray = components.moray;
+        moray.client.when('putObject', []);
+
+        ModelServer.init(model);
+
+        moray.client.when('findObjects');
+
+        var server = new ModelServer(uuids[0]);
+
+        var ur = components.ur;
+
+        var expUrResult = [
+            null,
+            '\n',
+            ''
+        ];
+
+        ur.when('execute', [], expUrResult);
+
+        server.reboot(function (err) {
+            test.deepEqual(ur.history, [ [ 'execute',
+                { uuid: uuids[0],
+                  message:
+                  { type: 'script',
+                    script: '#!/bin/bash\nexit 113',
+                    args: [],
+                    env: {} } } ]]); 
+            test.done();
+        });
+    });
+}
 
 function testModifyServer(test) {
     test.expect(3);
@@ -374,7 +411,10 @@ function testSetBootParameters(test) {
         setup: true,
         boot_platform: '123Z',
         hostname: 'testbox',
-        sysinfo: { 'setup': true }
+        sysinfo: { 'setup': true },
+        default_console: 'serial',
+        serial: 'ttyb',
+        serial_speed: 100
     };
 
     async.waterfall([
@@ -398,7 +438,10 @@ function testSetBootParameters(test) {
             server.setBootParams(
                 {
                     boot_params: newBootParameters,
-                    boot_platform: 'newer'
+                    boot_platform: 'newer',
+                    default_console: 'vga',
+                    serial: 'ttya',
+                    serial_speed: 200
                 },
                 function (modifyError) {
                     test.equal(
@@ -418,7 +461,10 @@ function testSetBootParameters(test) {
                                 setup: true,
                                 boot_platform: 'newer',
                                 hostname: 'testbox',
-                                sysinfo: { 'setup': true }
+                                sysinfo: { 'setup': true },
+                                default_console: 'vga',
+                                serial: 'ttya',
+                                serial_speed: 200
                             }
                         ],
                         'moray command history');
@@ -426,23 +472,30 @@ function testSetBootParameters(test) {
                 });
         },
         function (callback) {
-            moray.client.when('getObject', [], { value: expSearchResults });
-            delete server.value;
-            redis.client.when('hgetall', [], {});
-
             expSearchResults = {
                 uuid: uuid,
                 boot_params: newBootParameters,
                 setup: true,
                 boot_platform: 'newer',
                 hostname: 'testbox',
-                sysinfo: { 'setup': true }
+                sysinfo: { 'setup': true },
+                default_console: 'serial',
+                serial: 'ttyb',
+                serial_speed: 100
             };
+
+            moray.client.when('getObject', [], { value: expSearchResults });
+            delete server.value;
+            redis.client.when('hgetall', [], {});
+
             server.getBootParams(function (getError, params) {
                 test.equal(
                      getError,
                      null,
                 'There should be no error');
+
+                console.log("PARAMS");
+                console.dir(params);
 
                 test.deepEqual(
                     params,
@@ -455,7 +508,10 @@ function testSetBootParameters(test) {
                             equal_quotes: 'sauce="apple"',
                             commas: 'fee,fi,fo,fum',
                             backslash: 'fruit\\cake'
-                        }
+                        },
+                        default_console: 'serial',
+                        serial: 'ttyb',
+                        serial_speed: 100
                     });
 
                 callback();
@@ -491,7 +547,10 @@ function testUpdateBootParameters(test) {
         setup: true,
         boot_platform: '123Z',
         hostname: 'testbox',
-        sysinfo: { 'setup': true }
+        sysinfo: { 'setup': true },
+        default_console: 'serial',
+        serial: 'ttyb',
+        serial_speed: 100
     };
 
     async.waterfall([
@@ -536,7 +595,10 @@ function testUpdateBootParameters(test) {
                                 setup: true,
                                 boot_platform: 'newer',
                                 hostname: 'testbox',
-                                sysinfo: { 'setup': true }
+                                sysinfo: { 'setup': true },
+                                default_console: 'serial',
+                                serial: 'ttyb',
+                                serial_speed: 100
                             }
                         ],
                         'moray command history');
@@ -554,7 +616,10 @@ function testUpdateBootParameters(test) {
                 setup: true,
                 boot_platform: 'newer',
                 hostname: 'testbox',
-                sysinfo: { 'setup': true }
+                sysinfo: { 'setup': true },
+                default_console: 'serial',
+                serial: 'ttyb',
+                serial_speed: 100
             };
             server.getBootParams(function (getError, params) {
                 test.equal(
@@ -571,7 +636,10 @@ function testUpdateBootParameters(test) {
                             hostname: 'testbox',
                             original: 'value',
                             updated: 'shazbot'
-                        }
+                        },
+                        default_console: 'serial',
+                        serial: 'ttyb',
+                        serial_speed: 100
                     });
 
                 callback();
@@ -592,6 +660,7 @@ module.exports = nodeunit.testCase({
     'fetch a particular server':              testFetchServer,
     'create server':                          testCreateServer,
     'delete a server':                        testDeleteServer,
+    'reboot server':                          testRebootServer,
     'modify server':                          testModifyServer,
     'set server boot parameters':             testSetBootParameters,
     'update server boot parameters':          testUpdateBootParameters
