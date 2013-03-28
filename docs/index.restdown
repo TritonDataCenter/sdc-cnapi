@@ -1,11 +1,11 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, ZFS
+apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, Virtual Machine Snapshots, ZFS
 markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.0
-date: Mon Jan 21 2013 20:58:40 GMT+0000 (UTC)
+date: Thu Mar 28 2013 20:07:42 GMT+0000 (UTC)
 
 # Who
 
@@ -72,7 +72,9 @@ payload. Any values not present in the payload will effectively be deleted.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||platform||String||The platform image to use on next boot||
+||kernel_args||Object||Key value pairs to be sent to server on boot||
 
 
 ### Responses
@@ -211,6 +213,7 @@ Returns Servers present in datacenter.
 ||**Param**||**Type**||**Description**||
 ||uuids||String||Comma seperated list of UUIDs to look up||
 ||setup||Boolean||Return only setup servers||
+||headnode||Boolean||Return only headnodes||
 
 
 ### Responses
@@ -257,6 +260,22 @@ Set the value of a Server's attribute.
 ||*Code*||*Type*||*Description*||
 ||204||None||The value was set successfuly||
 
+## ServerReboot (POST /servers/:server\_uuid/reboot)
+
+Reboot the server.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||Object||Server reboot initiated||
+||500||None||Error attempting to set up server||
+
 ## ServerFactoryReset (PUT /servers/:server\_uuid/factory-reset)
 
 Reset the server back to a factory state.
@@ -287,6 +306,22 @@ _None_
 
 ||*Code*||*Type*||*Description*||
 ||200||Object||Setup initated, returns object containing workflow id||
+||500||None||Error while processing request||
+
+## ServerSysinfoRefresh (POST /servers/:server_uuid/sysinfo-refresh)
+
+Fetch a given server's sysinfo values and store them in the server object.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Object||Sysinfo refresh initiated||
 ||500||None||Error while processing request||
 
 ## ServerDelete (DELETE /servers/:server_uuid)
@@ -348,6 +383,22 @@ Synchronously execute a command on the target server.
 
 
 # Virtual Machines
+
+## VmList (GET /servers/:server_uuid/vms)
+
+Query the server for a list of VMs.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||Array||List of VMs||
+||404||Object||No such server||
 
 ## VmLoad (GET /servers/:server_uuid/vms/:uuid)
 
@@ -442,7 +493,7 @@ Reboot a VM which is in the 'running' state.
 ||404||Error||No such server||
 ||500||Error||Error encountered while attempting to fulfill request||
 
-## VmCreate (POST /servers/:server_uuid/vms/:uuid/reboot)
+## VmCreate (POST /servers/:server_uuid/vms)
 
 Create a VM on the specified server.
 
@@ -450,7 +501,7 @@ Create a VM on the specified server.
 ### Inputs
 
 ||**Param**||**Type**||**Description**||
-||jobid||String||Post information to workflow with this id||
+||jobid||String||Create a new virtual machine on the given server||
 
 
 ### Responses
@@ -463,6 +514,60 @@ Create a VM on the specified server.
 ## VmDestroy (DELETE /servers/:server_uuid/vms/:uuid)
 
 Delete the specified VM.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+
+# Virtual Machine Snapshots
+
+## VmSnapshotCreate (PUT /servers/:server_uuid/vms/:uuid/snapshots)
+
+Task a snapshot of a VM.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+## VmSnapshotRollback (PUT /servers/:ser_uuid/vms/:uuid/snapshots/:snapshot_name/rollback)
+
+Roll back to a previous snapshot of a VM.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+## VmSnapshotDestroy (DELETE /servers/:ser_uuid/vms/:uuid/snapshots/:snapshot_name)
+
+Delete a VM's snapshot.
 
 
 ### Inputs
