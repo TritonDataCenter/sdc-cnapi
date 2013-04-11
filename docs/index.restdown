@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.0
-date: Thu Apr 11 2013 09:20:22 GMT+0000 (UTC)
+date: Thu Apr 11 2013 23:04:40 GMT+0000 (UTC)
 
 # Who
 
@@ -215,6 +215,8 @@ Returns Servers present in datacenter.
 ||setup||Boolean||Return only setup servers||
 ||headnode||Boolean||Return only headnodes||
 ||extras||String||Comma seperated values: vms, memory, sysinfo||
+||limit||Number||Maximum number of results to show||
+||offset||Number||Offset the subset of results returned||
 
 
 ### Responses
