@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.0
-date: Thu Mar 28 2013 20:07:42 GMT+0000 (UTC)
+date: Thu Apr 11 2013 09:20:22 GMT+0000 (UTC)
 
 # Who
 
@@ -214,6 +214,7 @@ Returns Servers present in datacenter.
 ||uuids||String||Comma seperated list of UUIDs to look up||
 ||setup||Boolean||Return only setup servers||
 ||headnode||Boolean||Return only headnodes||
+||extras||String||Comma seperated values: vms, memory, sysinfo||
 
 
 ### Responses
@@ -248,6 +249,8 @@ Set the value of a Server's attribute.
 ||default_console||String||Console type||
 ||rack_identifier||String||The id of the server's rack||
 ||reserved||Boolean||Server is available for provisioning||
+||reservation_ratio||Number||The reservation ratio||
+||overprovision_ratio||Number||The overprovisioning ratio||
 ||serial||String||Serial device||
 ||serial_speed||Number||Serial speed value||
 ||setup||Boolean||True if server has been set up||
