@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, Virtual Machine Snapshots, ZFS
+apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Nics, Remote Execution, Virtual Machines, Virtual Machine Snapshots, ZFS
 markdown2extras: wiki-tables, code-friendly
 ---
 
@@ -304,7 +304,8 @@ Initiate the server setup process for a newly started server.
 
 ### Inputs
 
-_None_
+||**Param**||**Type**||**Description**||
+||nics||Object||Array of nic objects with parameters to update. See the NicUpdate section below.||
 
 
 ### Responses
@@ -385,6 +386,53 @@ Synchronously execute a command on the target server.
 
 ||*Code*||*Type*||*Description*||
 ||404||None||No such server||
+
+
+# Nics
+
+## NicUpdate (PUT /servers/:server_uuid/nics)
+
+Update properties of the server's nics.
+
+
+### Inputs
+
+||**Param**||**Type**||**Description**||
+||action||String||The action to perform on the nic arguments: must be one of "update", "replace" or "delete" ||
+||nics||Object||Array of nic objects with parameters to update. See the Nics Object section below.||
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Object||Sysinfo refresh initiated||
+||500||None||Error while processing request||
+
+
+### Nics Object
+
+The nic object must be an array of nic objects. Only the following options are
+allowed, and both are currently required:
+
+||*Parameter*||*Type*||*Description*||
+||mac||String||MAC address of the nic to update||
+||nic_tags_provided||Array of Strings||nic tags for this physical nic||
+
+An example request to exactly set the nic_tags_provided for a server would be:
+
+    {
+        "action": "replace",
+        "nics": [
+          {
+            "mac": "00:0c:29:d4:5b:04",
+            "nic_tags_provided": [ "external" ]
+          },
+          {
+            "mac": "00:0c:29:d4:5b:fa",
+            "nic_tags_provided": [ "admin" ]
+          }
+        ]
+    }
 
 
 # Virtual Machines
