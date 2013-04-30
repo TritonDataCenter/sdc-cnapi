@@ -1,11 +1,11 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Nics, Remote Execution, Virtual Machines, Virtual Machine Snapshots, ZFS
+apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, Virtual Machine Snapshots, ZFS
 markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.0
-date: Thu Apr 11 2013 23:04:40 GMT+0000 (UTC)
+date: Tue Apr 30 2013 23:19:32 GMT+0000 (UTC)
 
 # Who
 
@@ -257,7 +257,7 @@ Set the value of a Server's attribute.
 ||serial_speed||Number||Serial speed value||
 ||setup||Boolean||True if server has been set up||
 ||setting_up||Boolean||True if server is in the process of setting up||
-||traits||String||Server traits||
+||traits||Object||Server traits||
 
 
 ### Responses
@@ -305,7 +305,8 @@ Initiate the server setup process for a newly started server.
 ### Inputs
 
 ||**Param**||**Type**||**Description**||
-||nics||Object||Array of nic objects with parameters to update. See the NicUpdate section below.||
+||nics||Object||Nic parameters to update||
+||postsetup_script||String||Script to run after setup has completed||
 
 
 ### Responses
@@ -386,53 +387,6 @@ Synchronously execute a command on the target server.
 
 ||*Code*||*Type*||*Description*||
 ||404||None||No such server||
-
-
-# Nics
-
-## NicUpdate (PUT /servers/:server_uuid/nics)
-
-Update properties of the server's nics.
-
-
-### Inputs
-
-||**Param**||**Type**||**Description**||
-||action||String||The action to perform on the nic arguments: must be one of "update", "replace" or "delete" ||
-||nics||Object||Array of nic objects with parameters to update. See the Nics Object section below.||
-
-
-### Responses
-
-||*Code*||*Type*||*Description*||
-||200||Object||Sysinfo refresh initiated||
-||500||None||Error while processing request||
-
-
-### Nics Object
-
-The nic object must be an array of nic objects. Only the following options are
-allowed, and both are currently required:
-
-||*Parameter*||*Type*||*Description*||
-||mac||String||MAC address of the nic to update||
-||nic_tags_provided||Array of Strings||nic tags for this physical nic||
-
-An example request to exactly set the nic_tags_provided for a server would be:
-
-    {
-        "action": "replace",
-        "nics": [
-          {
-            "mac": "00:0c:29:d4:5b:04",
-            "nic_tags_provided": [ "external" ]
-          },
-          {
-            "mac": "00:0c:29:d4:5b:fa",
-            "nic_tags_provided": [ "admin" ]
-          }
-        ]
-    }
 
 
 # Virtual Machines
@@ -555,6 +509,25 @@ Create a VM on the specified server.
 
 ||**Param**||**Type**||**Description**||
 ||jobid||String||Create a new virtual machine on the given server||
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+## VmReprovision (POST /servers/:server_uuid/vms/:uuid/reprovision)
+
+Reprovision a given VM.
+
+
+### Inputs
+
+||**Param**||**Type**||**Description**||
+||jobid||String||Create a new virtual machine on the given server||
+||image_uuid||String||Reprovision using the new image_uuid||
 
 
 ### Responses
