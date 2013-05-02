@@ -75,6 +75,44 @@ MockMorayWrapper.prototype.getClient = function () {
     return this.client;
 };
 
+/**
+ *
+ * Workflow
+ *
+ */
+
+function MockWorkflow() {
+    this.history = [];
+    this.callbackValues = {
+        createJob: []
+    };
+}
+
+MockWorkflow.prototype.when = function (fn, args, results) {
+    if (!this.callbackValues[fn]) {
+        this.callbackValues[fn] = [];
+    }
+    this.callbackValues[fn].push(results);
+};
+
+MockWorkflow.prototype.createJob = function (workflowName, params, callback) {
+    this.history.push(['createJob', workflowName, params ]);
+
+    var job = {
+        uuid: '1234b888-f8e0-11e1-b1a8-5f74056f9365'
+    };
+
+    callback(null, job);
+    return this;
+};
+
+function MockWorkflowWrapper() {
+    this.client = new MockWorkflow();
+}
+
+MockWorkflowWrapper.prototype.getClient = function () {
+    return this.client;
+};
 
 /**
  *
@@ -182,33 +220,37 @@ function newModel(callback) {
 
     var moray = new MockMorayWrapper();
     var redis = new MockRedisWrapper();
+    var wf = new MockWorkflowWrapper();
     var ur = new MockUr();
 
     async.waterfall([
-        function (wf$callback) {
+        function (cb) {
             common.loadConfig(configFilename, function (error, c) {
                 config = c;
-                return wf$callback();
+                return cb();
             });
         },
-        function (wf$callback) {
+        function (cb) {
             model = createModel({
                 log: log,
                 datacenter: config.datacenter_name,
+                cnapi: config.cnapi,
                 amqp: {
                     host: 'localhost'
                 }
             });
             model.setMoray(moray);
             model.setRedis(redis);
+            model.setWorkflow(wf);
             model.setUr(ur);
-            wf$callback();
+            cb();
         }
     ],
     function (error) {
         var components = {
             moray: moray,
             redis: redis,
+            workflow: wf,
             ur: ur
         };
         return callback(error, model, components);
@@ -219,5 +261,6 @@ module.exports = {
     MockRedis: MockRedis,
     MockRedisWrapper: MockRedisWrapper,
     MockMorayWrapper: MockMorayWrapper,
+    MockWorkflowWrapper: MockWorkflowWrapper,
     newModel: newModel
 };

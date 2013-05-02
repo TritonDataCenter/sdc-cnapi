@@ -318,6 +318,14 @@ function testRebootServer(test) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
+        var workflow = components.workflow;
+
+        var expSearchResults = [
+            { uuid: uuids[0], setup: true, sysinfo: { 'setup': true } }
+        ];
+
+        moray.client.when('getObject', [], { value: expSearchResults[0] });
+
         moray.client.when('putObject', []);
 
         ModelServer.init(model);
@@ -326,24 +334,20 @@ function testRebootServer(test) {
 
         var server = new ModelServer(uuids[0]);
 
-        var ur = components.ur;
-
-        var expUrResult = [
-            null,
-            '\n',
-            ''
-        ];
-
-        ur.when('execute', [], expUrResult);
-
         server.reboot(function (err) {
-            test.deepEqual(ur.history, [ [ 'execute',
-                { uuid: uuids[0],
-                  message:
-                  { type: 'script',
-                    script: '#!/bin/bash\nexit 113',
-                    args: [],
-                    env: {} } } ]]);
+            test.deepEqual(
+                workflow.getClient().history,
+                [
+                    [
+                        'createJob',
+                        'server-reboot',
+                        {
+                            cnapi_url: 'http://10.99.99.18',
+                            server_uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
+                            target: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58'
+                        }
+                    ]
+                ]);
             test.done();
         });
     });
