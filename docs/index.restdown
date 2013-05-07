@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.0
-date: Thu May 02 2013 02:13:59 GMT+0000 (UTC)
+date: Tue May 07 2013 20:59:20 GMT+0000 (UTC)
 
 # Who
 
@@ -250,6 +250,7 @@ Set the value of a Server's attribute.
 ||boot_platform||String||The platform image to be used on next boot||
 ||default_console||String||Console type||
 ||rack_identifier||String||The id of the server's rack||
+||comments||String||Any comments about the server||
 ||reserved||Boolean||Server is available for provisioning||
 ||reservation_ratio||Number||The reservation ratio||
 ||overprovision_ratio||Number||The overprovisioning ratio||
@@ -443,6 +444,24 @@ UUID `:server_uuid`.
 ||*Code*||*Type*||*Description*||
 ||204||None||Task was sent to server||
 ||404||Error||No such VM||
+||404||Error||No such server||
+
+## VmNicsUpdate (POST /servers/:server\_uuid/vms/nics/update)
+
+Bulk modify VM nics
+
+
+### Inputs
+
+||**Param**||**Type**||**Description**||
+||jobid||String||Post information to workflow with this id||
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||400||Error||Task not supported on server||
 ||404||Error||No such server||
 
 ## VmStart (POST /servers/:server_uuid/vms/:uuid/start)
