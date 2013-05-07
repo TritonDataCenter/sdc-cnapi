@@ -2,6 +2,10 @@ set -o xtrace
 DIRNAME=$(cd `dirname $0`/.. && pwd)
 cd $DIRNAME
 
+if [[ -n "$CLEAR" ]]; then
+    $DIRNAME/scripts/cnapi-delete-all-servers.sh
+fi
+
 rsync --recursive --partial -l ./{package.json,scripts,deps,config,bin,lib,test} /zones/$(sdc-vmname cnapi)/root/opt/smartdc/cnapi
 
 if [[ -z "$NO_RESTART" ]]; then

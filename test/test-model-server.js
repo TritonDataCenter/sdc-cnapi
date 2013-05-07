@@ -450,8 +450,7 @@ function testSetBootParameters(test) {
                 function (modifyError) {
                     test.equal(
                         modifyError,
-                        null,
-                        'There should be no error');
+                        null);
 
                     test.deepEqual(
                         moray.client.history[1],
@@ -496,7 +495,7 @@ function testSetBootParameters(test) {
                 test.equal(
                      getError,
                      null,
-                'There should be no error');
+                     'Ensure no error returned');
 
                 test.deepEqual(
                     params,
@@ -504,6 +503,8 @@ function testSetBootParameters(test) {
                         platform: 'newer',
                         kernel_args: {
                             rabbitmq: 'guest:guest:localhost:5672',
+                            rabbitmq_dns: 'guest:guest:localhost:5672',
+
                             hostname: 'testbox',
                             simple: 'ronny',
                             equal_quotes: 'sauce="apple"',
@@ -634,6 +635,7 @@ function testUpdateBootParameters(test) {
                         platform: 'newer',
                         kernel_args: {
                             rabbitmq: 'guest:guest:localhost:5672',
+                            rabbitmq_dns: 'guest:guest:localhost:5672',
                             hostname: 'testbox',
                             original: 'value',
                             updated: 'shazbot'

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x xtrace
+
 . /lib/sdc/config.sh
 load_sdc_config
 
