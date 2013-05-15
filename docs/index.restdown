@@ -1,11 +1,11 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, Virtual Machine Snapshots, ZFS
+apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, Virtual Machine Snapshots, Images, ZFS
 markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.0
-date: Tue May 07 2013 20:59:20 GMT+0000 (UTC)
+date: Wed May 15 2013 02:48:14 GMT+0000 (UTC)
 
 # Who
 
@@ -594,7 +594,7 @@ _None_
 ||404||Error||No such server||
 ||500||Error||Error encountered while attempting to fulfill request||
 
-## VmSnapshotRollback (PUT /servers/:ser_uuid/vms/:uuid/snapshots/:snapshot_name/rollback)
+## VmSnapshotRollback (PUT /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name/rollback)
 
 Roll back to a previous snapshot of a VM.
 
@@ -611,7 +611,7 @@ _None_
 ||404||Error||No such server||
 ||500||Error||Error encountered while attempting to fulfill request||
 
-## VmSnapshotDestroy (DELETE /servers/:ser_uuid/vms/:uuid/snapshots/:snapshot_name)
+## VmSnapshotDestroy (DELETE /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name)
 
 Delete a VM's snapshot.
 
@@ -619,6 +619,31 @@ Delete a VM's snapshot.
 ### Inputs
 
 _None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Task was sent to server||
+||404||Error||No such server||
+||500||Error||Error encountered while attempting to fulfill request||
+
+
+# Images
+
+## VmImagesCreate (POST /servers/:server_uuid/vms/:uuid/images)
+
+Create a VM image.
+
+
+### Inputs
+
+||**Param**||**Type**||**Description**||
+||jobid||String||Create a new virtual machine on the given server||
+||compression||String||Compression to use for creating image||
+||imgapi_url||String||Location of imgapi||
+||incremental||Boolean||Make this an incremental image?||
+||manifest||Object||Image manifest object||
 
 
 ### Responses
