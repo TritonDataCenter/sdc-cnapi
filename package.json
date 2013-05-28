@@ -8,7 +8,7 @@
     "amqp": "git://github.com/postwait/node-amqp.git#7becb031a3517a22490addc46654e807bce5f37e",
     "assert-plus": "0.1.2",
     "async": "0.1.18",
-    "bunyan": "0.14.5",
+    "bunyan": "0.21.3",
     "filed": "0.0.5",
     "hiredis": "0.1.14",
     "moray": "git+ssh://git@git.joyent.com:node-moray.git#6248cbe",
