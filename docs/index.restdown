@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.0
-date: Wed May 16 2013 22:48:14 GMT+0000 (UTC)
+date: Wed Jun 05 2013 22:47:30 GMT+0000 (UTC)
 
 # Who
 
@@ -185,7 +185,7 @@ _None_
 
 # Platforms
 
-## ServerList (GET /platforms)
+## PlatformList (GET /platforms)
 
 Returns avaiable platform images in datacenter.
 
@@ -309,7 +309,7 @@ Initiate the server setup process for a newly started server.
 ||**Param**||**Type**||**Description**||
 ||nics||Object||Nic parameters to update||
 ||postsetup_script||String||Script to run after setup has completed||
-||hostname||String||Hostname for the specified server||
+||hostname||String||Hostname to set for the specified server||
 
 
 ### Responses

@@ -1,3 +1,5 @@
+#!/usr/node/bin/node
+
 var dox = require('dox');
 var fs = require('fs');
 var sprintf = require('sprintf').sprintf;
