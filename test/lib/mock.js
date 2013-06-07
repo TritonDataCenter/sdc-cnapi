@@ -1,7 +1,7 @@
 var async = require('async');
 var common = require('../../lib/common');
 var path = require('path');
-var createModel = require('../../lib/models').createModel;
+var App = require('../../lib/app');
 
 var configFilename = path.join(__dirname, '..', '..', 'config', 'test.json');
 
@@ -206,9 +206,9 @@ MockUr.prototype.execute = function (opts, callback) {
 };
 
 
-function newModel(callback) {
+function newApp(callback) {
     var config;
-    var model;
+    var app;
 
     var logFn = function () { console.log.apply(null, arguments); };
     var log = {
@@ -231,18 +231,18 @@ function newModel(callback) {
             });
         },
         function (cb) {
-            model = createModel({
-                log: log,
+            app = new App({
+                logLevel: 'info',
                 datacenter: config.datacenter_name,
                 cnapi: config.cnapi,
                 amqp: {
                     host: 'localhost'
                 }
             });
-            model.setMoray(moray);
-            model.setRedis(redis);
-            model.setWorkflow(wf);
-            model.setUr(ur);
+            app.setMoray(moray);
+            app.setRedis(redis);
+            app.setWorkflow(wf);
+            app.setUr(ur);
             cb();
         }
     ],
@@ -253,7 +253,7 @@ function newModel(callback) {
             workflow: wf,
             ur: ur
         };
-        return callback(error, model, components);
+        return callback(error, app, components);
     });
 }
 
@@ -262,5 +262,5 @@ module.exports = {
     MockRedisWrapper: MockRedisWrapper,
     MockMorayWrapper: MockMorayWrapper,
     MockWorkflowWrapper: MockWorkflowWrapper,
-    newModel: newModel
+    newApp: newApp
 };

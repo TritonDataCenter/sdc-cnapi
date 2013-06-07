@@ -34,14 +34,14 @@ function testListPlatformsAll(test) {
         '12345Z\n4567Z latest\n\n',
         ''
     ];
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
         var ur = components.ur;
 
-        ModelServer.init(model);
-        ModelPlatform.init(model);
+        ModelServer.init(app);
+        ModelPlatform.init(app);
 
         moray.client.when('findObjects');
 
@@ -74,14 +74,14 @@ function testListPlatformsAllNoLatest(test) {
         '12345Z\n4567Z\n\n',
         ''
     ];
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
         var ur = components.ur;
 
-        ModelServer.init(model);
-        ModelPlatform.init(model);
+        ModelServer.init(app);
+        ModelPlatform.init(app);
 
         moray.client.when('findObjects');
         ur.when('execute', [], expUrResult);

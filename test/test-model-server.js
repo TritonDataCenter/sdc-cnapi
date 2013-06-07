@@ -31,14 +31,14 @@ function testListServersAll(test) {
         { uuid: uuids[1], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
 
         moray.client.when('findObjects');
 
-        ModelServer.init(model);
+        ModelServer.init(app);
 
         var options = {};
 
@@ -82,13 +82,13 @@ function testListServersByUuids(test) {
         { uuid: uuids[2], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
         moray.client.when('findObjects');
 
-        ModelServer.init(model);
+        ModelServer.init(app);
 
         var options = {
             uuid: [uuids[0], uuids[2]]
@@ -153,14 +153,14 @@ function testListServersSetup(test) {
         { uuid: uuids[1], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
 
         moray.client.when('findObjects');
 
-        ModelServer.init(model);
+        ModelServer.init(app);
 
         var options = {
             setup: true
@@ -207,13 +207,13 @@ function testFetchServer(test) {
         { uuid: uuids[0], setup: true, sysinfo: { 'setup': true } }
     ];
 
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
         moray.client.when('getObject', [], { value: expSearchResults[0] });
 
-        ModelServer.init(model);
+        ModelServer.init(app);
 
         var server = new ModelServer(uuids[0]);
 
@@ -238,12 +238,12 @@ function testCreateServer(test) {
 
     var serverToAdd = { uuid: uuids[0], ram: '12345' };
 
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
         moray.client.when('putObject', []);
-        ModelServer.init(model);
+        ModelServer.init(app);
 
         var server = new ModelServer(uuids[0]);
         server.setRaw(serverToAdd);
@@ -266,9 +266,9 @@ function testCreateServer(test) {
 function testDeleteServer(test) {
     test.expect(3);
 
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
-        ModelServer.init(model);
+        ModelServer.init(app);
         var redis = components.redis;
 
         var server = new ModelServer(uuids[0]);
@@ -314,7 +314,7 @@ function testDeleteServer(test) {
 function testRebootServer(test) {
     test.expect(2);
 
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
@@ -328,7 +328,7 @@ function testRebootServer(test) {
 
         moray.client.when('putObject', []);
 
-        ModelServer.init(model);
+        ModelServer.init(app);
 
         moray.client.when('findObjects');
 
@@ -358,13 +358,13 @@ function testModifyServer(test) {
 
     var uuid = uuids[0];
 
-    mock.newModel(function (error, model, components) {
+    mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
         moray.client.when('putObject', []);
 
-        ModelServer.init(model);
+        ModelServer.init(app);
 
         var server = new ModelServer(uuids[0]);
 
@@ -423,7 +423,7 @@ function testSetBootParameters(test) {
 
     async.waterfall([
         function (callback) {
-            mock.newModel(function (error, model, components) {
+            mock.newApp(function (error, app, components) {
                 moray = components.moray;
                 redis = components.redis;
 
@@ -432,7 +432,7 @@ function testSetBootParameters(test) {
                 moray.client.when('putObject', []);
                 moray.client.when('getObject', [], { value: expSearchResults });
 
-                ModelServer.init(model);
+                ModelServer.init(app);
 
                 server = new ModelServer(uuid);
                 callback();
@@ -557,7 +557,7 @@ function testUpdateBootParameters(test) {
 
     async.waterfall([
         function (callback) {
-            mock.newModel(function (error, model, components) {
+            mock.newApp(function (error, app, components) {
                 moray = components.moray;
                 redis = components.redis;
 
@@ -567,7 +567,7 @@ function testUpdateBootParameters(test) {
                 moray.client.when('getObject', [], { value: expSearchResults });
                 moray.client.when('putObject', []);
 
-                ModelServer.init(model);
+//                 ModelServer.init(app);
 
                 server = new ModelServer(uuid);
                 callback();
