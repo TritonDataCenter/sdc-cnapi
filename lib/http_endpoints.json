@@ -1,0 +1,9 @@
+{
+   "POST /servers":  {
+        "file": "lib/endpoints/servers",
+        "validation": {
+        
+        }
+    }
+
+}
