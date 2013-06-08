@@ -210,14 +210,6 @@ function newApp(callback) {
     var config;
     var app;
 
-    var logFn = function () { console.log.apply(null, arguments); };
-    var log = {
-        debug: logFn,
-        trace: logFn,
-        error: logFn,
-        info: logFn
-    };
-
     var moray = new MockMorayWrapper();
     var redis = new MockRedisWrapper();
     var wf = new MockWorkflowWrapper();
