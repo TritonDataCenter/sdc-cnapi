@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.0
-date: Wed Jun 05 2013 22:47:30 GMT+0000 (UTC)
+date: Tue Jun 11 2013 09:17:02 GMT+0000 (UTC)
 
 # Who
 
@@ -214,6 +214,7 @@ Returns Servers present in datacenter.
 ||uuids||String||Comma seperated list of UUIDs to look up||
 ||setup||Boolean||Return only setup servers||
 ||headnode||Boolean||Return only headnodes||
+||hostname||String||Return machine with given hostname||
 ||extras||String||Comma seperated values: vms, memory, sysinfo||
 ||limit||Number||Maximum number of results to show||
 ||offset||Number||Offset the subset of results returned||
