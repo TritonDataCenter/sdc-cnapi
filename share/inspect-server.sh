@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH=/usr:/usr/bin:/usr/sbin:/sbin
+
 function get_zpool_disks()
 {
    local zpool=$1
@@ -34,13 +36,13 @@ function get_zpool()
    if [[ $(zpool list) != "no pools available" ]]; then
        Zpool=$(zpool list -H | awk '{print $1}');
 
-           local used=$(zfs get -Hp -o value used ${Zpool})
-           local available=$(zfs get -Hp -o value available ${Zpool})
-           local size=$(( $used + $available ))
-           Zpool_size=$(($size / 1024 / 1024 / 1024))
+       local used=$(zfs get -Hp -o value used ${Zpool})
+       local available=$(zfs get -Hp -o value available ${Zpool})
+       local size=$(( $used + $available ))
+       Zpool_size=$(($size / 1024 / 1024 / 1024))
 
-           get_zpool_disks ${Zpool}
-           get_zpool_profile ${Zpool}
+       get_zpool_disks ${Zpool}
+       get_zpool_profile ${Zpool}
    fi
 }
 
@@ -52,9 +54,9 @@ boot_time=$(/usr/bin/kstat -p -m unix -n system_misc -s boot_time | cut -f2)
 cat << __END__;
 {
     "boot_time": $boot_time,
-    "Zpool": "${Zpool}",
-    "Zpool Disks": "${Zpool_disks}",
-    "Zpool Profile": "${Zpool_profile}",
-    "Zpool Size in GiB": ${Zpool_size}
+    "zpool": "${Zpool}",
+    "zpool_disks": "${Zpool_disks}",
+    "zpool_profile": "${Zpool_profile}",
+    "zpool_size": ${Zpool_size}
 }
 __END__
