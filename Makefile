@@ -75,6 +75,7 @@ release: all deps docs $(SMF_MANIFESTS)
 		$(ROOT)/package.json \
 		$(ROOT)/smf \
 		$(ROOT)/test \
+		$(ROOT)/share \
 		$(ROOT)/tools \
 		$(TMPDIR)/root/opt/smartdc/cnapi/
 	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
