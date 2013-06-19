@@ -6,7 +6,7 @@ if [[ -n "$CLEAR" ]]; then
     $DIRNAME/scripts/cnapi-delete-all-servers.sh
 fi
 
-rsync --recursive --partial -l ./{package.json,scripts,deps,config,bin,lib,test} /zones/$(sdc-vmname cnapi)/root/opt/smartdc/cnapi
+rsync --recursive --partial -l ./{share,package.json,scripts,deps,config,bin,lib,test} /zones/$(sdc-vmname cnapi)/root/opt/smartdc/cnapi
 
 if [[ -z "$NO_RESTART" ]]; then
     sdc-login cnapi 'svcadm restart cnapi; svcadm clear cnapi; tail -n 50 `svcs -L cnapi`; svcs cnapi'

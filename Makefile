@@ -40,7 +40,6 @@ NODE_PREBUILT_TAG=zone
 #
 include ./tools/mk/Makefile.defs
 include ./tools/mk/Makefile.node_prebuilt.defs
-include ./tools/mk/Makefile.node_deps.defs
 include ./tools/mk/Makefile.smf.defs
 
 ROOT            := $(shell pwd)
@@ -66,7 +65,7 @@ release: all deps docs $(SMF_MANIFESTS)
 	@mkdir -p $(TMPDIR)/root/opt/smartdc/cnapi
 	@mkdir -p $(TMPDIR)/site
 	@touch $(TMPDIR)/site/.do-not-delete-me
-	cd $(ROOT) && $(NPM) install
+	cd $(ROOT) && $(NPM) rebuild
 	cp -r   $(ROOT)/build \
 		$(ROOT)/bin \
 		$(ROOT)/config \
@@ -81,6 +80,8 @@ release: all deps docs $(SMF_MANIFESTS)
 	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
 	@rm -rf $(TMPDIR)
 
+regen_docs:
+	$(NODE) ./tools/gendocs.js lib/endpoints > docs/index.restdown
 
 .PHONY: publish
 publish: release
@@ -97,6 +98,5 @@ publish: release
 #
 include ./tools/mk/Makefile.deps
 include ./tools/mk/Makefile.node_prebuilt.targ
-include ./tools/mk/Makefile.node_deps.targ
 include ./tools/mk/Makefile.smf.targ
 include ./tools/mk/Makefile.targ
