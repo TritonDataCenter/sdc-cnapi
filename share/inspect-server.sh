@@ -57,6 +57,6 @@ cat << __END__;
     "zpool": "${Zpool}",
     "zpool_disks": "${Zpool_disks}",
     "zpool_profile": "${Zpool_profile}",
-    "zpool_size": ${Zpool_size}
+    "zpool_size": $(if [[ -z $Zpool_size ]]; then echo 0; else echo $Zpool_size ; fi)
 }
 __END__
