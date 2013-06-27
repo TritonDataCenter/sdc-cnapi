@@ -73,6 +73,7 @@ release: all deps docs $(SMF_MANIFESTS)
 		$(ROOT)/Makefile \
 		$(ROOT)/node_modules \
 		$(ROOT)/package.json \
+		$(ROOT)/sapi_manifests \
 		$(ROOT)/smf \
 		$(ROOT)/test \
 		$(ROOT)/share \
