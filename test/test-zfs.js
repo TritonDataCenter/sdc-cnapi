@@ -14,7 +14,7 @@ var async = require('async'),
     path = require('path'),
     uuid = require('node-uuid');
 
-var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.16');
+var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
 var client;
 
 var GZ;

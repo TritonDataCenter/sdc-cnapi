@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2012, Joyent, Inc. All rights reserved.
+ */
+
 var async = require('async');
 var util = require('util');
 
@@ -269,43 +273,21 @@ function testDeleteServer(test) {
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
         ModelServer.init(app);
-        var redis = components.redis;
+        ModelServer.cache = new mock.MockCache();
 
         var server = new ModelServer(uuids[0]);
 
-        redis.client.when(
-            'keys',
-            [],
-            [
-                null,
-                [
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:vms',
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:memory',
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:status'
-                ]
-            ]);
+        ModelServer.cache.when('remove', [null]);
+
         server.del(function (delError) {
             test.equal(delError, null, 'should not encounter an error');
 
             test.deepEqual(
-                redis.client.history,
-                [ [ 'keys',
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58*'
-                  ],
-                  [ 'del',
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58'
-                  ],
-                  [ 'del',
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:vms'
-                  ],
-                  [ 'del',
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:memory'
-                  ],
-                  [ 'del',
-                    'cnapi:servers:372bdb58-f8dd-11e1-8038-0b6dbddc5e58:status'
+                ModelServer.cache.history,
+                [ [ 'remove',
+                    { uuid: uuids[0] }
                   ]
-                ], 'redis history');
+                ], 'cache history');
             test.done();
         });
     });
@@ -400,7 +382,6 @@ function testSetBootParameters(test) {
 
     var server;
     var moray;
-    var redis;
 
     var newBootParameters = {
         simple: 'ronny',
@@ -425,7 +406,6 @@ function testSetBootParameters(test) {
         function (callback) {
             mock.newApp(function (error, app, components) {
                 moray = components.moray;
-                redis = components.redis;
 
                 test.equal(error, null, 'should not encounter an error');
 
@@ -433,6 +413,7 @@ function testSetBootParameters(test) {
                 moray.client.when('getObject', [], { value: expSearchResults });
 
                 ModelServer.init(app);
+                ModelServer.cache = new mock.MockCache;
 
                 server = new ModelServer(uuid);
                 callback();
@@ -489,7 +470,6 @@ function testSetBootParameters(test) {
 
             moray.client.when('getObject', [], { value: expSearchResults });
             delete server.value;
-            redis.client.when('hgetall', [], {});
 
             server.getBootParams(function (getError, params) {
                 test.equal(
@@ -532,7 +512,6 @@ function testUpdateBootParameters(test) {
 
     var server;
     var moray;
-    var redis;
 
     var update = {
         updated: 'shazbot'
@@ -559,15 +538,12 @@ function testUpdateBootParameters(test) {
         function (callback) {
             mock.newApp(function (error, app, components) {
                 moray = components.moray;
-                redis = components.redis;
 
                 test.equal(error, null, 'should not encounter an error');
 
                 moray.client.when('putObject', []);
                 moray.client.when('getObject', [], { value: expSearchResults });
                 moray.client.when('putObject', []);
-
-//                 ModelServer.init(app);
 
                 server = new ModelServer(uuid);
                 callback();
@@ -610,7 +586,6 @@ function testUpdateBootParameters(test) {
         function (callback) {
             moray.client.when('getObject', [], { value: expSearchResults });
             delete server.value;
-            redis.client.when('hgetall', [], {});
 
             expSearchResults = {
                 uuid: uuid,

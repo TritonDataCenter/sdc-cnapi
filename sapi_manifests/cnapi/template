@@ -1,7 +1,7 @@
 {
 	"logLevel": "info",
 	"datacenter_name": "{{{datacenter_name}}}",
-    "adminUuid": "{{{ufds_admin_uuid}}}",
+	"adminUuid": "{{{ufds_admin_uuid}}}",
 	"amqp": {
 		"host": "{{{RABBITMQ_SERVICE}}}"
 	},
@@ -33,8 +33,5 @@
 	},
 	"imgapi": {
 		"url": "http://{{{IMGAPI_SERVICE}}}"
-	},
-	"redis": {
-		"host": "{{{REDIS_SERVICE}}}"
 	}
 }
