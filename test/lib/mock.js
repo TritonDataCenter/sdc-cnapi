@@ -1,9 +1,14 @@
+/*
+ * Copyright (c) 2012, Joyent, Inc. All rights reserved.
+ */
+
 var async = require('async');
 var common = require('../../lib/common');
 var path = require('path');
 var App = require('../../lib/app');
 
 var configFilename = path.join(__dirname, '..', '..', 'config', 'test.json');
+
 
 /**
  *
@@ -22,12 +27,14 @@ function MockMoray() {
     this.reqs = [];
 }
 
+
 MockMoray.prototype.when = function (fn, args, results) {
     if (!this.callbackValues[fn]) {
         this.callbackValues[fn] = [];
     }
     this.callbackValues[fn].push(results);
 };
+
 
 MockMoray.prototype._emitResults = function (list) {
     var self = this;
@@ -37,9 +44,11 @@ MockMoray.prototype._emitResults = function (list) {
     self._lastReq().emit('end');
 };
 
+
 MockMoray.prototype._lastReq = function () {
     return this.reqs[this.reqs.length-1];
 };
+
 
 MockMoray.prototype.getObject = function (bucket, key, callback) {
     this.history.push(['getObject', bucket, key]);
@@ -48,17 +57,20 @@ MockMoray.prototype.getObject = function (bucket, key, callback) {
     return this;
 };
 
+
 MockMoray.prototype.putObject = function (bucket, key, value, callback) {
     this.history.push(['putObject', bucket, key, value]);
     callback.apply(null, [ null ]);
     return this;
 };
 
+
 MockMoray.prototype.delObject = function (bucket, key, callback) {
     this.history.push(['delObject', bucket, key]);
     callback.apply(null, [ null ]);
     return this;
 };
+
 
 MockMoray.prototype.findObjects = function (bucket, filter, opts) {
     this.history.push(['findObjects', bucket, filter, opts]);
@@ -67,13 +79,16 @@ MockMoray.prototype.findObjects = function (bucket, filter, opts) {
     return req;
 };
 
+
 function MockMorayWrapper() {
     this.client = new MockMoray();
 }
 
+
 MockMorayWrapper.prototype.getClient = function () {
     return this.client;
 };
+
 
 /**
  *
@@ -88,12 +103,14 @@ function MockWorkflow() {
     };
 }
 
+
 MockWorkflow.prototype.when = function (fn, args, results) {
     if (!this.callbackValues[fn]) {
         this.callbackValues[fn] = [];
     }
     this.callbackValues[fn].push(results);
 };
+
 
 MockWorkflow.prototype.createJob = function (workflowName, params, callback) {
     this.history.push(['createJob', workflowName, params ]);
@@ -106,77 +123,45 @@ MockWorkflow.prototype.createJob = function (workflowName, params, callback) {
     return this;
 };
 
+
 function MockWorkflowWrapper() {
     this.client = new MockWorkflow();
 }
+
 
 MockWorkflowWrapper.prototype.getClient = function () {
     return this.client;
 };
 
+
 /**
  *
- * Redis
+ * Cache
  *
  */
 
-function MockRedis() {
+function MockCache() {
     this.history = [];
     this.callbackValues = {
-        get: [],
-        del: [],
-        hmset: [],
-        hmgetall: [],
-        exec: [],
-        exists: [],
-        keys: []
+        remove: []
     };
 }
 
-MockRedis.prototype.when = function (fn, args, results) {
+
+MockCache.prototype.when = function (fn, results) {
     if (!this.callbackValues[fn]) {
         this.callbackValues[fn] = [];
     }
     this.callbackValues[fn].push(results);
 };
 
-MockRedis.prototype.hmset = function (key, values, callback) {
-    this.history.push(['hmset', key, values]);
-    callback();
+
+MockCache.prototype.remove = function (query, callback) {
+    this.history.push(['remove', query]);
+    callback.apply(null, this.callbackValues.remove.pop());
     return this;
 };
 
-MockRedis.prototype.hgetall = function (key, callback) {
-    this.history.push(['hgetall', key]);
-    callback();
-    return this;
-};
-
-MockRedis.prototype.get = function (key, callback) {
-    this.history.push(['get', key]);
-    callback();
-    return this;
-};
-
-MockRedis.prototype.keys = function (key, callback) {
-    this.history.push(['keys', key]);
-    callback.apply(null, this.callbackValues.keys.pop());
-    return this;
-};
-
-MockRedis.prototype.del = function (key, callback) {
-    this.history.push(['del', key]);
-    callback();
-    return this;
-};
-
-function MockRedisWrapper() {
-    this.client = new MockRedis();
-}
-
-MockRedisWrapper.prototype.getClient = function () {
-    return this.client;
-};
 
 /**
  *
@@ -190,6 +175,7 @@ function MockUr() {
         execute: []
     };
 }
+
 
 MockUr.prototype.when = function (fn, args, results) {
     if (!this.callbackValues[fn]) {
@@ -211,7 +197,6 @@ function newApp(callback) {
     var app;
 
     var moray = new MockMorayWrapper();
-    var redis = new MockRedisWrapper();
     var wf = new MockWorkflowWrapper();
     var ur = new MockUr();
 
@@ -232,7 +217,6 @@ function newApp(callback) {
                 }
             });
             app.setMoray(moray);
-            app.setRedis(redis);
             app.setWorkflow(wf);
             app.setUr(ur);
             cb();
@@ -241,7 +225,6 @@ function newApp(callback) {
     function (error) {
         var components = {
             moray: moray,
-            redis: redis,
             workflow: wf,
             ur: ur
         };
@@ -250,8 +233,7 @@ function newApp(callback) {
 }
 
 module.exports = {
-    MockRedis: MockRedis,
-    MockRedisWrapper: MockRedisWrapper,
+    MockCache: MockCache,
     MockMorayWrapper: MockMorayWrapper,
     MockWorkflowWrapper: MockWorkflowWrapper,
     newApp: newApp

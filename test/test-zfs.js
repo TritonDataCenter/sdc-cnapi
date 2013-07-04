@@ -14,7 +14,7 @@ var async = require('async'),
     path = require('path'),
     uuid = require('node-uuid');
 
-var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.16');
+var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
 var client;
 
 var GZ;
@@ -41,6 +41,8 @@ function testListServers(test) {
     client.get('/servers?headnode=true', function (err, req, res, servers) {
         test.equal(err, null, 'valid response from GET /servers');
         test.ok(res, 'got a response');
+        if (!res)
+            console.dir(res);
         test.equal(res.statusCode, 200, 'GET /servers returned 200');
         test.ok(servers);
         GZ = servers[0].uuid;
