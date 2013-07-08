@@ -398,8 +398,7 @@ function testSetBootParameters(test) {
         hostname: 'testbox',
         sysinfo: { 'setup': true },
         default_console: 'serial',
-        serial: 'ttyb',
-        serial_speed: 100
+        serial: 'ttyb'
     };
 
     async.waterfall([
@@ -425,8 +424,7 @@ function testSetBootParameters(test) {
                     boot_params: newBootParameters,
                     boot_platform: 'newer',
                     default_console: 'vga',
-                    serial: 'ttya',
-                    serial_speed: 200
+                    serial: 'ttya'
                 },
                 function (modifyError) {
                     test.equal(
@@ -447,8 +445,7 @@ function testSetBootParameters(test) {
                                 hostname: 'testbox',
                                 sysinfo: { 'setup': true },
                                 default_console: 'vga',
-                                serial: 'ttya',
-                                serial_speed: 200
+                                serial: 'ttya'
                             }
                         ],
                         'moray command history');
@@ -464,8 +461,7 @@ function testSetBootParameters(test) {
                 hostname: 'testbox',
                 sysinfo: { 'setup': true },
                 default_console: 'serial',
-                serial: 'ttyb',
-                serial_speed: 100
+                serial: 'ttyb'
             };
 
             moray.client.when('getObject', [], { value: expSearchResults });
@@ -492,8 +488,7 @@ function testSetBootParameters(test) {
                             backslash: 'fruit\\cake'
                         },
                         default_console: 'serial',
-                        serial: 'ttyb',
-                        serial_speed: 100
+                        serial: 'ttyb'
                     });
 
                 callback();
@@ -530,8 +525,7 @@ function testUpdateBootParameters(test) {
         hostname: 'testbox',
         sysinfo: { 'setup': true },
         default_console: 'serial',
-        serial: 'ttyb',
-        serial_speed: 100
+        serial: 'ttyb'
     };
 
     async.waterfall([
@@ -575,8 +569,7 @@ function testUpdateBootParameters(test) {
                                 hostname: 'testbox',
                                 sysinfo: { 'setup': true },
                                 default_console: 'serial',
-                                serial: 'ttyb',
-                                serial_speed: 100
+                                serial: 'ttyb'
                             }
                         ],
                         'moray command history');
@@ -595,8 +588,7 @@ function testUpdateBootParameters(test) {
                 hostname: 'testbox',
                 sysinfo: { 'setup': true },
                 default_console: 'serial',
-                serial: 'ttyb',
-                serial_speed: 100
+                serial: 'ttyb'
             };
             server.getBootParams(function (getError, params) {
                 test.equal(
@@ -616,8 +608,7 @@ function testUpdateBootParameters(test) {
                             updated: 'shazbot'
                         },
                         default_console: 'serial',
-                        serial: 'ttyb',
-                        serial_speed: 100
+                        serial: 'ttyb'
                     });
 
                 callback();
