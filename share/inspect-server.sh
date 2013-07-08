@@ -35,10 +35,12 @@ function get_zpool()
 {
    if [[ $(zpool list) != "no pools available" ]]; then
        Zpool=$(zpool list -H | awk '{print $1}');
+       Zpool_creation=$(zfs get -Hp -o value creation ${Zpool})
 
        local used=$(zfs get -Hp -o value used ${Zpool})
        local available=$(zfs get -Hp -o value available ${Zpool})
        local size=$(( $used + $available ))
+
        Zpool_size=$(($size / 1024 / 1024 / 1024))
 
        get_zpool_disks ${Zpool}
@@ -48,8 +50,15 @@ function get_zpool()
 
 get_zpool
 
-boot_time=$(/usr/bin/kstat -p -m unix -n system_misc -s boot_time | cut -f2)
+if [[ -z $Zpool_creation ]]; then
+    Zpool_creation="0"
+fi
 
+if [[ -z $Zpool_size ]]; then
+    Zpool_size="0"
+fi
+
+boot_time=$(/usr/bin/kstat -p -m unix -n system_misc -s boot_time | cut -f2)
 
 cat << __END__;
 {
@@ -57,6 +66,7 @@ cat << __END__;
     "zpool": "${Zpool}",
     "zpool_disks": "${Zpool_disks}",
     "zpool_profile": "${Zpool_profile}",
-    "zpool_size": $(if [[ -z $Zpool_size ]]; then echo 0; else echo $Zpool_size ; fi)
+    "zpool_creation": $Zpool_creation,
+    "zpool_size": $Zpool_size
 }
 __END__
