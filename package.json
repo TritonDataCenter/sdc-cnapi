@@ -17,7 +17,7 @@
     "nodeunit": "0.7.4",
     "nedb": "git://github.com/louischatriot/nedb.git#ccc766ca2a0cace2ca339a6ac153772a7b51edd9",
     "restify-validator": "0.3.0",
-    "restify": "git://github.com/mcavage/node-restify.git#de1fc77",
+    "restify": "2.5.1",
     "sdc-clients": "git+ssh://git@git.joyent.com:node-sdc-clients.git#980a466f5ce66fa20bcbb7fedf0c65921db9f1ed",
     "sprintf": "0.1.1",
     "task_agent": "git+ssh://git@git.joyent.com:task_agent.git#78b13e0f6badfaa9ad9a65b2b7b40a491f09c134",
