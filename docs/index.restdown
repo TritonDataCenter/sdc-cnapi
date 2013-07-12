@@ -429,6 +429,22 @@ Query the server for the VM's details.
 ||404||Object||No such VM||
 ||404||Object||No such server||
 
+## VmInfo (GET /servers/:server\_uuid/vms/:uuid/info)
+
+Retrieve QEMU information about the running KVM machine.
+
+### Inputs
+||**Param**||**Type**||**Description**||
+||types||String||Comma separated types of information to retrieve. See ``man vmadm(1m) -- info section`` for available types (default: all)
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||202||None||Info retrieved from server||
+||404||Error||No such VM||
+||404||Error||No such server||
+||500||Error||Error retrieving information from VM||
+
 ## VmUpdate (POST /servers/:server\_uuid/vms/:uuid/update)
 
 Modify the system parameters of the VM identified by `:uuid` on server with
