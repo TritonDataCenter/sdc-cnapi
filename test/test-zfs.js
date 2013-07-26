@@ -24,6 +24,7 @@ var snapshotName = 'snappy';
 
 function setup(callback) {
     client = restify.createJsonClient({
+        agent: false,
         url: CNAPI_URL
     });
     client.basicAuth('admin', 'joypass123');
