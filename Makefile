@@ -70,7 +70,7 @@ release: all deps docs $(SMF_MANIFESTS)
 	cp -r   $(ROOT)/build \
 		$(ROOT)/bin \
 		$(ROOT)/config \
-		$(ROOT)/describe: \
+		$(ROOT)/describe \
 		$(ROOT)/lib \
 		$(ROOT)/Makefile \
 		$(ROOT)/node_modules \
