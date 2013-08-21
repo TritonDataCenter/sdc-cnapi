@@ -66,7 +66,7 @@ release: all deps docs $(SMF_MANIFESTS)
 	@mkdir -p $(TMPDIR)/site
 	@touch $(TMPDIR)/site/.do-not-delete-me
 	cd $(ROOT) && $(NPM) install
-	(git symbolic-ref HEAD | awk -F/ '{print $3}') > $(ROOT)/describe
+	(git symbolic-ref HEAD | awk -F/ '{print $$3}' && git describe) > $(ROOT)/describe
 	cp -r   $(ROOT)/build \
 		$(ROOT)/bin \
 		$(ROOT)/config \
