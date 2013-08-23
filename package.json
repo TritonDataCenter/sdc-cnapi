@@ -1,7 +1,7 @@
 {
   "name": "cnapi",
   "description": "SmartDataCenter Compute Node API",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
@@ -10,7 +10,7 @@
     "async": "0.1.18",
     "bunyan": "0.21.3",
     "filed": "0.0.5",
-    "moray": "git+ssh://git@git.joyent.com:node-moray.git#6248cbe",
+    "moray": "git+ssh://git@git.joyent.com:node-moray.git#74af2a4630bd9ddf51d95b17319067b80675054e",
     "memwatch": "git://github.com/lloyd/node-memwatch.git#475ce024a53c74ad5baff27003b81499896e81a5",
     "node-uuid": "1.2.0",
     "deep-equal": "git://github.com/substack/node-deep-equal.git#b2cfeb95da6982f8bc2e676231820a3a47385db3",
