@@ -4,8 +4,8 @@ apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remot
 markdown2extras: wiki-tables, code-friendly
 ---
 
-version: 1.0.0
-date: Wed Jun 26 2013 23:17:59 GMT+0000 (UTC)
+version: 1.0.2
+date: Fri Aug 23 2013 08:44:44 GMT+0000 (UTC)
 
 # Who
 
@@ -256,7 +256,6 @@ Set the value of a Server's attribute.
 ||reservation_ratio||Number||The reservation ratio||
 ||overprovision_ratios||Object||The overprovisioning ratios. Must be an object with Number value keys and keys must be one of 'cpu', 'ram', 'disk', 'io', 'net'.||
 ||serial||String||Serial device||
-||serial_speed||Number||Serial speed value||
 ||setup||Boolean||True if server has been set up||
 ||setting_up||Boolean||True if server is in the process of setting up||
 ||transitional_status||String||The fallback status if not 'running'. For example, if the server has to reboot, this value may be set to 'rebooting'.||
@@ -429,21 +428,39 @@ Query the server for the VM's details.
 ||404||Object||No such VM||
 ||404||Object||No such server||
 
-## VmInfo (GET /servers/:server\_uuid/vms/:uuid/info)
+## VmInfo (GET /servers/:server_uuid/vms/:uuid/info)
 
-Retrieve QEMU information about the running KVM machine.
+Query the server for the VM's `vmadm info` output.
+
 
 ### Inputs
-||**Param**||**Type**||**Description**||
-||types||String||Comma separated types of information to retrieve. See ``man vmadm(1m) -- info section`` for available types (default: all)
+
+_None_
+
 
 ### Responses
 
 ||*Code*||*Type*||*Description*||
-||202||None||Info retrieved from server||
-||404||Error||No such VM||
-||404||Error||No such server||
-||500||Error||Error retrieving information from VM||
+||200||Object||Request succeeded||
+||404||Object||No such VM||
+||404||Object||No such server||
+
+## VmInfo (GET /servers/:server_uuid/vms/:uuid/vnc)
+
+Query the server for the VM's VNC host and port.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Object||Request succeeded||
+||404||Object||No such VM||
+||404||Object||No such server||
 
 ## VmUpdate (POST /servers/:server\_uuid/vms/:uuid/update)
 
