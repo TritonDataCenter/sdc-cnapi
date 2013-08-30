@@ -7,3 +7,6 @@
 [submodule "deps/restdown"]
 	path = deps/restdown
 	url = git://github.com/trentm/restdown.git
+[submodule "deps/sdc-scripts"]
+	path = deps/sdc-scripts
+	url = git@git.joyent.com:sdc-scripts.git
