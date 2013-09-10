@@ -326,7 +326,9 @@ function testRebootServer(test) {
                         {
                             cnapi_url: 'http://10.99.99.18',
                             server_uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
-                            target: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58'
+                            target: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
+                            creator_uuid: undefined,
+                            origin: undefined
                         }
                     ]
                 ]);
