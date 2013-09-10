@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.2
-date: Fri Aug 23 2013 08:44:44 GMT+0000 (UTC)
+date: Sun Sep 01 2013 02:40:13 GMT+0000 (UTC)
 
 # Who
 
@@ -349,6 +349,23 @@ _None_
 
 ||*Code*||*Type*||*Description*||
 ||204||None||Server was deleted successfully||
+||500||Error||Could not process request||
+
+## ServerTaskHistory (GET /servers/:server_uuid/task-history)
+
+Return details of all provisioner tasks run on the compute node since
+provisioner was started.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||None||Tasks returned successfully||
 ||500||Error||Could not process request||
 
 
