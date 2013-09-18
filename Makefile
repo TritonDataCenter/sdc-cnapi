@@ -60,7 +60,7 @@ test: $(NODEUNIT)
 
 
 .PHONY: release
-release: all deps docs $(SMF_MANIFESTS)
+release: all deps docs regen_docs $(SMF_MANIFESTS)
 	@echo "Building $(RELEASE_TARBALL)"
 	@mkdir -p $(TMPDIR)/root/opt/smartdc/cnapi
 	@mkdir -p $(TMPDIR)/site
