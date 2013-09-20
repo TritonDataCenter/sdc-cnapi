@@ -52,6 +52,7 @@ TMPDIR          := /tmp/$(STAMP)
 .PHONY: all
 all: | $(NPM_EXEC) sdc-scripts
 	$(NPM) rebuild
+	cd $(ROOT) && $(NPM) install
 
 .PHONY: test
 test: $(NODEUNIT)
@@ -60,12 +61,11 @@ test: $(NODEUNIT)
 
 
 .PHONY: release
-release: all deps docs regen_docs $(SMF_MANIFESTS)
+release: all deps docs $(SMF_MANIFESTS)
 	@echo "Building $(RELEASE_TARBALL)"
 	@mkdir -p $(TMPDIR)/root/opt/smartdc/cnapi
 	@mkdir -p $(TMPDIR)/site
 	@touch $(TMPDIR)/site/.do-not-delete-me
-	cd $(ROOT) && $(NPM) install
 	(git symbolic-ref HEAD | awk -F/ '{print $$3}' && git describe) > $(ROOT)/describe
 	cp -r   $(ROOT)/build \
 		$(ROOT)/bin \
