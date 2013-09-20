@@ -10,6 +10,7 @@
     "async": "0.1.18",
     "bunyan": "0.21.3",
     "filed": "0.0.5",
+    "dox": "0.4.1",
     "moray": "git+ssh://git@git.joyent.com:node-moray.git#74af2a4630bd9ddf51d95b17319067b80675054e",
     "memwatch": "git://github.com/lloyd/node-memwatch.git#475ce024a53c74ad5baff27003b81499896e81a5",
     "node-uuid": "1.2.0",
@@ -26,7 +27,6 @@
     "wf-shared": "git+ssh://git@git.joyent.com:wf-shared.git#1e72d9e"
   },
   "devDependencies": {
-    "dox": "0.4.1",
     "ejs": "0.8.3",
     "file": "0.2.1"
   }
