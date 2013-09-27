@@ -4,8 +4,8 @@ apisections: Boot Parameters, Ping, Platforms, Servers, Provisioner Tasks, Remot
 markdown2extras: wiki-tables, code-friendly
 ---
 
-version: 1.0.2
-date: Wed Sep 18 2013 06:19:08 GMT+0000 (UTC)
+version: 1.0.4
+date: Fri Sep 27 2013 20:53:56 GMT+0000 (UTC)
 
 # Who
 
@@ -214,6 +214,8 @@ Returns Servers present in datacenter.
 ||uuids||String||Comma seperated list of UUIDs to look up||
 ||setup||Boolean||Return only setup servers||
 ||headnode||Boolean||Return only headnodes||
+||reserved||Boolean||Return only reserved servers||
+||reservoir||Boolean||Return only reservoir servers||
 ||hostname||String||Return machine with given hostname||
 ||extras||String||Comma seperated values: vms, memory, sysinfo||
 ||limit||Number||Maximum number of results to show||
@@ -253,6 +255,7 @@ Set the value of a Server's attribute.
 ||rack_identifier||String||The id of the server's rack||
 ||comments||String||Any comments about the server||
 ||reserved||Boolean||Server is available for provisioning||
+||reservoir||Boolean||Server should be considered last for provisioning||
 ||reservation_ratio||Number||The reservation ratio||
 ||overprovision_ratios||Object||The overprovisioning ratios. Must be an object with Number value keys and keys must be one of 'cpu', 'ram', 'disk', 'io', 'net'.||
 ||serial||String||Serial device||
