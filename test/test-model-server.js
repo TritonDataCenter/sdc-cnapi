@@ -273,21 +273,15 @@ function testDeleteServer(test) {
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
         ModelServer.init(app);
-        ModelServer.cache = new mock.MockCache();
 
         var server = new ModelServer(uuids[0]);
-
-        ModelServer.cache.when('remove', [null]);
 
         server.del(function (delError) {
             test.equal(delError, null, 'should not encounter an error');
 
-            test.deepEqual(
-                ModelServer.cache.history,
-                [ [ 'remove',
-                    { uuid: uuids[0] }
-                  ]
-                ], 'cache history');
+            test.equal(
+                ModelServer.scache[uuids[0]],
+                undefined, 'cache history');
             test.done();
         });
     });
