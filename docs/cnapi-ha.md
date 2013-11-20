@@ -14,7 +14,7 @@ faults.
 
 # Mechanics
 
-Reference: https://mo.joyent.com/cnapi/raw/master/docs/cnapi-ha.png
+<img src="https://mo.joyent.com/cnapi/raw/master/docs/cnapi-ha.png" />
 
 
 When any CNAPI instance starts up, it will connect to the `ur.cnapi` queue. It
