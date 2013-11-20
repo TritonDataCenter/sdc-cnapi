@@ -1,15 +1,15 @@
 # CNAPI High Availability
 
-In the face of disaster, it is advantageous to have redundant instances should
-the situation arise where a critical service experiences a problem. Running
-multiple instances of a service accross different physical servers limits the
-possible risk should one of those servers experience software, hardware or
-network faults.
-
 CNAPI occupies an critical position within the hiearchy of the SDC service
 stack, and as such, losing either the service, or the server (the headnode) it
 resides on would be devastating to the state of the datacentre. Therefore, being
 able to run multiple instances of CNAPI is of the utmost importance.
+
+Should the situation arise where a critical service experiences a problem, it
+is advantageous to have redundant instances to fail-over onto. Running multiple
+instances of a service accross different physical servers limits the possible
+risk should one of those servers experience software, hardware or network
+faults.
 
 
 # Mechanics
