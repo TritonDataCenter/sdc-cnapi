@@ -44,7 +44,7 @@ include ./tools/mk/Makefile.smf.defs
 
 ROOT            := $(shell pwd)
 RELEASE_TARBALL := cnapi-pkg-$(STAMP).tar.bz2
-TMPDIR          := /tmp/$(STAMP)
+RELSTAGEDIR          := /tmp/$(STAMP)
 
 #
 # Repo-specific targets
@@ -63,9 +63,9 @@ test: $(NODEUNIT)
 .PHONY: release
 release: all deps docs $(SMF_MANIFESTS)
 	@echo "Building $(RELEASE_TARBALL)"
-	@mkdir -p $(TMPDIR)/root/opt/smartdc/cnapi
-	@mkdir -p $(TMPDIR)/site
-	@touch $(TMPDIR)/site/.do-not-delete-me
+	@mkdir -p $(RELSTAGEDIR)/root/opt/smartdc/cnapi
+	@mkdir -p $(RELSTAGEDIR)/site
+	@touch $(RELSTAGEDIR)/site/.do-not-delete-me
 	(git symbolic-ref HEAD | awk -F/ '{print $$3}' && git describe) > $(ROOT)/describe
 	cp -r   $(ROOT)/build \
 		$(ROOT)/bin \
@@ -80,12 +80,12 @@ release: all deps docs $(SMF_MANIFESTS)
 		$(ROOT)/test \
 		$(ROOT)/share \
 		$(ROOT)/tools \
-		$(TMPDIR)/root/opt/smartdc/cnapi/
-	mkdir -p $(TMPDIR)/root/opt/smartdc/boot
-	cp -R $(ROOT)/deps/sdc-scripts/* $(TMPDIR)/root/opt/smartdc/boot/
-	cp -R $(ROOT)/boot/* $(TMPDIR)/root/opt/smartdc/boot/
-	(cd $(TMPDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
-	@rm -rf $(TMPDIR)
+		$(RELSTAGEDIR)/root/opt/smartdc/cnapi/
+	mkdir -p $(RELSTAGEDIR)/root/opt/smartdc/boot
+	cp -R $(ROOT)/deps/sdc-scripts/* $(RELSTAGEDIR)/root/opt/smartdc/boot/
+	cp -R $(ROOT)/boot/* $(RELSTAGEDIR)/root/opt/smartdc/boot/
+	(cd $(RELSTAGEDIR) && $(TAR) -jcf $(ROOT)/$(RELEASE_TARBALL) root site)
+	@rm -rf $(RELSTAGEDIR)
 
 regen_docs:
 	$(NODE) ./tools/gendocs.js lib/endpoints > docs/index.restdown
