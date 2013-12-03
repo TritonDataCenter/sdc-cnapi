@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# Rsync the master in this working copy to the install on the given HN.
+#
+
+#set -o xtrace
+set -o errexit
+
+TOP=$(cd $(dirname $0)/../; pwd)
+NODE=$1
+ROLE=cnapi
+
+if [[ -z "$ZONE" ]]; then
+    ZONE=$(ssh $NODE "/opt/smartdc/bin/sdc-vmapi /vms" 2>/dev/null \
+        | json -H -c "this.tags && this.tags.smartdc_role === '$ROLE'" \
+            -c 'this.state === "running"' 0.uuid)
+fi
+echo "ZONE: $ZONE"
+
+extraOpts=
+if [[ $(uname -s) != "SunOS" ]]; then
+    extraOpts="--exclude *.node --exclude build"
+else
+    # Clean node_modules everytime.
+    ssh $NODE rm -rf /zones/$ZONE/root/opt/smartdc/$ROLE/node_modules
+fi
+
+rsync -av ${TOP}/ \
+    $NODE:/zones/$ZONE/root/opt/smartdc/$ROLE/ \
+    $extraOpts \
+    --exclude .git/ \
+    --exclude /config/config.json \
+    --exclude /deps/ \
+    --exclude /docs/ \
+    --exclude /scripts/ \
+    --exclude /boot/ \
+    --exclude /tools/ \
+    --exclude /tmp/
+
+state=$(ssh ${NODE} svcs -z ${ZONE} -H -o state $ROLE)
+if [[ "$state" == "maintenance" ]]; then
+    ssh ${NODE} svcadm -z ${ZONE} clear $ROLE
+else
+    ssh ${NODE} svcadm -z ${ZONE} restart $ROLE
+fi
+ssh ${NODE} svcadm -z ${ZONE} restart config-agent
