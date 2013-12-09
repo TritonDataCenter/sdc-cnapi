@@ -17,7 +17,7 @@
     "deep-equal": "git://github.com/substack/node-deep-equal.git#b2cfeb95da6982f8bc2e676231820a3a47385db3",
     "nodeunit": "0.7.4",
     "restify-validator": "0.3.0",
-    "restify": "git://github.com/mcavage/node-restify.git#9b07786060c240fcb1592289886d21d1f04c99c1",
+    "restify": "git+ssh://git@github.com:mcavage/node-restify.git#0d7b4bafc747f249ce900b507665b220fb0b0e65",
     "sdc-clients": "git+ssh://git@git.joyent.com:node-sdc-clients.git#980a466f5ce66fa20bcbb7fedf0c65921db9f1ed",
     "sprintf": "0.1.1",
     "task_agent": "git+ssh://git@git.joyent.com:task_agent.git#78b13e0f6badfaa9ad9a65b2b7b40a491f09c134",
