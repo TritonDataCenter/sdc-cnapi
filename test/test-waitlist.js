@@ -1,0 +1,234 @@
+/*
+ * Copyright (c) 2012, Joyent, Inc. All rights reserved.
+ *
+ * zfs.test.js: Tests for ZFS endpoints
+ */
+
+var Logger = require('bunyan');
+var restify = require('restify');
+
+var async = require('async');
+var cp = require('child_process');
+var fs = require('fs');
+var http = require('http');
+var path = require('path');
+var uuid = require('node-uuid');
+var sprintf = require('sprintf').sprintf;
+
+var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
+var client;
+
+var wlurl;
+var serveruuid;
+
+var dataset = 'zones/' + uuid.v4();
+var snapshotName = 'snappy';
+var ticketuuid;
+
+function setup(callback) {
+    client = restify.createJsonClient({
+        agent: false,
+        url: CNAPI_URL
+    });
+    client.basicAuth('admin', 'joypass123');
+
+    if (!wlurl) {
+        client.get('/servers?headnode=true', function (err, req, res, servers) {
+            wlurl = '/servers/' + servers[0].uuid + '/waitlist';
+            serveruuid = servers[0].uuid;
+            callback();
+        });
+    } else {
+        callback();
+    }
+}
+
+
+function teardown(callback) {
+    callback();
+}
+
+
+function testDeleteAllWaitlistTickets(test) {
+    test.expect(9);
+
+    async.waterfall([
+        function (wfcb) {
+            client.del(wlurl + '?force=true', delcb);
+
+            function delcb(err, req, res) {
+                test.deepEqual(err, null);
+                test.equal(res.statusCode, 204,
+                           'POST waitlist ticket returned 204');
+                test.ok(res, 'got a response');
+                wfcb();
+            }
+        },
+        function (wfcb) {
+            client.get(wlurl, function (err, req, res, waitlist) {
+                test.equal(err, null, 'valid response from GET /servers');
+                test.ok(res, 'got a response');
+                test.equal(res.statusCode, 200, 'GET waitlist returned 200');
+                test.ok(waitlist);
+                test.deepEqual(waitlist, []);
+                wfcb();
+            });
+        }
+    ],
+    function (error) {
+        test.ok(!error);
+        test.done();
+    });
+}
+
+
+function testCreateTicket(test) {
+    test.expect(48);
+
+    var ticketPayload = {
+        scope: 'test',
+        id: '123',
+        expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString()
+    };
+
+    var ticketPayload2 = {
+        scope: 'test',
+        id: '234',
+        expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString()
+    };
+
+    var ticketPayloads = [
+        ticketPayload,
+        ticketPayload,
+        ticketPayload2
+    ];
+
+    var ticketuuids = [];
+
+    async.waterfall([
+        function (wfcb) {
+            // Create the tickets from payload given in ticketPayloads
+            async.forEachSeries(ticketPayloads, onTicketPayload, wfcb);
+
+            function onTicketPayload(tp, fecb) {
+                client.post(wlurl, tp, function (err, req, res, ticket) {
+                    test.deepEqual(err, null);
+                    test.equal(res.statusCode, 202,
+                               'POST waitlist ticket returned 202');
+                    test.ok(res, 'got a response');
+                    test.ok(ticket, 'got an ticket');
+                    test.ok(ticket.uuid, 'got a ticket uuid');
+
+                    ticketuuids.push(ticket.uuid);
+                    ticketuuid = ticket.uuid;
+                    fecb();
+                });
+            }
+        },
+        function (wfcb) {
+            // Test getting a single waitlist ticket
+            var ticketurl = sprintf('%s/%s', wlurl, ticketuuid);
+            client.get(ticketurl, getcb);
+
+            function getcb(err, req, res, ticket) {
+                test.deepEqual(err, null);
+                test.ok(res, 'got a response');
+                test.equal(res.statusCode, 200,
+                    'GET waitlist ticket returned 200');
+
+                test.ok(ticket);
+                test.equal(ticket.scope, ticketPayload2.scope);
+                test.equal(ticket.server_uuid, serveruuid);
+                test.equal(ticket.expires_at, ticketPayload2.expires_at);
+                test.equal(ticket.server_uuid, serveruuid);
+                test.equal(ticket.id, ticketPayload2.id);
+
+                wfcb();
+            }
+        },
+        function (wfcb) {
+            // Test listing all waitlist tickets on a server
+            client.get(wlurl, function (err, req, res, waitlist) {
+                test.equal(err, null, 'valid response from GET /servers');
+                test.ok(res, 'got a response');
+                test.equal(res.statusCode, 200, 'GET waitlist returned 200');
+
+                test.ok(waitlist);
+                test.equal(waitlist.length, 3);
+
+                test.equal(waitlist[0].scope, ticketPayload.scope);
+                test.equal(waitlist[0].server_uuid, serveruuid);
+                test.equal(waitlist[0].expires_at, ticketPayload.expires_at);
+                test.equal(waitlist[0].server_uuid, serveruuid);
+                test.equal(waitlist[0].id, ticketPayload.id);
+                test.equal(waitlist[0].status, 'queued');
+
+                test.equal(waitlist[1].scope, ticketPayload.scope);
+                test.equal(waitlist[1].server_uuid, serveruuid);
+                test.equal(waitlist[1].expires_at, ticketPayload.expires_at);
+                test.equal(waitlist[1].server_uuid, serveruuid);
+                test.equal(waitlist[1].id, ticketPayload.id);
+                test.equal(waitlist[1].status, 'queued');
+
+                test.equal(waitlist[2].scope, ticketPayload2.scope);
+                test.equal(waitlist[2].server_uuid, serveruuid);
+                test.equal(waitlist[2].expires_at, ticketPayload2.expires_at);
+                test.equal(waitlist[2].server_uuid, serveruuid);
+                test.equal(waitlist[2].id, ticketPayload2.id);
+                test.equal(waitlist[2].status, 'queued');
+
+                wfcb();
+            });
+        }
+    ],
+    function (error) {
+        test.equal(error, null, 'No errors received');
+        test.done();
+    });
+}
+
+
+function testUpdateTicket(test) {
+    test.expect(4);
+
+//     var date;
+    var ticketurl = sprintf('%s/%s', wlurl, ticketuuid);
+
+    async.waterfall([
+        function (wfcb) {
+            client.get(ticketurl, function (err, req, res, ticket) {
+                test.equal(err, null, 'valid response from GET /servers');
+                test.ok(res, 'got a response');
+                test.equal(res.statusCode, 200, 'GET waitlist returned 200');
+                test.ok(ticket);
+                wfcb();
+            });
+        },
+        function (wfcb) {
+//             client.post(ticketurl, function (err, req, res, ticket) {
+//                 test.equal(err, null, 'valid response from GET /servers');
+//                 test.ok(res, 'got a response');
+//                 test.equal(res.statusCode, 200, 'GET waitlist returned 200');
+//                 test.ok(waitlist);
+//                 date = wa
+//                 test.done();
+//             });
+            wfcb();
+        },
+        function (wfcb) {
+            wfcb();
+        }
+    ],
+    function (error) {
+        test.done();
+    });
+}
+
+
+module.exports = {
+    setUp: setup,
+    tearDown: teardown,
+    'delete all tickets': testDeleteAllWaitlistTickets,
+    'create tickets then get one or many': testCreateTicket
+//    'create ticket and update status': testUpdateTicket
+};
