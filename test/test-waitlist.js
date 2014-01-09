@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2012, Joyent, Inc. All rights reserved.
  *
- * zfs.test.js: Tests for ZFS endpoints
+ * test-waitlist.js: Tests for ZFS endpoints
  */
 
 var Logger = require('bunyan');
