@@ -210,29 +210,29 @@ function testCreateWaitReleaseTicket(test) {
     };
 
     var ticket;
-//     var ticket2;
+    var ticket2;
 
     async.waterfall([
         function (wfcb) {
-            client.post(wlurl, ticketPayload, function (err, req, res, ticket) {
+            client.post(wlurl, ticketPayload, function (err, req, res, t) {
                 test.deepEqual(err, null);
-                test.equal(res.statusCode, 202,
-                           'POST waitlist ticket returned 202');
+                test.equal(
+                    res.statusCode, 202, 'POST waitlist ticket returned 202');
                 test.ok(res, 'got a response');
-                test.ok(ticket, 'got an ticket');
-                test.ok(ticket.uuid, 'got a ticket uuid');
+                test.ok(t, 'got an ticket');
+                test.ok(t.uuid, 'got a ticket uuid');
 
                 wfcb();
             });
         },
         function (wfcb) {
-            client.post(wlurl, ticketPayload2, function (err, req, res, ticket) {
+            client.post(wlurl, ticketPayload2, function (err, req, res, t) {
                 test.deepEqual(err, null);
-                test.equal(res.statusCode, 202,
-                           'POST waitlist ticket returned 202');
+                test.equal(
+                    res.statusCode, 202, 'POST waitlist ticket returned 202');
                 test.ok(res, 'got a response');
-                test.ok(ticket, 'got an ticket');
-                test.ok(ticket.uuid, 'got a ticket uuid');
+                test.ok(t, 'got an ticket');
+                test.ok(t.uuid, 'got a ticket uuid');
 
                 wfcb();
             });
@@ -253,7 +253,7 @@ function testCreateWaitReleaseTicket(test) {
                 ticket2 = waitlist[2];
 
                 test.deepEqual(ticket.status, 'active');
-//                 test.deepEqual(ticket2.status, 'queued');
+                test.deepEqual(ticket2.status, 'queued');
 
                 test.ok(ticket);
 
