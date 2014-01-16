@@ -33,7 +33,7 @@ function setup(callback) {
 
     if (!wlurl) {
         client.get('/servers?headnode=true', function (err, req, res, servers) {
-            wlurl = '/servers/' + servers[0].uuid + '/waitlist';
+            wlurl = '/servers/' + servers[0].uuid + '/tickets';
             serveruuid = servers[0].uuid;
 
             deleteAllTickets(callback);

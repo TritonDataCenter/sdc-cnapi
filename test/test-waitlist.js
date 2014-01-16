@@ -21,8 +21,6 @@ var client;
 var wlurl;
 var serveruuid;
 
-var dataset = 'zones/' + uuid.v4();
-var snapshotName = 'snappy';
 var ticketuuid;
 
 function setup(callback) {
@@ -34,7 +32,7 @@ function setup(callback) {
 
     if (!wlurl) {
         client.get('/servers?headnode=true', function (err, req, res, servers) {
-            wlurl = '/servers/' + servers[0].uuid + '/waitlist';
+            wlurl = '/servers/' + servers[0].uuid + '/tickets';
             serveruuid = servers[0].uuid;
 
             deleteAllTickets(callback);
@@ -124,7 +122,7 @@ function testCreateTicket(test) {
         },
         function (wfcb) {
             // Test getting a single waitlist ticket
-            var ticketurl = sprintf('%s/%s', wlurl, ticketuuid);
+            var ticketurl = sprintf('/tickets/%s', ticketuuid);
             client.get(ticketurl, getcb);
 
             function getcb(err, req, res, ticket) {

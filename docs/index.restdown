@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.5
-date: Fri Nov 29 2013 22:59:26 GMT+0000 (UTC)
+date: Thu Jan 16 2014 09:30:10 GMT+0000 (UTC)
 
 # Who
 
@@ -717,7 +717,8 @@ Create a VM image.
 ||jobid||String||Create a new virtual machine on the given server||
 ||compression||String||Compression to use for creating image||
 ||imgapi_url||String||Location of imgapi||
-||incremental||Boolean||Make this an incremental image?||
+||incremental||Boolean||Make this an incremental image? Optional.||
+||prepare_image_script||String||A script run in a reboot of the VM||
 ||manifest||Object||Image manifest object. Require at least &quot;uuid&quot;,||
 
 
@@ -731,7 +732,7 @@ Create a VM image.
 
 # Waitlist
 
-## ServerWaitlistList (GET /servers/:server_uuid/waitlist)
+## ServerWaitlistList (GET /servers/:server_uuid/tickets)
 
 Returns all waitlist tickets currently active on a server.
 
@@ -745,6 +746,107 @@ _None_
 
 ||*Code*||*Type*||*Description*||
 ||200||Array||Waitlist returned successfully||
+||500||Error||Could not process request||
+
+## ServerWaitlistTicketCreate (POST /servers/:server_uuid/tickets)
+
+Create a new waitlist ticket.
+
+
+### Inputs
+
+||**Param**||**Type**||**Description**||
+||scope||String||Limit the ticket to the given scope||
+||id||String||The id of the resource of type 'scope'||
+||expires_at||String||ISO 8601 date string when ticket will expire||
+||action||String||Description of acting to be undertaken||
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||202||Array||Waitlist ticket created successfully||
+||500||Error||Could not process request||
+
+## ServerWaitlistGetTicket (POST /tickets/:ticket_uuid)
+
+Retrieve a waitlist ticket.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||200||Array||Waitlist ticket returned successfully||
+||500||Error||Could not process request||
+
+## ServerWaitlistDeleteTicket (DELETE /tickets/:ticket_uuid)
+
+Delete a waitlist ticket.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||Array||Waitlist ticket deleted successfully||
+||500||Error||Could not process request||
+
+## ServerWaitlistTicketsDeleteAll (DELETE /servers/:server_uuid/tickets)
+
+Delete all of a server's waitlist tickets.
+
+
+### Inputs
+
+||**Param**||**Type**||**Description**||
+||force||Boolean||Must be set to 'true' for delete to succeed||
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||Array||Waitlist ticket deleted successfully||
+||500||Error||Could not process request||
+
+## ServerWaitlistTicketsWait (GET /tickets/:ticket_uuid/wait)
+
+Wait until a waitlist ticket either expires or becomes active.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||Array||Ticket active or expired||
+||500||Error||Could not process request||
+
+## ServerWaitlistTicketsWait (GET /tickets/:ticket_uuid/release)
+
+Release a currently active or queued waitlist ticket.
+
+
+### Inputs
+
+_None_
+
+
+### Responses
+
+||*Code*||*Type*||*Description*||
+||204||Array||Ticket released successfully||
 ||500||Error||Could not process request||
 
 
