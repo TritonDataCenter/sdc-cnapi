@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.5
-date: Thu Jan 16 2014 09:30:10 GMT+0000 (UTC)
+date: Mon Jan 20 2014 17:32:29 GMT+0000 (UTC)
 
 # Who
 
@@ -74,6 +74,7 @@ payload. Any values not present in the payload will effectively be deleted.
 ||**Param**||**Type**||**Description**||
 ||platform||String||The platform image to use on next boot||
 ||kernel_args||Object||Key value pairs to be sent to server on boot||
+||kernel_flags||Object||Kernel flags to be sent to server on boot||
 
 
 ### Responses
@@ -94,6 +95,7 @@ passed in, the currently effective value will remain unchanged.
 
 ||**Param**||**Type**||**Description**||
 ||kernel_args||Object||Boot parms to update||
+||kernel_flags||Object||Kernel flags to update||
 ||platform||String||Set platform as the bootable platform||
 
 
@@ -135,6 +137,7 @@ effectively deleted when the new object replaces the old.
 
 ||**Param**||**Type**||**Description**||
 ||kernel_args||Object||Boot parms to update||
+||kernel_values||Object||Kernel flags to update||
 ||platform||String||Set platform as the bootable platform||
 
 

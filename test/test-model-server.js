@@ -386,6 +386,11 @@ function testSetBootParameters(test) {
         backslash: 'fruit\\cake'
     };
 
+    var newKernelArgs = {
+        '-k': true,
+        '-m': 'milestone=none'
+    };
+
     var expSearchResults = {
         uuid: uuid,
         boot_params: {},
@@ -417,6 +422,7 @@ function testSetBootParameters(test) {
         function (callback) {
             server.setBootParams(
                 {
+                    kernel_flags: newKernelArgs,
                     boot_params: newBootParameters,
                     boot_platform: 'newer',
                     default_console: 'vga',
@@ -441,7 +447,11 @@ function testSetBootParameters(test) {
                                 hostname: 'testbox',
                                 sysinfo: { 'setup': true },
                                 default_console: 'vga',
-                                serial: 'ttya'
+                                serial: 'ttya',
+                                kernel_flags: {
+                                    '-k': true,
+                                    '-m': 'milestone=none'
+                                }
                             }
                         ],
                         'moray command history');
@@ -496,6 +506,7 @@ function testSetBootParameters(test) {
     });
 }
 
+
 function testUpdateBootParameters(test) {
     test.expect(5);
 
@@ -513,9 +524,21 @@ function testUpdateBootParameters(test) {
         updated: 'shazbot'
     };
 
+    var kernelArgs = {
+        '-k': null,
+        '-m': 'foo=bar',
+        '-n': 'new'
+    };
+
+    var updatedKernelArgs = {
+        '-m': 'foo=bar',
+        '-n': 'new'
+    };
+
     var expSearchResults = {
         uuid: uuid,
         boot_params: { 'original': 'value' },
+        kernel_flags: { '-k': 'value', '-m': 'milestone=none' },
         setup: true,
         boot_platform: '123Z',
         hostname: 'testbox',
@@ -542,6 +565,7 @@ function testUpdateBootParameters(test) {
         function (callback) {
             server.updateBootParams(
                 {
+                    kernel_flags: kernelArgs,
                     boot_params: update,
                     boot_platform: 'newer'
                 },
@@ -560,6 +584,8 @@ function testUpdateBootParameters(test) {
                             {
                                 uuid: uuid,
                                 boot_params: updatedBootParams,
+                                kernel_flags: updatedKernelArgs,
+
                                 setup: true,
                                 boot_platform: 'newer',
                                 hostname: 'testbox',
