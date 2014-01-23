@@ -444,6 +444,7 @@ function testSetBootParameters(test) {
                                 boot_params: newBootParameters,
                                 setup: true,
                                 boot_platform: 'newer',
+                                boot_modules: [],
                                 hostname: 'testbox',
                                 sysinfo: { 'setup': true },
                                 default_console: 'vga',
@@ -467,7 +468,9 @@ function testSetBootParameters(test) {
                 hostname: 'testbox',
                 sysinfo: { 'setup': true },
                 default_console: 'serial',
-                serial: 'ttyb'
+                serial: 'ttyb',
+                boot_modules: [],
+                kernel_flags: {}
             };
 
             moray.client.when('getObject', [], { value: expSearchResults });
@@ -493,6 +496,8 @@ function testSetBootParameters(test) {
                             commas: 'fee,fi,fo,fum',
                             backslash: 'fruit\\cake'
                         },
+                        boot_modules: [],
+                        kernel_flags: {},
                         default_console: 'serial',
                         serial: 'ttyb'
                     });
@@ -541,6 +546,7 @@ function testUpdateBootParameters(test) {
         kernel_flags: { '-k': 'value', '-m': 'milestone=none' },
         setup: true,
         boot_platform: '123Z',
+        boot_modules: [],
         hostname: 'testbox',
         sysinfo: { 'setup': true },
         default_console: 'serial',
@@ -567,6 +573,7 @@ function testUpdateBootParameters(test) {
                 {
                     kernel_flags: kernelArgs,
                     boot_params: update,
+                    boot_modules: [ {}, {} ],
                     boot_platform: 'newer'
                 },
                 function (modifyError) {
@@ -588,6 +595,7 @@ function testUpdateBootParameters(test) {
 
                                 setup: true,
                                 boot_platform: 'newer',
+                                boot_modules: [ {}, {} ],
                                 hostname: 'testbox',
                                 sysinfo: { 'setup': true },
                                 default_console: 'serial',
@@ -607,9 +615,11 @@ function testUpdateBootParameters(test) {
                 boot_params: updatedBootParams,
                 setup: true,
                 boot_platform: 'newer',
+                boot_modules: [ {}, {} ],
                 hostname: 'testbox',
                 sysinfo: { 'setup': true },
                 default_console: 'serial',
+                kernel_flags: updatedKernelArgs,
                 serial: 'ttyb'
             };
             server.getBootParams(function (getError, params) {
@@ -629,7 +639,9 @@ function testUpdateBootParameters(test) {
                             original: 'value',
                             updated: 'shazbot'
                         },
+                        kernel_flags: updatedKernelArgs,
                         default_console: 'serial',
+                        boot_modules: [ {}, {} ],
                         serial: 'ttyb'
                     });
 
