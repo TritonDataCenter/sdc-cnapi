@@ -135,7 +135,7 @@ function testExpireSingleTicket(test) {
 
 function testExpireSingleTicketStartNext(test) {
     var expireTimeSeconds = 3;
-    var expireTimeSeconds2 = 5;
+    var expireTimeSeconds2 = 6;
 
     var ticketPayload = {
         scope: 'test',
@@ -180,11 +180,11 @@ function testExpireSingleTicketStartNext(test) {
                 wfcb();
             });
         },
-        function (wfcb) {
-            setTimeout(function () {
-                wfcb();
-            }, 1000);
-        },
+//         function (wfcb) {
+//             setTimeout(function () {
+//                 wfcb();
+//             }, 1000);
+//         },
         function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
                 test.equal(err, null, 'valid response from GET /servers');
@@ -206,7 +206,7 @@ function testExpireSingleTicketStartNext(test) {
         function (wfcb) {
             setTimeout(function () {
                 wfcb();
-            }, (1+expireTimeSeconds) * 1000);
+            }, expireTimeSeconds * 1000);
         },
         function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
@@ -224,6 +224,8 @@ function testExpireSingleTicketStartNext(test) {
             });
         },
         function (wfcb) {
+            console.dir(ticket);
+            console.dir(ticket2);
             test.deepEqual(ticket.status, 'expired');
             test.deepEqual(ticket2.status, 'active');
             wfcb();
