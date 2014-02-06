@@ -1,11 +1,11 @@
 {
   "name": "cnapi",
   "description": "SmartDataCenter Compute Node API",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
-    "amqp": "git://github.com/postwait/node-amqp.git#7becb031a3517a22490addc46654e807bce5f37e",
+    "amqp": "git://github.com/postwait/node-amqp.git#2a5b1e9d2cd5838991ea378251f186c13ba79f97",
     "assert-plus": "0.1.2",
     "async": "0.1.18",
     "bunyan": "0.21.3",
