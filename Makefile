@@ -58,6 +58,7 @@ all: | $(NPM_EXEC) sdc-scripts
 test: $(NODEUNIT)
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-model-server.js
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-zfs.js
+	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-allocator.js
 
 
 .PHONY: release

@@ -33,5 +33,31 @@
 	},
 	"imgapi": {
 		"url": "http://{{{IMGAPI_SERVICE}}}"
+	},
+        "dapi": {
+		"allocationDescription": [
+			"pipe", "hard-filter-setup",
+			        "hard-filter-invalid-servers",
+			        "override-overprovisioning",
+			        "calculate-recent-vms",
+			        "calculate-server-unreserved",
+			        "calculate-locality",
+			        "hard-filter-reserved",
+			        "hard-filter-headnode",
+			        "hard-filter-running",
+			        "hard-filter-vlans",
+			        "hard-filter-platform-versions",
+			        "hard-filter-traits",
+			        "hard-filter-overprovision-ratios",
+			        ["or", ["pipe", "hard-filter-reservoir",
+			                        "hard-filter-min-ram",
+			                        "hard-filter-min-cpu"],
+			               ["pipe", "hard-filter-min-ram",
+			                        "hard-filter-min-cpu"]],
+			        ["or", "hard-filter-large-servers",
+			               "identity"],
+			        "soft-filter-locality-hints",
+			        "sort-min-ram",
+			        "pick-weighted-random"]
 	}
 }
