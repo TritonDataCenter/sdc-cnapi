@@ -89,16 +89,7 @@ function testMalformedVM(t) {
     var data = deepCopy(allocData);
     delete data.vm.vm_uuid;
 
-    client.post('/allocate', data, function (err, req, res, body) {
-        t.ok(err);
-        t.equal(err.statusCode, 409);
-
-        t.ok(body);
-        t.equal(body.code, 'InvalidArgument');
-        t.equal(body.message, '"vm.vm_uuid" is an invalid UUID');
-
-        t.done();
-    });
+    callAlloc(t, data, 'vm', '"vm.vm_uuid" is an invalid UUID');
 }
 
 
@@ -106,16 +97,7 @@ function testMalformedServerUuids(t) {
     var data = deepCopy(allocData);
     data.servers = ['b2e85bcb-6679-48bc-9ecb-8d8322b9d5d0', 'foo'];
 
-    client.post('/allocate', data, function (err, req, res, body) {
-        t.ok(err);
-        t.equal(err.statusCode, 409);
-
-        t.ok(body);
-        t.equal(body.code, 'InvalidArgument');
-        t.equal(body.message, 'invalid server UUID');
-
-        t.done();
-    });
+    callAlloc(t, data, 'servers', 'invalid server UUID');
 }
 
 
@@ -123,16 +105,7 @@ function testMissingTags(t) {
     var data = deepCopy(allocData);
     delete data.nic_tags;
 
-    client.post('/allocate', data, function (err, req, res, body) {
-        t.ok(err);
-        t.equal(err.statusCode, 409);
-
-        t.ok(body);
-        t.equal(body.code, 'MissingParameter');
-        t.equal(body.message, '"nic_tags" is required');
-
-        t.done();
-    });
+    callAlloc(t, data, 'nic_tags', 'value was not an array');
 }
 
 
@@ -140,16 +113,8 @@ function testMissingPkg(t) {
     var data = deepCopy(allocData);
     delete data.package;
 
-    client.post('/allocate', data, function (err, req, res, body) {
-        t.ok(err);
-        t.equal(err.statusCode, 409);
-
-        t.ok(body);
-        t.equal(body.code, 'MissingParameter');
-        t.equal(body.message, '"package" is required');
-
-        t.done();
-    });
+    var msg = 'value is not an object. (was: [object Undefined])';
+    callAlloc(t, data, 'package', msg);
 }
 
 
@@ -157,13 +122,25 @@ function testMissingImg(t) {
     var data = deepCopy(allocData);
     delete data.image;
 
+    var msg = 'value is not an object. (was: [object Undefined])';
+    callAlloc(t, data, 'image', msg);
+}
+
+
+function callAlloc(t, data, errField, errMsg) {
     client.post('/allocate', data, function (err, req, res, body) {
         t.ok(err);
-        t.equal(err.statusCode, 409);
+        t.equal(err.statusCode, 500);
 
-        t.ok(body);
-        t.equal(body.code, 'MissingParameter');
-        t.equal(body.message, '"image" is required');
+        var expected = {
+            code: 'InvalidParameters',
+            message: 'Request parameters failed validation',
+            errors: [ {
+                field: errField,
+                code: 'Invalid',
+                message: errMsg } ]
+        };
+        t.deepEqual(body, expected);
 
         t.done();
     });
