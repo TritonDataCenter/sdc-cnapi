@@ -30,11 +30,57 @@ When a compute node is started up from a shutdown state, regardless if it has
 been set up, it will broadcast a message containing the payload from the
 sysinfo utility. This broadcast message is picked up by CNAPI.
 
-# Setup
+
+# Interacting with CNAPI
+
+There are two ways of interacting with CNAPI. Indirectly: adminui, cloudapi,
+workflow, vmapi. Directly: sdc-cnapi/curl.
+
+
+The `sdc-cnapi` tool is a wrapper around curl with will fill in the host, port
+and auth details. It is present in the `sdc` zone on the headnode, but
+available to be run from the GZ.
+
+Use it as so:
+
+    sdc-cnapi /servers/5e4bafa8-9dfd-11e3-982d-a7dee2e79ac4 -X POST -d '{ "datacenter_name": "foo" }'
+
 
 # Heartbeats
 
+Compute nodes are populated with services, some of which connect to AMQP. One
+of these is the "heartbeater" agent, its responsibility is to periodically emit
+server and zone information to AMQP. CNAPI is connects to AMQP and listens for
+these heartbeat messages from all servers. It uses the periodic action of these
+heartbeats to determine whether a compute node is up.
+
+If a compute node is not setup (and therefore has no agents besides ur), CNAPI
+uses the frequency of the sysinfo messages sent by Ur.
+
+
 # Resetting to factory defaults
+
+To reset a compute node to its factory default state, `PUT` to the server's
+`factory-reset` endpoint:
+
+    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/factory-reset -X PUT
+    HTTP/1.1 202 Accepted
+    Content-Type: application/json
+    Content-Length: 51
+    Date: Tue, 25 Feb 2014 09:24:52 GMT
+    Server: Compute Node API
+    x-request-id: ae6426e0-9dfe-11e3-96ca-d3493bcec4fe
+    x-response-time: 28
+    x-server-name: a6b7ba97-deb7-44b1-85da-3d7ae328c710
+    Connection: keep-alive
+
+    {
+      "job_uuid": "4a664491-aa29-4d77-9fc2-592308d56922"
+    }
+
+The UUID of the factory reset job is returned and can be used to poll for the
+completion of the operation.
+
 
 # Provisioner Tasks
 
@@ -42,6 +88,75 @@ sysinfo utility. This broadcast message is picked up by CNAPI.
 
 # Ur Messages
 
+# Boot parameters
+
+When a compute node boots up, its boot-loader fetches the necessary information
+from booter. These booter in turn requests this data, consisting of
+`boot_platform`, `kernel_flags` and `kernel_modules` from CNAPI.
+
+Operations on boot parameters are done via the `/boot` endpoint.
+
+On the the initial, boot from a "factory default" state, the "default" boot
+parameters will be fetched from the `/boot/default` endpoint.
+
+Setting the default boot platform for new compute nodes:
+
+    sdc-cnapi /boot/ac586cae-9ace-11e3-a64e-7f4008875a90 \
+        -X PUT \
+        -d '{ "boot_platform": "20140219T205617Z" }'
+
+
+Kernel arguments are key/value pairs passed in to the kernel. They are distinct
+from kernel flags.
+
+For example, to set the kernel arguments and flags for a compute node with uuid
+21306a50-9dad-11e3-9404-53f0c3de6cb8:
+
+    sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
+        -X POST
+        -d '{ "kernel_args": { "foo": "bar" }, "kernel_flags": { "-k": true } }'
+
+
+Passing `null` as the value to a key deletes that key/value.
+
+For instance, to delete the `foo` key:
+
+    sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
+        -X POST
+        -d '{ "kernel_args": { "foo": null } }'
+
+
+To completely overwrite values, use PUT instead of POST:
+
+    sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
+        -X PUT
+        -d '{ "kernel_args": { "alpha": "able" } }'
+
+
+# Setting up a new Server
+
+Setting when a new server comes online its `status` should be be visible as
+'running', and its `setup` state should be `'unsetup'`:
+
+    -bash-4.1# sdc-cnapi /servers | json -Hga uuid setup status
+    564d2cec-76f9-2438-7f66-9140267bed05 true running
+    564d5f0d-3517-5f60-78f1-ce6d0b8f58df false running
+
+
+To set up the new server, one may use one of the indirect methods (adminui,
+etc).
+
+Addiontionally one may also use `sdc-server`:
+
+    -bash-4.1# sdc-server setup 564d5f0d-3517-5f60-78f1-ce6d0b8f58df
+
+
+Or, sdc-cnapi:
+
+    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup -X PUT
+
+
+# Reference
 
 <% Object.keys(doc).forEach(function (section) { %><% var blocks = doc[section]; %># <%= section %>
 
