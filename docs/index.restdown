@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.7
-date: Wed Feb 26 2014 02:12:45 GMT+1100 (EST)
+date: Wed Feb 26 2014 09:27:42 GMT+0000 (UTC)
 
 # Who
 
@@ -33,37 +33,36 @@ sysinfo utility. This broadcast message is picked up by CNAPI.
 
 # Interacting with CNAPI
 
-There are two ways of interacting with CNAPI. Indirectly: adminui, cloudapi,
-workflow, vmapi. Directly: sdc-cnapi/curl.
-
-
-The `sdc-cnapi` tool is a wrapper around curl with will fill in the host, port
-and auth details. It is present in the `sdc` zone on the headnode, but
-available to be run from the GZ.
+There are two ways of interacting with CNAPI. Indirectly: eg. adminui, cloudapi,
+workflow, vmapi. Directly: eg. sdc-cnapi, sdc-server, curl.
 
 Use it as so:
 
-    sdc-cnapi /servers/5e4bafa8-9dfd-11e3-982d-a7dee2e79ac4 -X POST -d '{ "datacenter_name": "foo" }'
+    -bash-4.1# sdc-cnapi /servers/5e4bafa8-9dfd-11e3-982d-a7dee2e79ac4 \
+                    -X POST \
+                    -d '{ "datacenter_name": "foo" }'
 
 
 # Heartbeats
 
-Compute nodes are populated with services, some of which connect to AMQP. One
-of these is the "heartbeater" agent, its responsibility is to periodically emit
-server and zone information to AMQP. CNAPI is connects to AMQP and listens for
-these heartbeat messages from all servers. It uses the periodic action of these
+Each compute node is populated with services which allow the headnode to
+monitor usage and interact with the compute nodes in general. One of these is
+the "heartbeater" agent, its responsibility is to periodically emit server and
+zone information to AMQP. CNAPI is connects to AMQP and listens for these
+heartbeat messages from all servers. It uses the periodic action of these
 heartbeats to determine whether a compute node is up.
 
 If a compute node is not setup (and therefore has no agents besides ur), CNAPI
 uses the frequency of the sysinfo messages sent by Ur.
 
 
-# Resetting to factory defaults
+# Resetting to Factory Defaults
 
 To reset a compute node to its factory default state, `PUT` to the server's
 `factory-reset` endpoint:
 
-    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/factory-reset -X PUT
+    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/factory-reset \
+                    -X PUT
     HTTP/1.1 202 Accepted
     Content-Type: application/json
     Content-Length: 51
@@ -86,7 +85,18 @@ completion of the operation.
 
 # Virtual Machine Actions
 
-# Ur Messages
+# Remote Execution
+
+CNAPI exposes a mechanism to allow remote execution of commands.
+
+    -bash-4.1# sdc-cnapi /servers/$(sysinfo |json UUID)/execute \
+            -X POST \
+            -d '{ "script": "#!/bin/bash\necho hi $1 $FOO", "args": ["hello"],
+                  "env": { "FOO": "1" } }'
+
+Using the script, args, and env properties we can control the source we
+execute, the arguments to that script and any environment variables.
+
 
 # Boot parameters
 
@@ -101,7 +111,7 @@ parameters will be fetched from the `/boot/default` endpoint.
 
 Setting the default boot platform for new compute nodes:
 
-    sdc-cnapi /boot/ac586cae-9ace-11e3-a64e-7f4008875a90 \
+    -bash-4.1# sdc-cnapi /boot/ac586cae-9ace-11e3-a64e-7f4008875a90 \
         -X PUT \
         -d '{ "boot_platform": "20140219T205617Z" }'
 
@@ -112,7 +122,7 @@ from kernel flags.
 For example, to set the kernel arguments and flags for a compute node with uuid
 21306a50-9dad-11e3-9404-53f0c3de6cb8:
 
-    sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
+    -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
         -X POST
         -d '{ "kernel_args": { "foo": "bar" }, "kernel_flags": { "-k": true } }'
 
@@ -128,7 +138,7 @@ For instance, to delete the `foo` key:
 
 To completely overwrite values, use PUT instead of POST:
 
-    sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
+    -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
         -X PUT
         -d '{ "kernel_args": { "alpha": "able" } }'
 
@@ -153,7 +163,8 @@ Addiontionally one may also use `sdc-server`:
 
 Or, sdc-cnapi:
 
-    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup -X PUT
+    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup \
+                    -X PUT
 
 
 # Reference
