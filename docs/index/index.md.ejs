@@ -81,9 +81,20 @@ The UUID of the factory reset job is returned and can be used to poll for the
 completion of the operation.
 
 
-# Provisioner Tasks
-
 # Virtual Machine Actions
+
+One of the main mechanisms via which CNAPI interacts with compute nodes VMs is via
+AMQP messages sent to and received from the provisioner agent on the compute
+node.
+
+
+    -bash-4.1# sdc-cnapi /servers/$(sysinfo |json UUID)/vms/f9940090-a065-11e3-81fd-274008e46b67machine_reboot \
+            -X POST \
+            -d '{}'
+
+See the reference for the API for available VM endpoitns.
+
+
 
 # Remote Execution
 
