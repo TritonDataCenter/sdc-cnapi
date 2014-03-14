@@ -1,7 +1,5 @@
 /*
  * Copyright (c) 2012, Joyent, Inc. All rights reserved.
- *
- * zfs.test.js: Tests for ZFS endpoints
  */
 
 var Logger = require('bunyan');
@@ -326,10 +324,12 @@ function testUpdateTicket(test) {
 }
 
 
+
 module.exports = {
     setUp: setup,
     tearDown: teardown,
     'delete all tickets': testDeleteAllWaitlistTickets,
     'create tickets then get one or many': testCreateTicket
+//     'waiting on a ticket': testWaitOnTicket
 //    'create ticket and update status': testUpdateTicket
 };
