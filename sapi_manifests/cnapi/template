@@ -49,6 +49,7 @@
 			        "hard-filter-platform-versions",
 			        "hard-filter-traits",
 			        "hard-filter-overprovision-ratios",
+				"hard-filter-sick-servers",
 			        ["or", ["pipe", "hard-filter-reservoir",
 			                        "hard-filter-min-ram",
 			                        "hard-filter-min-cpu"],
