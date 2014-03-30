@@ -75,6 +75,9 @@ function testWaitForActiveTicket(test) {
             }
         },
         function (wfcb) {
+            setTimeout(wfcb, 5000);
+        },
+        function (wfcb) {
             var timeout = setTimeout(function () {
                 test.ok(false, 'timed out waiting for active ticket');
             }, 1000);
@@ -147,7 +150,9 @@ function testWaitOnTicket(test) {
             function onFinish(err) {
                 console.log('ticketUuids');
                 console.dir(ticketUuids);
-                wfcb();
+                setTimeout(function () {
+                    wfcb();
+                }, 5000);
             }
         },
         function (wfcb) {
@@ -162,7 +167,6 @@ function testWaitOnTicket(test) {
                 function getcb(err, req, res, ticket) {
                     test.equal(err, null, 'error returned');
                     tickets.push(ticket);
-//                     setTimeout(fecb, 1000);
                     fecb();
                 }
             }

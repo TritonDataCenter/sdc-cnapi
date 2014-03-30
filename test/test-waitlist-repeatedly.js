@@ -145,24 +145,27 @@ function testWaitOnTicket(test) {
             }
 
             function onFinish(err) {
-                console.log('ticketUuids');
-                console.dir(ticketUuids);
-                wfcb();
+                setTimeout(function () {
+                    wfcb();
+                }, 5000);
             }
         },
         function (wfcb) {
+            console.log('ticketUuids %s', ticketUuids.length);
+            console.dir(ticketUuids);
             // Fetch all the created tickets back
             async.forEachSeries(ticketUuids, onPayload, onFinish);
 
             var tickets = [];
 
             function onPayload(t, fecb) {
+                console.log('XX t = %s', t);
                 var geturl = sprintf('/tickets/%s', t);
                 client.get(geturl, getcb);
                 function getcb(err, req, res, ticket) {
-                    test.equal(err, null, 'error returned');
+                    test.deepEqual(err, null,
+                        'error returned: ' + (err ? err.message : ''));
                     tickets.push(ticket);
-//                     setTimeout(fecb, 1000);
                     fecb();
                 }
             }
@@ -189,19 +192,20 @@ function testWaitOnTicket(test) {
                     i++;
 
                     // check next ticket in line
-                    if (i === ticketUuids.length) {
-                        fecb();
-                    } else {
+                    if (i < ticketUuids.length) {
                         setTimeout(function () {
                             console.log('checking %s', ticketUuids[i]);
                             var geturl = sprintf('/tickets/%s', ticketUuids[i]);
                             client.get(geturl, getcb);
                             function getcb(err, req, res, ticket) {
-                                test.equal(err, null, 'error returned');
+                                test.deepEqual(err, null,
+                                    'error returned: ' + (err ? err.message : ''));
                                 test.equal(ticket.status, 'active');
                                 fecb();
                             }
-                        }, 1000);
+                        }, 2000);
+                    } else {
+                        fecb();
                     }
                 }
             }
