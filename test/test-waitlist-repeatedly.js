@@ -199,7 +199,8 @@ function testWaitOnTicket(test) {
                             client.get(geturl, getcb);
                             function getcb(err, req, res, ticket) {
                                 test.deepEqual(err, null,
-                                    'error returned: ' + (err ? err.message : ''));
+                                    'error returned: '
+                                    + (err ? err.message : ''));
                                 test.equal(ticket.status, 'active');
                                 fecb();
                             }

@@ -57,7 +57,7 @@ function deleteAllTickets(callback) {
 
 
 function testExpireSingleTicket(test) {
-    var expireTimeSeconds = 2;
+    var expireTimeSeconds = 3;
     var ticketPayload = {
         scope: 'test',
         id: '123',
@@ -69,6 +69,7 @@ function testExpireSingleTicket(test) {
 
     async.waterfall([
         function (wfcb) {
+            // create the ticket
             client.post(wlurl, ticketPayload, function (err, req, res, t) {
                 test.deepEqual(err, null);
                 test.equal(res.statusCode, 202,
@@ -83,7 +84,7 @@ function testExpireSingleTicket(test) {
         function (wfcb) {
             setTimeout(function () {
                 wfcb();
-            }, 5000);
+            }, (expireTimeSeconds+1) * 1000);
         },
         function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
@@ -93,6 +94,7 @@ function testExpireSingleTicket(test) {
                 test.ok(waitlist.length);
 
                 ticket = waitlist[0];
+                console.dir(ticket);
                 test.ok(ticket);
 
 
@@ -241,6 +243,6 @@ module.exports = {
     setUp: setup,
     tearDown: teardown,
     'expire single ticket': testExpireSingleTicket,
-    'create two tickets expire first, start next':
-        testExpireSingleTicketStartNext
+//     'create two tickets expire first, start next':
+//         testExpireSingleTicketStartNext
 };
