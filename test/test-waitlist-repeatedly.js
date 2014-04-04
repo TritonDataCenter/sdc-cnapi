@@ -145,9 +145,7 @@ function testWaitOnTicket(test) {
             }
 
             function onFinish(err) {
-                setTimeout(function () {
-                    wfcb();
-                }, 5000);
+                wfcb();
             }
         },
         function (wfcb) {
@@ -204,7 +202,7 @@ function testWaitOnTicket(test) {
                                 test.equal(ticket.status, 'active');
                                 fecb();
                             }
-                        }, 2000);
+                        }, 1000);
                     } else {
                         fecb();
                     }
