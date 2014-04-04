@@ -57,7 +57,7 @@ function deleteAllTickets(callback) {
 
 
 function testExpireSingleTicket(test) {
-    var expireTimeSeconds = 4;
+    var expireTimeSeconds = 3;
     var ticketPayload = {
         scope: 'test',
         id: '123',
@@ -69,6 +69,7 @@ function testExpireSingleTicket(test) {
 
     async.waterfall([
         function (wfcb) {
+            // create the ticket
             client.post(wlurl, ticketPayload, function (err, req, res, t) {
                 test.deepEqual(err, null);
                 test.equal(res.statusCode, 202,
@@ -81,11 +82,6 @@ function testExpireSingleTicket(test) {
             });
         },
         function (wfcb) {
-            setTimeout(function () {
-                wfcb();
-            }, 1000);
-        },
-        function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
                 test.equal(err, null, 'valid response from GET /servers');
                 test.ok(res, 'got a response');
@@ -93,15 +89,12 @@ function testExpireSingleTicket(test) {
                 test.ok(waitlist.length);
 
                 ticket = waitlist[0];
+                console.dir(ticket);
                 test.ok(ticket);
-
+                test.deepEqual(ticket.status, 'active');
 
                 wfcb();
             });
-        },
-        function (wfcb) {
-            test.deepEqual(ticket.status, 'active');
-            wfcb();
         },
         function (wfcb) {
             setTimeout(function () {
@@ -134,8 +127,8 @@ function testExpireSingleTicket(test) {
 
 
 function testExpireSingleTicketStartNext(test) {
-    var expireTimeSeconds = 3;
-    var expireTimeSeconds2 = 6;
+    var expireTimeSeconds = 5;
+    var expireTimeSeconds2 = 12;
 
     var ticketPayload = {
         scope: 'test',
@@ -180,11 +173,11 @@ function testExpireSingleTicketStartNext(test) {
                 wfcb();
             });
         },
-//         function (wfcb) {
-//             setTimeout(function () {
-//                 wfcb();
-//             }, 1000);
-//         },
+        function (wfcb) {
+            setTimeout(function () {
+                wfcb();
+            }, 3000);
+        },
         function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
                 test.equal(err, null, 'valid response from GET /servers');
@@ -206,7 +199,7 @@ function testExpireSingleTicketStartNext(test) {
         function (wfcb) {
             setTimeout(function () {
                 wfcb();
-            }, expireTimeSeconds * 1000);
+            }, 5000);
         },
         function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
