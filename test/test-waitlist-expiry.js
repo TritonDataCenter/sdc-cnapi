@@ -136,7 +136,7 @@ function testExpireSingleTicket(test) {
 
 
 function testExpireSingleTicketStartNext(test) {
-    var expireTimeSeconds = 3;
+    var expireTimeSeconds = 5;
     var expireTimeSeconds2 = 12;
 
     var ticketPayload = {
@@ -185,7 +185,7 @@ function testExpireSingleTicketStartNext(test) {
         function (wfcb) {
             setTimeout(function () {
                 wfcb();
-            }, 5000);
+            }, 3000);
         },
         function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
@@ -243,6 +243,6 @@ module.exports = {
     setUp: setup,
     tearDown: teardown,
     'expire single ticket': testExpireSingleTicket,
-//     'create two tickets expire first, start next':
-//         testExpireSingleTicketStartNext
+    'create two tickets expire first, start next':
+        testExpireSingleTicketStartNext
 };
