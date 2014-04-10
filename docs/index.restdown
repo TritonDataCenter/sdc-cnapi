@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.8
-date: Thu Apr 10 2014 16:33:27 GMT-0700 (PDT)
+date: Thu Apr 10 2014 16:36:59 GMT-0700 (PDT)
 
 # Who
 
@@ -381,7 +381,7 @@ Query the server for the Image's details.
 ### Responses
 
 ||*Code*||*Type*||*Description*||
-||204||Object||Task was sent to server||
+||200||Object||Request succeeded||
 ||404||Object||No such Image||
 ||404||Object||No such server||
 
