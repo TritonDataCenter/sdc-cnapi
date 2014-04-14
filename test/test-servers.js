@@ -294,7 +294,9 @@ function validateServer(t, server, options) {
 
             var numAttr = ['max_physical_memory', 'quota', 'cpu_cap'];
             numAttr.forEach(function (attr) {
-                t.equal(typeof (vm[attr]), 'number');
+                if (typeof (vm[attr]) !== 'undefined') {
+                    t.equal(typeof (vm[attr]), 'number');
+                }
             });
 
             t.equal(typeof (vm.last_modified), 'string');
