@@ -167,7 +167,7 @@ Setting when a new server comes online its `status` should be be visible as
 To set up the new server, one may use one of the indirect methods (adminui,
 etc).
 
-Addiontionally one may also use `sdc-server`:
+Additionally, one may also use `sdc-server`:
 
     -bash-4.1# sdc-server setup 564d5f0d-3517-5f60-78f1-ce6d0b8f58df
 
@@ -176,6 +176,84 @@ Or, sdc-cnapi:
 
     -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup \
                     -X PUT
+
+
+# Updating Nics
+
+The only parameter of the server's nics that can be changed is
+nic_tags_provided. This parameter can be changed depending on the following
+values for the *action* parameter:
+
+* update: Add nic tags to the target nics
+* replace: Replace the nic tags (ie: completely overwrite the list) for the
+  target nics
+* delete: Remove the nic tags from the target nics
+
+## Examples
+
+**update**
+
+Add the manta nic tag to a nic with sdc-cnapi:
+
+    sdc-cnapi /servers/564d4d2c-ddd0-7be7-40ae-bae473a1d53e/nics \
+    -X PUT '\
+        {
+            "action": "update",
+            "nics": [
+                {
+                    "mac": "00:0c:29:a1:d5:3e",
+                    "nic_tags_provided": [ "manta" ]
+                }
+            ]
+        }'
+
+Or with sdc-server:
+
+    sdc-server update-nictags -s 564d4d2c-ddd0-7be7-40ae-bae473a1d53e \
+        manta_nic=00:0c:29:a1:d5:3e
+
+**replace**
+
+Set the nic tags for a nic to external and mantanat (removing all other nic
+tags) with sdc-cnapi:
+
+    sdc-cnapi /servers/564d4d2c-ddd0-7be7-40ae-bae473a1d53e/nics \
+    -X PUT '\
+        {
+            "action": "replace",
+            "nics": [
+                {
+                    "mac": "00:0c:29:a1:d5:3e",
+                    "nic_tags_provided": [ "external", "mantanat" ]
+                }
+            ]
+        }'
+
+Or with sdc-server:
+
+    sdc-server replace-nictags -s 564d4d2c-ddd0-7be7-40ae-bae473a1d53e \
+        external_nic=00:0c:29:a1:d5:3e mantanat_nic=00:0c:29:a1:d5:3e
+
+**delete**
+
+Remove the mantanat nic tag from a nic with sdc-cnapi:
+
+    sdc-cnapi /servers/564d4d2c-ddd0-7be7-40ae-bae473a1d53e/nics \
+    -X PUT '\
+        {
+            "action": "delete",
+            "nics": [
+                {
+                    "mac": "00:0c:29:a1:d5:3e",
+                    "nic_tags_provided": [ "mantanat" ]
+                }
+            ]
+        }'
+
+Or with sdc-server:
+
+    sdc-server delete-nictags -s 564d4d2c-ddd0-7be7-40ae-bae473a1d53e \
+        mantanat_nic=00:0c:29:a1:d5:3e
 
 
 # Reference
