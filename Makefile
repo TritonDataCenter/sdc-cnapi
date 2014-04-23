@@ -32,7 +32,7 @@ JSSTYLE_FLAGS	= -o indent=4,doxygen,unparenthesized-return=0
 SMF_MANIFESTS_IN = smf/manifests/cnapi.xml.in
 SMF_DTD		= $(REPO_ROOT)/tools/service_bundle.dtd.1
 
-NODE_PREBUILT_VERSION=v0.8.25
+NODE_PREBUILT_VERSION=v0.8.26
 NODE_PREBUILT_TAG=zone
 
 #
