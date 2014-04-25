@@ -9,7 +9,7 @@
     "assert-plus": "0.1.2",
     "async": "0.1.18",
     "bunyan": "0.21.3",
-    "dapi": "git+ssh://git@git.joyent.com:dapi.git#d6d66ee57d8386c0a61fbba00f35dc30911f2e73",
+    "dapi": "git+ssh://git@git.joyent.com:dapi.git#1016d298e6e4c649accb8ade93e2a6e9c5111fab",
     "deep-equal": "git://github.com/substack/node-deep-equal.git#b2cfeb95da6982f8bc2e676231820a3a47385db3",
     "dox": "0.4.1",
     "filed": "0.0.5",
