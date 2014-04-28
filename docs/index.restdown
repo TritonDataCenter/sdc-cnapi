@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.8
-date: Mon Apr 14 2014 18:14:29 GMT-0700 (PDT)
+date: Mon Apr 28 2014 21:46:28 GMT+0000 (UTC)
 
 # Who
 
@@ -214,7 +214,8 @@ Or with sdc-server:
 
 **replace**
 
-Set the nic tags for a nic to external and mantanat with sdc-cnapi:
+Set the nic tags for a nic to external and mantanat (removing all other nic
+tags) with sdc-cnapi:
 
     sdc-cnapi /servers/564d4d2c-ddd0-7be7-40ae-bae473a1d53e/nics \
     -X PUT '\
@@ -253,6 +254,121 @@ Or with sdc-server:
 
     sdc-server delete-nictags -s 564d4d2c-ddd0-7be7-40ae-bae473a1d53e \
         mantanat_nic=00:0c:29:a1:d5:3e
+
+# Server records
+
+
+A CNAPI server record looks like the following
+
+    -bash-4.1# sdc-cnapi /servers
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Content-Length: 9848
+    Date: Tue, 22 Apr 2014 08:35:10 GMT
+    Server: Compute Node API
+    x-request-id: 03f340c0-c9f9-11e3-9a2b-e36882367c85
+    x-response-time: 15
+    x-server-name: c587f0fc-a962-49cb-a4d2-cd9cb0efb9b9
+    Connection: keep-alive
+    
+    {
+      "sysinfo": {
+         --- compute node sysinfo ---
+      },
+      "ram": 4095,
+      "current_platform": "20140421T214627Z",
+      "headnode": true,
+      "boot_platform": "20140421T214627Z",
+      "datacenter": "coal",
+      "overprovision_ratio": 1,
+      "reservation_ratio": 0.15,
+      "reservoir": false,
+      "traits": {},
+      "rack_identifier": "",
+      "comments": "",
+      "uuid": "564d4374-d703-b97b-ca9f-7375f05f337c",
+      "hostname": "headnode",
+      "reserved": false,
+      "boot_params": {
+        "rabbitmq": "guest:guest:rabbitmq.coal.joyent.us:5672"
+      },
+      "kernel_flags": {},
+      "default_console": "vga",
+      "serial": "ttyb",
+      "setup": true,
+      "setting_up": false,
+      "last_boot": "2014-04-22T07:39:50.000Z",
+      "created": "2014-04-22T07:37:30.000Z",
+      "vms": {
+         --- compute node vm objects ---
+      },
+      "transitional_status": "",
+      "last_heartbeat": "2014-04-22T08:35:07.776Z",
+      "status": "running",
+      "memory_available_bytes": 2044813312,
+      "memory_arc_bytes": 184096272,
+      "memory_total_bytes": 4284993536,
+      "memory_provisionable_bytes": -44936986624,
+      "disk_kvm_zvol_used_bytes": 0,
+      "disk_kvm_zvol_volsize_bytes": 0,
+      "disk_kvm_quota_bytes": 0,
+      "disk_zone_quota_bytes": 536870912000,
+      "disk_cores_quota_bytes": 429496729600,
+      "disk_installed_images_used_bytes": 950053376,
+      "disk_pool_size_bytes": 159987531776,
+      "overprovision_ratios": {
+        "ram": 1
+      },
+      "unreserved_cpu": 400,
+      "unreserved_ram": -42863,
+      "unreserved_disk": 151669
+    }
+
+## Server properties
+
+||**Param**||**Type**||**Description**||
+||**boot_params***||*Object*||
+||**boot_platform**||**String**||The platform image to be booted from on next boot.||
+||**current_platform**||**String**||The platform image currently in use by server.||
+||**comments**||**String**||Description of server.||
+||**created**||**String date**||Date of server creation.||
+||**datacenter**||**String**||Datacenter in which server resides||
+||**default_console**||
+||**disk_cores_quota_bytes**||
+||**disk_installed_images_used_bytes**||
+||**disk_kvm_quota_bytes**||
+||**disk_kvm_zvol_used_bytes**||
+||**disk_kvm_zvol_volsize_bytes**||
+||**disk_pool_size_bytes**||
+||**disk_zone_quota_bytes**||
+||**headnode**||**Boolean**||Whether server is a headnode||
+||**hostname**||**String**||Hostname if any||
+||**kernel_flags**||
+||**last_boot**||
+||**last_heartbeat**||
+||**memory_arc_bytes**||
+||**memory_available_bytes**||
+||**memory_provisionable_bytes**||
+||**memory_total_bytes**||
+||**overprovision_ratio**||
+||**overprovision_ratios**||
+||**rack_identifier**||
+||**ram**||**Number*||
+||**reservation_ratio**||
+||**reserved**||**Boolean**||||
+||**reservoir**||**Boolean**||||
+||**serial**||**String*||
+||**setting_up**||**Boolean**||Whether server is in the process of setting up.||
+||**setup**||**Boolean**||Whether server has been marked as set up.||
+||**status**||**Boolean**||The server's current state of activity.||
+||**sysinfo**||**Object**||The last given sysinfo payload for server||
+||**traits**||**Object*||
+||**transitional_status***||Takes precedense over `status` when a server is undergoing a status change.||
+||**unreserved_cpu**||
+||**unreserved_disk**||
+||**unreserved_ram**||
+||**uuid**||**String**||The server's unique identifier.||
+||**vms**||**Object**||A object representing all the vms on server.||
 
 
 # Reference
@@ -494,7 +610,7 @@ values for the *action* parameter:
 * update: Add nic tags to the target nics
 * replace: Replace the nic tags (ie: completely overwrite the list) for the
   target nics
-* delete: Rmove the nic tags from the target nics
+* delete: Remove the nic tags from the target nics
 
 For examples, see the [Updating Nics](#updating-nics) section above.
 
