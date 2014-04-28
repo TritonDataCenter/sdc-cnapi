@@ -5,7 +5,7 @@
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
-    "amqp": "git://github.com/postwait/node-amqp.git#2a5b1e9d2cd5838991ea378251f186c13ba79f97",
+    "amqp": "git://github.com/postwait/node-amqp.git#d0cef347dfe7d5a7126d0bd2b81766c7a0be3ec6",
     "assert-plus": "0.1.2",
     "async": "0.1.18",
     "bunyan": "0.21.3",
