@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.8
-date: Mon Apr 28 2014 21:56:13 GMT+0000 (UTC)
+date: Tue Apr 29 2014 10:07:30 GMT+0000 (UTC)
 
 # Who
 
@@ -329,46 +329,46 @@ A CNAPI server record looks like the following
 ||**Param**||**Type**||**Description**||
 ||**boot_params**||*Object*||
 ||**boot_platform**||*String*||The platform image to be booted from on next boot.||
-||**current_platform**||*String**||The platform image currently in use by server.||
+||**current_platform**||*String*||The platform image currently in use by server.||
 ||**comments**||*String*||Description of server.||
 ||**created**||*String date*||Date of server creation.||
 ||**datacenter**||*String*||Datacenter in which server resides||
-||**default_console**||
-||**disk_cores_quota_bytes**||
-||**disk_installed_images_used_bytes**||
-||**disk_kvm_quota_bytes**||
-||**disk_kvm_zvol_used_bytes**||
-||**disk_kvm_zvol_volsize_bytes**||
-||**disk_pool_size_bytes**||
-||**disk_zone_quota_bytes**||
+||**default_console**||||
+||**disk_cores_quota_bytes**||||
+||**disk_installed_images_used_bytes**||||
+||**disk_kvm_quota_bytes**||||
+||**disk_kvm_zvol_used_bytes**||||
+||**disk_kvm_zvol_volsize_bytes**||||
+||**disk_pool_size_bytes**||||
+||**disk_zone_quota_bytes**||||
 ||**headnode**||*Boolean*||Whether server is a headnode||
 ||**hostname**||*String*||Hostname if any||
-||**kernel_flags**||
-||**last_boot**||
-||**last_heartbeat**||
-||**memory_arc_bytes**||
-||**memory_available_bytes**||
-||**memory_provisionable_bytes**||
-||**memory_total_bytes**||
-||**overprovision_ratio**||
-||**overprovision_ratios**||
-||**rack_identifier**||
-||**ram**||**Number*||
-||**reservation_ratio**||
+||**kernel_flags**||||
+||**last_boot**||||
+||**last_heartbeat**||||
+||**memory_arc_bytes**||||
+||**memory_available_bytes**||||
+||**memory_provisionable_bytes**||||
+||**memory_total_bytes**||||
+||**overprovision_ratio**||||
+||**overprovision_ratios**||||
+||**rack_identifier**||||
+||**ram**||*Number*||||
+||**reservation_ratio**||||
 ||**reserved**||*Boolean*||||
 ||**reservoir**||*Boolean*||||
-||**serial**||*String*||
+||**serial**||*String*||||
 ||**setting_up**||*Boolean*||Whether server is in the process of setting up.||
 ||**setup**||*Boolean*||Whether server has been marked as set up.||
 ||**status**||*Boolean*||The server's current state of activity.||
 ||**sysinfo**||*Object*||The last given sysinfo payload for server||
-||**traits**||*Object*||
+||**traits**||*Object*||||
 ||**transitional_status***||*String*||Takes precedense over `status` when a server is undergoing a status change.||
-||**unreserved_cpu**||
-||**unreserved_disk**||
-||**unreserved_ram**||
-||**uuid**||**String**||The server's unique identifier.||
-||**vms**||**Object**||A object representing all the vms on server.||
+||**unreserved_cpu**||||
+||**unreserved_disk**||||
+||**unreserved_ram**||||
+||**uuid**||*String*||The server's unique identifier.||
+||**vms**||*Object*||A object representing all the vms on server.||
 
 
 # Reference
