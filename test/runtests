@@ -109,7 +109,7 @@ if [[ -z "$cnapi_ip" ]]; then
 fi
 export CNAPI_IP=$cnapi_ip
 
-test_files=$(ls -1 test/test-*.js)
+test_files=$(find test -name "test-*.js" -print)
 if [[ -n "$opt_test_pattern" ]]; then
     test_files=$(echo "$test_files" | grep "$opt_test_pattern" || true)
     echo "# Running filtered set of test files: $test_files"
