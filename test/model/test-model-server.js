@@ -5,12 +5,12 @@
 var async = require('async');
 var util = require('util');
 
-var common = require('../lib/common');
-var mock = require('./lib/mock');
+var common = require('../../lib/common');
+var mock = require('../lib/mock');
 var nodeunit = require('nodeunit');
 var sprintf = require('sprintf').sprintf;
 
-var ModelServer = require('../lib/models/server');
+var ModelServer = require('../../lib/models/server');
 
 var uuids = [
     '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',

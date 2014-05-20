@@ -1,12 +1,12 @@
 var async = require('async');
 var util = require('util');
 
-var common = require('../lib/common');
-var mock = require('./lib/mock');
+var common = require('../../lib/common');
+var mock = require('../lib/mock');
 var nodeunit = require('nodeunit');
 
-var ModelPlatform = require('../lib/models/platform');
-var ModelServer = require('../lib/models/server');
+var ModelPlatform = require('../../lib/models/platform');
+var ModelServer = require('../../lib/models/server');
 
 function setup(callback) {
     callback();
