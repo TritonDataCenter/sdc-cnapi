@@ -136,35 +136,6 @@ MockWorkflowWrapper.prototype.getClient = function () {
 
 /**
  *
- * Cache
- *
- */
-
-function MockCache() {
-    this.history = [];
-    this.callbackValues = {
-        remove: []
-    };
-}
-
-
-MockCache.prototype.when = function (fn, results) {
-    if (!this.callbackValues[fn]) {
-        this.callbackValues[fn] = [];
-    }
-    this.callbackValues[fn].push(results);
-};
-
-
-MockCache.prototype.remove = function (query, callback) {
-    this.history.push(['remove', query]);
-    callback.apply(null, this.callbackValues.remove.pop());
-    return this;
-};
-
-
-/**
- *
  * Ur
  *
  */
@@ -233,7 +204,6 @@ function newApp(callback) {
 }
 
 module.exports = {
-    MockCache: MockCache,
     MockMorayWrapper: MockMorayWrapper,
     MockWorkflowWrapper: MockWorkflowWrapper,
     newApp: newApp

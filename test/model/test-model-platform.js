@@ -44,6 +44,7 @@ function testListPlatformsAll(test) {
         ModelPlatform.init(app);
 
         moray.client.when('findObjects');
+        moray.client.when('getObject', [], []);
 
         ur.when('execute', [], expUrResult);
 
@@ -84,6 +85,7 @@ function testListPlatformsAllNoLatest(test) {
         ModelPlatform.init(app);
 
         moray.client.when('findObjects');
+        moray.client.when('getObject', [], []);
         ur.when('execute', [], expUrResult);
 
         ModelPlatform.list({}, function (listError, platforms) {

@@ -272,6 +272,7 @@ function testDeleteServer(test) {
 
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
+        var moray = components.moray;
         ModelServer.init(app);
 
         var server = new ModelServer(uuids[0]);
@@ -279,9 +280,14 @@ function testDeleteServer(test) {
         server.del(function (delError) {
             test.equal(delError, null, 'should not encounter an error');
 
-            test.equal(
-                ModelServer.scache[uuids[0]],
-                undefined, 'cache history');
+            test.deepEqual(
+                moray.client.history[0],
+                [
+                    'delObject',
+                    'cnapi_servers',
+                    '372bdb58-f8dd-11e1-8038-0b6dbddc5e58'
+                ],
+            'moray command history');
             test.done();
         });
     });
@@ -413,7 +419,6 @@ function testSetBootParameters(test) {
                 moray.client.when('getObject', [], { value: expSearchResults });
 
                 ModelServer.init(app);
-                ModelServer.cache = new mock.MockCache;
 
                 server = new ModelServer(uuid);
                 callback();
