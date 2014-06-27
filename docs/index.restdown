@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.8
-date: Wed May 14 2014 10:04:52 GMT+0000 (UTC)
+date: Fri Jun 27 2014 20:28:30 GMT+0000 (UTC)
 
 # Who
 
@@ -370,6 +370,138 @@ A CNAPI server record looks like the following
 ||**uuid**||*String*||The server's unique identifier||
 ||**vms**||*Object*||A object representing all the vms on server||
 
+# Waitlist
+
+When executing jobs on a server, such vm provision, start, stop, reboot, and
+zfs dataset import it is possible that concurrent jobs may interfere with each
+other.
+
+To prevent this, a mechanism is required that will queue jobs based on the
+type of resource they're acting on. Jobs should be grouped by "scope" and
+serialized such that a server can will only execute be executing one job per
+scope group at a time. In this way it would be possible to enforce that only
+one job be active on a vm on a server, but would still allow jobs to be run
+against another vm. Any jobs that come in after one is active will be queued
+and dispatch as the previous job finishes.
+
+This system allows for concurrent jobs where the scoping has been set such
+that two jobs will not interfere with each other. For instance, two reboot
+jobs for two different vms may be run at the same time, however, two reboots
+for the same vm will happen in sequential order.
+
+Use of the waitlist is a deliberate process. It is up to the one initiating a job
+to create a ticket and wait for it to become active. As such, it is possible
+to not use the waitlist at all. However, one then runs the risk of concurrent
+jobs trampling each other.
+
+Waitlist tickets are serialized and dispatched one by one according to their
+`server_uuid`, `scope` and `id` parameters.
+
+The first step to using the waitlist is to determine the scope and subject (ie
+the resource on which the action will be performed). For example this may be
+something like 'vm', 'dataset', etc.  This means that the action will be
+performed on a resource identified by `id` of the type given by `scope`.
+
+The basic process is as follows: a job starts and it first acquires a ticket
+from CNAPI for that particular server and passes in a `scope` and an `id`. 
+
+Because waitlist tickets are serviced in order, once a ticket has been created
+the next step is to wait for it to become active. This will happen if there
+are no tickets for that scope/id combination, or if waited upon and all
+preceding tickets are resolved. To find out whether a ticket has become
+'active' (ie indicating the job may proceed and do its work), the job may poll
+the ticket values, or use the blocking `wait` endpoint for that ticket.
+
+Once the work has been completed, it is up to the job to "release" the ticket,
+so that subsequent tickets for that scope/id combination can be serviced.
+
+Acquiring a ticket before performing work is an explicit step (as opposed to
+CNAPI doing the serialization internally) in effort to add transparency and to
+know what is happening with the SDC pipeline from just looking at the
+top-level workflow for some work to be performed.
+
+### Request (create) a ticket
+
+Using the waitlist begins with requesting a ticket. POST to the
+CreateWaitlistTicket endpoint. Specify the scope and unique id. An expiry date
+must also be specified. Endpoint returns a ticket uuid.
+
+    -bash-4.1# sdc-cnapi /servers/$(sysinfo | json UUID)/tickets -X POST -d '{ "scope": "vm", "id": "nuts", "expires_at": "2015-10-10T00:00:00"}'
+    HTTP/1.1 202 Accepted
+    Content-Type: application/json
+    Content-Length: 47
+    Date: Fri, 27 Jun 2014 19:36:47 GMT
+    Server: Compute Node API
+    x-request-id: 60c72290-fe32-11e3-913f-b11ed03e831d
+    x-response-time: 49
+    x-server-name: 9d2c3229-1e92-4c3f-98fd-5a7ac5fb28ed
+    Connection: keep-alive
+
+    {
+      "uuid": "ec8d5ef3-24b6-4582-ade8-c9e9bfb70906"
+    }
+
+
+### Display all tickets
+
+    -bash-4.1# sdc-cnapi /servers/$(sysinfo | json UUID)/tickets
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Content-Length: 260
+    Date: Fri, 27 Jun 2014 19:37:12 GMT
+    Server: Compute Node API
+    x-request-id: 6fcc80a0-fe32-11e3-913f-b11ed03e831d
+    x-response-time: 14
+    x-server-name: 9d2c3229-1e92-4c3f-98fd-5a7ac5fb28ed
+    Connection: keep-alive
+
+    [
+      {
+        "uuid": "ec8d5ef3-24b6-4582-ade8-c9e9bfb70906",
+        "server_uuid": "564d6e71-b375-4b81-07ec-ad77fe5fa680",
+        "scope": "vm",
+        "id": "nuts",
+        "expires_at": "2015-10-10T00:00:00",
+        "created_at": "2014-06-27T19:36:47.708Z",
+        "updated_at": "2014-06-27T19:36:47.708Z",
+        "status": "active"
+      }
+    ]
+
+### Wait on a ticket
+
+    -bash-4.1# sdc-cnapi /tickets/bb5038c2-7498-4e07-b919-df072c76d2dc/wait
+    <returns when ticket is released or expires>
+
+
+### Release a ticket
+
+    -bash-4.1# sdc-cnapi /tickets/bb5038c2-7498-4e07-b919-df072c76d2dc/release -X PUT
+    HTTP/1.1 204 No Content
+    Date: Fri, 27 Jun 2014 19:42:46 GMT
+    Server: Compute Node API
+    x-request-id: 3678cb00-fe33-11e3-913f-b11ed03e831d
+    x-response-time: 19
+    x-server-name: 9d2c3229-1e92-4c3f-98fd-5a7ac5fb28ed
+    Connection: keep-alive
+
+
+### Delete a ticket
+
+Explicitly deletes a waitlist ticket. This will allow the next ticket in line
+for the given scope/id to proceed. The next ticket waiting on the same scope/id
+will be allowed to proceed.
+
+    -bash-4.1# sdc-cnapi /tickets/ec8d5ef3-24b6-4582-ade8-c9e9bfb70906 -X DELETE
+    HTTP/1.1 204 No Content
+    Date: Fri, 27 Jun 2014 19:41:14 GMT
+    Server: Compute Node API
+    x-request-id: ff8dcd70-fe32-11e3-913f-b11ed03e831d
+    x-response-time: 14
+    x-server-name: 9d2c3229-1e92-4c3f-98fd-5a7ac5fb28ed
+    Connection: keep-alive
+
+
 
 # Reference
 
@@ -462,6 +594,8 @@ payload. Any values not present in the payload will effectively be deleted.
 ||kernel_args||Object||Key value pairs to be sent to server on boot||
 ||boot_modules||Array||List of boot module objects||
 ||kernel_flags||Object||Kernel flags to be sent to server on boot||
+||serial||Object||Serial device to use (i.e. &quot;ttyb&quot;)||
+||default_console||Object||Default console type (i.e. &quot;serial&quot;)||
 
 
 ### Responses
@@ -528,6 +662,8 @@ effectively deleted when the new object replaces the old.
 ||boot_modules||Array||List of boot module objects||
 ||kernel_values||Object||Kernel flags to update||
 ||platform||String||Set platform as the bootable platform||
+||serial||Object||Serial device to use (i.e. &quot;ttyb&quot;)||
+||default_console||Object||Default console type (i.e. &quot;serial&quot;)||
 
 
 ### Responses
@@ -706,7 +842,7 @@ Set the value of a Server's attribute.
 ||comments||String||Any comments about the server||
 ||reserved||Boolean||Server is available for provisioning||
 ||reservoir||Boolean||Server should be considered last for provisioning||
-||reservation_ratio||Number||The reservation ratio||
+||reservation_ratio||Nmber||The reservation ratio||
 ||overprovision_ratios||Object||The overprovisioning ratios. Must be an object with Number value keys and keys must be one of 'cpu', 'ram', 'disk', 'io', 'net'.||
 ||serial||String||Serial device||
 ||setup||Boolean||True if server has been set up||
@@ -808,27 +944,6 @@ _None_
 
 Return details of all provisioner tasks run on the compute node since
 provisioner was started.
-
-
-### Inputs
-
-_None_
-
-
-### Responses
-
-||*Code*||*Type*||*Description*||
-||204||None||Tasks returned successfully||
-||500||Error||Could not process request||
-
-## ServerAttach (GET /servers/:server_uuid/attach)
-
-This endpoint allows servers to register themselves with CNAPI via a
-persistent websocket connection from the compute node's provisioner. If this
-connection exists the server is assumed to be up and running. This allows
-for the server status to be tracked with a much lower time between the
-server going up or down and the time until that status is reflected in the
-server status returned by CNAPI/
 
 
 ### Inputs
