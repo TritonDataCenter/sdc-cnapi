@@ -53,7 +53,7 @@ function testWaitForActiveTicket(test) {
     var ticketPayload = {
         scope: 'test1',
         id: '111',
-        expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString()
+        expires_at: (new Date((new Date().valueOf()) + 120*1000)).toISOString()
     };
 
     var time0;
@@ -113,7 +113,7 @@ function testWaitOnTicket(test) {
             scope: 'test1',
             id: '111',
             expires_at:
-                (new Date((new Date().valueOf()) + 60*1000)).toISOString()
+                (new Date((new Date().valueOf()) + 120*1000)).toISOString()
         });
     }
 
