@@ -127,8 +127,8 @@ function testExpireSingleTicket(test) {
 
 
 function testExpireSingleTicketStartNext(test) {
-    var expireTimeSeconds = 5;
-    var expireTimeSeconds2 = 12;
+    var expireTimeSeconds = 10;
+    var expireTimeSeconds2 = 24;
 
     var ticketPayload = {
         scope: 'test',
@@ -174,11 +174,6 @@ function testExpireSingleTicketStartNext(test) {
             });
         },
         function (wfcb) {
-            setTimeout(function () {
-                wfcb();
-            }, 3000);
-        },
-        function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
                 test.equal(err, null, 'valid response from GET /servers');
                 test.ok(res, 'got a response');
@@ -199,7 +194,7 @@ function testExpireSingleTicketStartNext(test) {
         function (wfcb) {
             setTimeout(function () {
                 wfcb();
-            }, 5000);
+            }, (expireTimeSeconds + 2) * 1000);
         },
         function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {

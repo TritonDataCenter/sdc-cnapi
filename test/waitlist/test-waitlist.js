@@ -9,6 +9,7 @@ var async = require('async');
 var cp = require('child_process');
 var fs = require('fs');
 var http = require('http');
+var util = require('util');
 var path = require('path');
 var uuid = require('node-uuid');
 var sprintf = require('sprintf').sprintf;
@@ -76,18 +77,20 @@ function testDeleteAllWaitlistTickets(test) {
 
 
 function testCreateTicket(test) {
-    test.expect(48);
+    test.expect(55);
 
     var ticketPayload = {
         scope: 'test',
         id: '123',
-        expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString()
+        expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString(),
+        action: 'action0'
     };
 
     var ticketPayload2 = {
         scope: 'test',
         id: '234',
-        expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString()
+        expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString(),
+        action: 'action1'
     };
 
     var ticketPayloads = [
@@ -100,8 +103,9 @@ function testCreateTicket(test) {
 
     async.waterfall([
         function (wfcb) {
+            var queues = [];
             // Create the tickets from payload given in ticketPayloads
-            async.forEachSeries(ticketPayloads, onTicketPayload, wfcb);
+            async.forEachSeries(ticketPayloads, onTicketPayload, onForEachEnd);
 
             function onTicketPayload(tp, fecb) {
                 client.post(wlurl, tp, function (err, req, res, ticket) {
@@ -114,8 +118,23 @@ function testCreateTicket(test) {
 
                     ticketuuids.push(ticket.uuid);
                     ticketuuid = ticket.uuid;
+                    queues.push(ticket.queue);
                     fecb();
                 });
+            }
+
+            function onForEachEnd(err) {
+                test.equal(queues[0].length, 1);
+                test.equal(queues[1].length, 2);
+                test.equal(queues[0].length, 1);
+
+                test.equal(queues[0][0].action, 'action0');
+                test.equal(queues[1][0].action, 'action0');
+                test.equal(queues[1][1].action, 'action0');
+                test.equal(queues[2][0].action, 'action1');
+
+                console.error(util.inspect(queues));
+                wfcb();
             }
         },
         function (wfcb) {

@@ -5,7 +5,7 @@ markdown2extras: wiki-tables, code-friendly
 ---
 
 version: 1.0.8
-date: Fri Jun 27 2014 20:28:30 GMT+0000 (UTC)
+date: Thu Jul 03 2014 16:59:58 GMT+0000 (UTC)
 
 # Who
 
@@ -1300,7 +1300,9 @@ Create a VM image.
 
 ## ServerWaitlistList (GET /servers/:server_uuid/tickets)
 
-Returns all waitlist tickets currently active on a server.
+Returns all waitlist tickets currently active on a server. Returns the uuid of
+the newly created ticket as well as an array of all the tickets in the ticket's
+scope queue.
 
 
 ### Inputs
