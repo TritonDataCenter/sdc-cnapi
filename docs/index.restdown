@@ -120,12 +120,17 @@ Operations on boot parameters are done via the `/boot` endpoint.
 On the the initial, boot from a "factory default" state, the "default" boot
 parameters will be fetched from the `/boot/default` endpoint.
 
-Setting the default boot platform for new compute nodes:
+Setting the boot platform for a compute nodes:
 
     -bash-4.1# sdc-cnapi /boot/ac586cae-9ace-11e3-a64e-7f4008875a90 \
-        -X PUT \
-        -d '{ "boot_platform": "20140219T205617Z" }'
+        -X POST \
+        -d '{ "platform": "20140219T205617Z" }'
 
+Setting the default boot platform for new compute nodes:
+
+    -bash-4.1# sdc-cnapi /boot/default \
+        -X POST \
+        -d '{ "platform": "20140219T205617Z" }'
 
 Kernel arguments are key/value pairs passed in to the kernel. They are distinct
 from kernel flags.
