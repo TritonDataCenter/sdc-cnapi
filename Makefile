@@ -51,8 +51,7 @@ RELSTAGEDIR          := /tmp/$(STAMP)
 #
 .PHONY: all
 all: | $(NPM_EXEC) sdc-scripts
-	$(NPM) rebuild
-	cd $(ROOT) && $(NPM) install
+	$(NPM) install
 
 .PHONY: test
 test: $(NODEUNIT)
