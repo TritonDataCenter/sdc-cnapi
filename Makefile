@@ -24,6 +24,7 @@ NODEUNIT	:= ./node_modules/nodeunit/bin/nodeunit
 #
 REPO_ROOT	= $(shell pwd)
 DOC_FILES	= index.restdown
+RESTDOWN_FLAGS   = --brand-dir=deps/restdown-brand-remora
 JS_FILES	:= $(shell ls *.js 2>/dev/null) $(shell find bin lib test tools -name '*.js' 2>/dev/null)
 JSL_CONF_NODE	= $(REPO_ROOT)/tools/jsl.node.conf
 JSL_FILES_NODE	= $(JS_FILES)
