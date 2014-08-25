@@ -3,6 +3,15 @@ title: CNAPI (Compute Node API) Design
 apisections: Allocation, Capacity, Boot Parameters, Images, Ping, Nics, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, Virtual Machine Snapshots, VmImages, Waitlist, ZFS
 markdown2extras: wiki-tables, code-friendly
 ---
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<!--
+    Copyright (c) 2014, Joyent, Inc.
+-->
 
 version: 1.0.8
 date: Wed Aug 06 2014 06:58:38 GMT+0000 (UTC)
