@@ -26,7 +26,7 @@
     "verror": "1.3.4",
     "vasync": "git://github.com/davepacheco/node-vasync.git#e8743bb07a09dd83ea2df7e6d241c8a78b67aec6",
     "watershed": "0.3.0",
-    "wf-client": "git+ssh://git@git.joyent.com:wf-client.git#a8590b497e40aea87610fa1c370fcbed64f43367",
+    "wf-client": "git+ssh://git@github.com:joyent/sdc-wf-client.git#a8590b497e40aea87610fa1c370fcbed64f43367",
     "wf-shared": "git+ssh://git@git.joyent.com:wf-shared.git#1e72d9e"
   },
   "devDependencies": {
