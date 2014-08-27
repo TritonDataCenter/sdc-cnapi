@@ -43,7 +43,7 @@ and destroying tasks, initiating tasks, etc.
 
 # Development
 
-To run the boilerplate API server:
+To run the  API server:
 
     git clone git@git.joyent.com:cnapi.git
     cd cnapi
@@ -66,28 +66,3 @@ The CNAPI_IP environment variable specifies the URL at which to point the test
 suite.  For example, this would test CNAPI installed on bh1-kvm6:
 
     CNAPI_IP=10.2.206.13 make test
-
-
-
-# Other Sections Here
-
-Add other sections to your README as necessary. E.g. Running a demo, adding
-development data.
-
-
-
-# TODO
-
-Remaining work for this repo:
-
-- any "TODO" or "XXX" in the repo
-- review from engineering group
-- [Trent] Finish the restdown "public" dir and other work as discussed with
-  Philip. `git rm docs/media/css`
-- Give a little starter guide on using this repo as a starter template for the
-  new repos (for NAPI, CNAPI, FWAPI, DAPI, Workflow API, ZAPI). Include
-  getting on mo.joyent.com and head.no.de/docs for this.
-- Should we spec JIRA projects for the new APIs?
-- Add the node/npm local build support a la Amon and DSAPI. I.e. deps/node
-  and deps/npm git submodules and build handling in the Makefile.
-
