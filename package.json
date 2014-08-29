@@ -14,7 +14,7 @@
     "dox": "0.4.1",
     "filed": "0.0.5",
     "memwatch": "git://github.com/lloyd/node-memwatch.git#475ce024a53c74ad5baff27003b81499896e81a5",
-    "moray": "git+ssh://git@git.joyent.com:node-moray.git#c692a7acd56eb77c264990308d4d39c5fdcd7746",
+    "moray": "git+ssh://git@github.com:joyent/node-moray.git#master",
     "node-uuid": "1.2.0",
     "nodeunit": "0.7.4",
     "once": "1.3.0",
