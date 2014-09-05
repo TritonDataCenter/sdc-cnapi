@@ -22,7 +22,7 @@
     "restify": "git+ssh://git@github.com:mcavage/node-restify.git#0d7b4bafc747f249ce900b507665b220fb0b0e65",
     "sdc-clients": "git+ssh://git@github.com:joyent/node-sdc-clients.git#980a466f5ce66fa20bcbb7fedf0c65921db9f1ed",
     "sprintf": "0.1.1",
-    "task_agent": "git+ssh://git@git.joyent.com:task_agent.git#78b13e0f6badfaa9ad9a65b2b7b40a491f09c134",
+    "task_agent": "git+ssh://git@github.com:joyent/node-task-agent.git#78b13e0f6badfaa9ad9a65b2b7b40a491f09c134",
     "verror": "1.3.4",
     "vasync": "git://github.com/davepacheco/node-vasync.git#e8743bb07a09dd83ea2df7e6d241c8a78b67aec6",
     "watershed": "0.3.0",
