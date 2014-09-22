@@ -13,14 +13,6 @@ markdown2extras: tables, code-friendly
     Copyright (c) 2014, Joyent, Inc.
 -->
 
-version: 1.0.8
-date: Wed Aug 06 2014 06:58:38 GMT+0000 (UTC)
-
-# Who
-
-Orlando
-Josh
-
 # Overview
 
 CNAPI is the 'Compute Node API' which presents an API to communicate and
@@ -279,7 +271,7 @@ A CNAPI server record looks like the following
     x-response-time: 15
     x-server-name: c587f0fc-a962-49cb-a4d2-cd9cb0efb9b9
     Connection: keep-alive
-    
+
     {
       "sysinfo": {
          --- compute node sysinfo ---
@@ -413,7 +405,7 @@ something like 'vm', 'dataset', etc.  This means that the action will be
 performed on a resource identified by `id` of the type given by `scope`.
 
 The basic process is as follows: a job starts and it first acquires a ticket
-from CNAPI for that particular server and passes in a `scope` and an `id`. 
+from CNAPI for that particular server and passes in a `scope` and an `id`.
 
 Because waitlist tickets are serviced in order, once a ticket has been created
 the next step is to wait for it to become active. This will happen if there
@@ -1675,4 +1667,7 @@ _None_
 | 200  | Array | List of zpool detail objects |
 
 
+# Meta
 
+- CNAPI version: 1.0.8
+- Doc build date: Wed Aug 06 2014 06:58:38 GMT+0000 (UTC)
