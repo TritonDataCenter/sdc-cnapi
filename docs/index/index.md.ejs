@@ -1,7 +1,7 @@
 ---
 title: CNAPI (Compute Node API) Design
 apisections: <%= Object.keys(doc).join(", ") %>
-markdown2extras: wiki-tables, code-friendly
+markdown2extras: tables, code-friendly
 ---
 <!--
     This Source Code Form is subject to the terms of the Mozilla Public
@@ -14,7 +14,7 @@ markdown2extras: wiki-tables, code-friendly
 -->
 
 
-# CNAPI
+# Overview
 
 CNAPI is the 'Compute Node API' which presents an API to communicate and
 interact with Compute Nodes (CNs).
@@ -328,49 +328,50 @@ A CNAPI server record looks like the following
 
 ## Server properties
 
-||**Param**||**Type**||**Description**||
-||**boot_params**||*Object*||
-||**boot_platform**||*String*||The platform image to be booted from on next boot||
-||**current_platform**||*String*||The platform image currently in use by server||
-||**comments**||*String*||Description of server||
-||**created**||*String date*||Date of server creation||
-||**datacenter**||*String*||Datacenter in which server resides||
-||**default_console**||||
-||**disk_cores_quota_bytes**||||
-||**disk_installed_images_used_bytes**||||
-||**disk_kvm_quota_bytes**||||
-||**disk_kvm_zvol_used_bytes**||||
-||**disk_kvm_zvol_volsize_bytes**||||
-||**disk_pool_size_bytes**||||
-||**disk_zone_quota_bytes**||||
-||**headnode**||*Boolean*||Whether server is a headnode||
-||**hostname**||*String*||Hostname if any||
-||**kernel_flags**||||
-||**last_boot**||||
-||**last_heartbeat**||||
-||**memory_arc_bytes**||||
-||**memory_available_bytes**||||
-||**memory_provisionable_bytes**||||
-||**memory_total_bytes**||||
-||**overprovision_ratio**||||
-||**overprovision_ratios**||||
-||**rack_identifier**||||
-||**ram**||*Number*||||
-||**reservation_ratio**||||
-||**reserved**||*Boolean*||||
-||**reservoir**||*Boolean*||||
-||**serial**||*String*||||
-||**setting_up**||*Boolean*||Whether server is in the process of setting up||
-||**setup**||*Boolean*||Whether server has been marked as set up||
-||**status**||*Boolean*||The server's current state of activity||
-||**sysinfo**||*Object*||The last given sysinfo payload for server||
-||**traits**||*Object*||||
-||**transitional_status**||*String*||Takes precedense over `status` when a server is undergoing a status change||
-||**unreserved_cpu**||||
-||**unreserved_disk**||||
-||**unreserved_ram**||||
-||**uuid**||*String*||The server's unique identifier||
-||**vms**||*Object*||A object representing all the vms on server||
+| Param                                | Type          | Description                                                                |
+| ------------------------------------ | ------------- | -------------------------------------------------------------------------- |
+| **boot_params**                      | *Object*      |
+| **boot_platform**                    | *String*      | The platform image to be booted from on next boot                          |
+| **current_platform**                 | *String*      | The platform image currently in use by server                              |
+| **comments**                         | *String*      | Description of server                                                      |
+| **created**                          | *String date* | Date of server creation                                                    |
+| **datacenter**                       | *String*      | Datacenter in which server resides                                         |
+| **default_console**                  |               |
+| **disk_cores_quota_bytes**           |               |
+| **disk_installed_images_used_bytes** |               |
+| **disk_kvm_quota_bytes**             |               |
+| **disk_kvm_zvol_used_bytes**         |               |
+| **disk_kvm_zvol_volsize_bytes**      |               |
+| **disk_pool_size_bytes**             |               |
+| **disk_zone_quota_bytes**            |               |
+| **headnode**                         | *Boolean*     | Whether server is a headnode                                               |
+| **hostname**                         | *String*      | Hostname if any                                                            |
+| **kernel_flags**                     |               |
+| **last_boot**                        |               |
+| **last_heartbeat**                   |               |
+| **memory_arc_bytes**                 |               |
+| **memory_available_bytes**           |               |
+| **memory_provisionable_bytes**       |               |
+| **memory_total_bytes**               |               |
+| **overprovision_ratio**              |               |
+| **overprovision_ratios**             |               |
+| **rack_identifier**                  |               |
+| **ram**                              | *Number*      |                                                                            |
+| **reservation_ratio**                |               |
+| **reserved**                         | *Boolean*     |                                                                            |
+| **reservoir**                        | *Boolean*     |                                                                            |
+| **serial**                           | *String*      |                                                                            |
+| **setting_up**                       | *Boolean*     | Whether server is in the process of setting up                             |
+| **setup**                            | *Boolean*     | Whether server has been marked as set up                                   |
+| **status**                           | *Boolean*     | The server's current state of activity                                     |
+| **sysinfo**                          | *Object*      | The last given sysinfo payload for server                                  |
+| **traits**                           | *Object*      |                                                                            |
+| **transitional_status**              | *String*      | Takes precedense over `status` when a server is undergoing a status change |
+| **unreserved_cpu**                   |               |
+| **unreserved_disk**                  |               |
+| **unreserved_ram**                   |               |
+| **uuid**                             | *String*      | The server's unique identifier                                             |
+| **vms**                              | *Object*      | A object representing all the vms on server                                |
 
 # Waitlist
 
@@ -517,22 +518,21 @@ will be allowed to proceed.
 
 ### Inputs
 
-<% if (block.params.length) { %>||**Param**||**Type**||**Description**||
-<% block.params.forEach(function (input) { %>||<%= input.name %>||<%= input.type %>||<%= input.description %>||
-<% }); %><% } else { %>_None_
-<% } %>
+<% if (block.params.length) { %><%= makeTable({
+    headers: ["Param", "Type", "Description"],
+    fields: ["name", "type", "description"],
+    data: block.params
+}) %><% } else { %>_None_<% } %>
+
 
 ### Responses
 
-<% if (block.responses.length) { %>||*Code*||*Type*||*Description*||
-<% block.responses.forEach(function (resp) { %>||<%= resp.code %>||<%= resp.type %>||<%= resp.description %>||
-<% }); %><% } else { %>_None_
-<% } %>
+<% if (block.responses.length) { %><%= makeTable({
+    headers: ["Code", "Type", "Description"],
+    fields: ["code", "type", "description"],
+    data: block.responses
+}) %><% } else { %>_None_<% } %>
+
+
 <% }); %>
 <% }); %>
-
-
-# Meta
-
-- CNAPI version: <%= package.version %>
-- Doc build date: <%= (new Date()).toString() %>

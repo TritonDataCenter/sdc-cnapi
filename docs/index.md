@@ -13,6 +13,7 @@ markdown2extras: tables, code-friendly
     Copyright (c) 2014, Joyent, Inc.
 -->
 
+
 # Overview
 
 CNAPI is the 'Compute Node API' which presents an API to communicate and
@@ -540,6 +541,7 @@ parameters must be constructed.
 | 500  | Error  | Could not process request                      |
 
 
+
 # Capacity
 
 ## ServerCapacity (POST /capacity)
@@ -567,6 +569,7 @@ desired servers' UUIDs.
 | 500  | Error  | Could not process request                   |
 
 
+
 # Boot Parameters
 
 ## BootParamsGetDefault (GET /boot/default)
@@ -586,6 +589,7 @@ _None_
 | 200  | Object | Default boot parameters and kernel_args |
 | 404  | None   | No such Server                          |
 
+
 ## BootParamsSetDefault (PUT /boot/default)
 
 Set the default boot parameters.
@@ -596,14 +600,14 @@ payload. Any values not present in the payload will effectively be deleted.
 
 ### Inputs
 
-| Param           | Type   | Description                                    |
-| --------------- | ------ | ---------------------------------------------- |
-| platform        | String | The platform image to use on next boot         |
-| kernel_args     | Object | Key value pairs to be sent to server on boot   |
-| boot_modules    | Array  | List of boot module objects                    |
-| kernel_flags    | Object | Kernel flags to be sent to server on boot      |
-| serial          | Object | Serial device to use (i.e. &quot;ttyb&quot;)   |
-| default_console | Object | Default console type (i.e. &quot;serial&quot;) |
+| Param           | Type   | Description                                  |
+| --------------- | ------ | -------------------------------------------- |
+| platform        | String | The platform image to use on next boot       |
+| kernel_args     | Object | Key value pairs to be sent to server on boot |
+| boot_modules    | Array  | List of boot module objects                  |
+| kernel_flags    | Object | Kernel flags to be sent to server on boot    |
+| serial          | Object | Serial device to use (i.e. &quot;ttyb&quot;)           |
+| default_console | Object | Default console type (i.e. &quot;serial&quot;)         |
 
 
 ### Responses
@@ -612,6 +616,7 @@ payload. Any values not present in the payload will effectively be deleted.
 | ---- | ---- | --------------------------------- |
 | 204  | None | Boot parameters successfully set. |
 | 404  | None | No such Server                    |
+
 
 ## BootParamsUpdateDefault (POST /boot/default)
 
@@ -638,6 +643,7 @@ passed in, the currently effective value will remain unchanged.
 | 204  | None | Boot parameters successfully set |
 | 404  | None | No such Server                   |
 
+
 ## BootParamsGet (GET /boot/:server_uuid)
 
 Returns the boot parameters for a particular server.
@@ -658,6 +664,7 @@ _None_
 | 200  | Object | Default boot parameters and kernel_args |
 | 404  | None   | No such Server                          |
 
+
 ## BootParamsSet (PUT /boot/:server_uuid)
 
 Set the boot parameters of a server.
@@ -669,14 +676,14 @@ effectively deleted when the new object replaces the old.
 
 ### Inputs
 
-| Param           | Type   | Description                                    |
-| --------------- | ------ | ---------------------------------------------- |
-| kernel_args     | Object | Boot parms to update                           |
-| boot_modules    | Array  | List of boot module objects                    |
-| kernel_values   | Object | Kernel flags to update                         |
-| platform        | String | Set platform as the bootable platform          |
-| serial          | Object | Serial device to use (i.e. &quot;ttyb&quot;)   |
-| default_console | Object | Default console type (i.e. &quot;serial&quot;) |
+| Param           | Type   | Description                           |
+| --------------- | ------ | ------------------------------------- |
+| kernel_args     | Object | Boot parms to update                  |
+| boot_modules    | Array  | List of boot module objects           |
+| kernel_values   | Object | Kernel flags to update                |
+| platform        | String | Set platform as the bootable platform |
+| serial          | Object | Serial device to use (i.e. &quot;ttyb&quot;)    |
+| default_console | Object | Default console type (i.e. &quot;serial&quot;)  |
 
 
 ### Responses
@@ -685,6 +692,7 @@ effectively deleted when the new object replaces the old.
 | ---- | ---- | -------------- |
 | 202  | None | No content     |
 | 404  | None | No such Server |
+
 
 ## BootParamsUpdate (POST /boot/:server_uuid)
 
@@ -710,6 +718,7 @@ Does not overwrite any values which are not given.
 | 202  | None | No content  |
 
 
+
 # Images
 
 ## ImageGet (GET /servers/:server_uuid/images/:uuid)
@@ -733,6 +742,7 @@ Query the server for the Image's details.
 | 404  | Object | No such server    |
 
 
+
 # Ping
 
 ## Ping (GET /ping)
@@ -750,6 +760,7 @@ _None_
 | Code | Type   | Description     |
 | ---- | ------ | --------------- |
 | 200  | Object | Status details. |
+
 
 
 # Nics
@@ -790,6 +801,7 @@ parameter must be an array of objects. Those objects must have both the
 | 404  | Error | No such server                      |
 
 
+
 # Platforms
 
 ## PlatformList (GET /platforms)
@@ -807,6 +819,7 @@ _None_
 | Code | Type  | Description          |
 | ---- | ----- | -------------------- |
 | 200  | Array | The returned servers |
+
 
 
 # Servers
@@ -837,6 +850,7 @@ Returns Servers present in datacenter.
 | ---- | ----- | -------------------- |
 | 200  | Array | The returned servers |
 
+
 ## ServerGet (GET /servers/:server\_uuid)
 
 Look up a single Server by UUID.
@@ -849,9 +863,10 @@ _None_
 
 ### Responses
 
-| Code | Type   | Description           |
-| ---- | ------ | --------------------- |
+| Code | Type   | Description        |
+| ---- | ------ | ------------------ |
 | 200  | Object | The server object&gt; |
+
 
 ## ServerUpdate (POST /servers/:server_uuid)
 
@@ -883,6 +898,7 @@ Set the value of a Server's attribute.
 | ---- | ---- | ----------------------------- |
 | 204  | None | The value was set successfuly |
 
+
 ## ServerReboot (POST /servers/:server\_uuid/reboot)
 
 Reboot the server.
@@ -900,6 +916,7 @@ _None_
 | 204  | Object | Server reboot initiated           |
 | 500  | None   | Error attempting to set up server |
 
+
 ## ServerFactoryReset (PUT /servers/:server\_uuid/factory-reset)
 
 Reset the server back to a factory state.
@@ -916,6 +933,7 @@ _None_
 | ---- | ------ | ----------------------------------------------------- |
 | 204  | Object | Setup initated, returns object containing workflow id |
 | 500  | None   | Error attempting to set up server                     |
+
 
 ## ServerSetup (PUT /servers/:server_uuid/setup)
 
@@ -938,6 +956,7 @@ Initiate the server setup process for a newly started server.
 | 200  | Object | Setup initated, returns object containing workflow id |
 | 500  | None   | Error while processing request                        |
 
+
 ## ServerSysinfoRefresh (POST /servers/:server_uuid/sysinfo-refresh)
 
 Fetch a given server's sysinfo values and store them in the server object.
@@ -954,6 +973,7 @@ _None_
 | ---- | ------ | ------------------------------ |
 | 200  | Object | Sysinfo refresh initiated      |
 | 500  | None   | Error while processing request |
+
 
 ## ServerDelete (DELETE /servers/:server_uuid)
 
@@ -972,6 +992,7 @@ _None_
 | ---- | ----- | ------------------------------- |
 | 204  | None  | Server was deleted successfully |
 | 500  | Error | Could not process request       |
+
 
 ## ServerTaskHistory (GET /servers/:server_uuid/task-history)
 
@@ -992,6 +1013,7 @@ _None_
 | 500  | Error | Could not process request   |
 
 
+
 # Provisioner Tasks
 
 ## TaskGet (GET /tasks/:task_id)
@@ -1010,6 +1032,7 @@ _None_
 | ---- | ------ | ------------------ |
 | 200  | Object | Task details       |
 | 404  | None   | No such task found |
+
 
 
 # Remote Execution
@@ -1035,6 +1058,7 @@ Synchronously execute a command on the target server.
 | 404  | None | No such server |
 
 
+
 # Virtual Machines
 
 ## VmList (GET /servers/:server_uuid/vms)
@@ -1053,6 +1077,7 @@ _None_
 | ---- | ------ | -------------- |
 | 204  | Array  | List of VMs    |
 | 404  | Object | No such server |
+
 
 ## VmLoad (GET /servers/:server_uuid/vms/:uuid)
 
@@ -1074,6 +1099,7 @@ Query the server for the VM's details.
 | 404  | Object | No such VM              |
 | 404  | Object | No such server          |
 
+
 ## VmInfo (GET /servers/:server_uuid/vms/:uuid/info)
 
 Query the server for the VM's `vmadm info` output.
@@ -1092,6 +1118,7 @@ _None_
 | 404  | Object | No such VM        |
 | 404  | Object | No such server    |
 
+
 ## VmInfo (GET /servers/:server_uuid/vms/:uuid/vnc)
 
 Query the server for the VM's VNC host and port.
@@ -1109,6 +1136,7 @@ _None_
 | 200  | Object | Request succeeded |
 | 404  | Object | No such VM        |
 | 404  | Object | No such server    |
+
 
 ## VmUpdate (POST /servers/:server\_uuid/vms/:uuid/update)
 
@@ -1131,6 +1159,7 @@ UUID `:server_uuid`.
 | 404  | Error | No such VM              |
 | 404  | Error | No such server          |
 
+
 ## VmNicsUpdate (POST /servers/:server\_uuid/vms/nics/update)
 
 Bulk modify VM nics
@@ -1151,6 +1180,7 @@ Bulk modify VM nics
 | 400  | Error | Task not supported on server |
 | 404  | Error | No such server               |
 
+
 ## VmStart (POST /servers/:server_uuid/vms/:uuid/start)
 
 Boot up a vm which is in the 'stopped' state.
@@ -1170,6 +1200,7 @@ Boot up a vm which is in the 'stopped' state.
 | 204  | None  | Task was sent to server |
 | 404  | Error | No such VM              |
 | 404  | Error | No such server          |
+
 
 ## VmStop (POST /servers/:server\_uuid/vms/:uuid/stop)
 
@@ -1192,6 +1223,7 @@ Shut down a VM which is in the 'running' state.
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
 
+
 ## VmReboot (POST /servers/:server\_uuid/vms/:uuid/reboot)
 
 Reboot a VM which is in the 'running' state.
@@ -1213,6 +1245,7 @@ Reboot a VM which is in the 'running' state.
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
 
+
 ## VmCreate (POST /servers/:server_uuid/vms)
 
 Create a VM on the specified server.
@@ -1232,6 +1265,7 @@ Create a VM on the specified server.
 | 204  | None  | Task was sent to server                               |
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
+
 
 ## VmReprovision (POST /servers/:server_uuid/vms/:uuid/reprovision)
 
@@ -1254,6 +1288,7 @@ Reprovision a given VM.
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
 
+
 ## VmDestroy (DELETE /servers/:server_uuid/vms/:uuid)
 
 Delete the specified VM.
@@ -1271,6 +1306,7 @@ _None_
 | 204  | None  | Task was sent to server                               |
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
+
 
 
 # Virtual Machine Snapshots
@@ -1293,6 +1329,7 @@ _None_
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
 
+
 ## VmSnapshotRollback (PUT /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name/rollback)
 
 Roll back to a previous snapshot of a VM.
@@ -1310,6 +1347,7 @@ _None_
 | 204  | None  | Task was sent to server                               |
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
+
 
 ## VmSnapshotDestroy (DELETE /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name)
 
@@ -1330,6 +1368,7 @@ _None_
 | 500  | Error | Error encountered while attempting to fulfill request |
 
 
+
 # VmImages
 
 ## VmImagesCreate (POST /servers/:server_uuid/vms/:uuid/images)
@@ -1339,14 +1378,14 @@ Create a VM image.
 
 ### Inputs
 
-| Param                | Type    | Description                                               |
-| -------------------- | ------- | --------------------------------------------------------- |
-| jobid                | String  | Create a new virtual machine on the given server          |
-| compression          | String  | Compression to use for creating image                     |
-| imgapi_url           | String  | Location of imgapi                                        |
-| incremental          | Boolean | Make this an incremental image? Optional.                 |
-| prepare_image_script | String  | A script run in a reboot of the VM                        |
-| manifest             | Object  | Image manifest object. Require at least &quot;uuid&quot;, |
+| Param                | Type    | Description                                      |
+| -------------------- | ------- | ------------------------------------------------ |
+| jobid                | String  | Create a new virtual machine on the given server |
+| compression          | String  | Compression to use for creating image            |
+| imgapi_url           | String  | Location of imgapi                               |
+| incremental          | Boolean | Make this an incremental image? Optional.        |
+| prepare_image_script | String  | A script run in a reboot of the VM               |
+| manifest             | Object  | Image manifest object. Require at least &quot;uuid&quot;,  |
 
 
 ### Responses
@@ -1356,6 +1395,7 @@ Create a VM image.
 | 204  | None  | Task was sent to server                               |
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
+
 
 
 # Waitlist
@@ -1379,6 +1419,7 @@ _None_
 | 200  | Array | Waitlist returned successfully |
 | 500  | Error | Could not process request      |
 
+
 ## ServerWaitlistTicketCreate (POST /servers/:server_uuid/tickets)
 
 Create a new waitlist ticket.
@@ -1401,6 +1442,7 @@ Create a new waitlist ticket.
 | 202  | Array | Waitlist ticket created successfully |
 | 500  | Error | Could not process request            |
 
+
 ## ServerWaitlistGetTicket (POST /tickets/:ticket_uuid)
 
 Retrieve a waitlist ticket.
@@ -1418,6 +1460,7 @@ _None_
 | 200  | Array | Waitlist ticket returned successfully |
 | 500  | Error | Could not process request             |
 
+
 ## ServerWaitlistDeleteTicket (DELETE /tickets/:ticket_uuid)
 
 Delete a waitlist ticket.
@@ -1434,6 +1477,7 @@ _None_
 | ---- | ----- | ------------------------------------ |
 | 204  | Array | Waitlist ticket deleted successfully |
 | 500  | Error | Could not process request            |
+
 
 ## ServerWaitlistTicketsDeleteAll (DELETE /servers/:server_uuid/tickets)
 
@@ -1454,6 +1498,7 @@ Delete all of a server's waitlist tickets.
 | 204  | Array | Waitlist ticket deleted successfully |
 | 500  | Error | Could not process request            |
 
+
 ## ServerWaitlistTicketsWait (GET /tickets/:ticket_uuid/wait)
 
 Wait until a waitlist ticket either expires or becomes active.
@@ -1471,6 +1516,7 @@ _None_
 | 204  | Array | Ticket active or expired  |
 | 500  | Error | Could not process request |
 
+
 ## ServerWaitlistTicketsWait (GET /tickets/:ticket_uuid/release)
 
 Release a currently active or queued waitlist ticket.
@@ -1487,6 +1533,7 @@ _None_
 | ---- | ----- | ---------------------------- |
 | 204  | Array | Ticket released successfully |
 | 500  | Error | Could not process request    |
+
 
 
 # ZFS
@@ -1507,6 +1554,7 @@ _None_
 | ---- | ----- | ------------------------------------------- |
 | 200  | Array | Array of objects, one per dataset on server |
 
+
 ## DatasetCreate (POST /servers/:server_uuid/datasets)
 
 Create a ZFS dataset on a server.
@@ -1522,6 +1570,7 @@ _None_
 | Code | Type | Description                  |
 | ---- | ---- | ---------------------------- |
 | 204  | None | Dataset successfully created |
+
 
 ## SnapshotCreate (POST /servers/:server_uuid/datasets/:dataset/snapshot)
 
@@ -1541,6 +1590,7 @@ Create a ZFS snapshot of a dataset on a server.
 | ---- | ---- | ----------------------------- |
 | 204  | None | Snapshot successfully created |
 
+
 ## SnapshotRollback (POST /servers/:server_uuid/datasets/:dataset/rollback)
 
 Revert a ZFS dataset to back to a previous state captured by a snapshot.
@@ -1559,6 +1609,7 @@ Revert a ZFS dataset to back to a previous state captured by a snapshot.
 | ---- | ---- | --------------------------------- |
 | 204  | None | Snapshot successfully rolled back |
 
+
 ## SnapshotList (GET /servers/:server_uuid/datasets/:dataset/snapshots)
 
 List all snapshots on a dataset
@@ -1575,6 +1626,7 @@ _None_
 | ---- | ----- | ------------------------- |
 | 200  | Array | Array of snapshot objects |
 
+
 ## DatasetPropertiesGetAll (GET /servers/:server_uuid/dataset-properties)
 
 Get ZFS properties across all datasets on a server.
@@ -1582,8 +1634,8 @@ Get ZFS properties across all datasets on a server.
 
 ### Inputs
 
-| Param         | Type   | Description                                           |
-| ------------- | ------ | ----------------------------------------------------- |
+| Param   | Type   | Description                                 |
+| ------- | ------ | ------------------------------------------- |
 | &lt;prop1&gt; | String | Get the property given by the &quot;prop1&quot; value |
 | &lt;prop2&gt; | String | Get the property given by the &quot;prop2&quot; value |
 | &lt;propN&gt; | String | Get the property given by the &quot;propN&quot; value |
@@ -1595,6 +1647,7 @@ Get ZFS properties across all datasets on a server.
 | ---- | ------ | ------------------------ |
 | 200  | Object | list of property details |
 
+
 ## DatasetPropertiesGet (GET /servers/:server_uuid/datasets/:dataset/properties)
 
 Get ZFS properties for a dataset.  The specific properties to return can be
@@ -1603,8 +1656,8 @@ filtered with ?prop1=foo&amp;prop2=bar, etc.
 
 ### Inputs
 
-| Param         | Type   | Description                                           |
-| ------------- | ------ | ----------------------------------------------------- |
+| Param   | Type   | Description                                 |
+| ------- | ------ | ------------------------------------------- |
 | &lt;prop1&gt; | String | Get the property given by the &quot;prop1&quot; value |
 | &lt;prop2&gt; | String | Get the property given by the &quot;prop2&quot; value |
 | &lt;propN&gt; | String | Get the property given by the &quot;propN&quot; value |
@@ -1615,6 +1668,7 @@ filtered with ?prop1=foo&amp;prop2=bar, etc.
 | Code | Type  | Description                      |
 | ---- | ----- | -------------------------------- |
 | 200  | Array | List of dataset property details |
+
 
 ## DatasetPropertiesSet (POST /servers/:server_uuid/datasets/:dataset/properties)
 
@@ -1634,6 +1688,7 @@ Set one or more properties for a ZFS dataset.
 | ---- | ---- | -------------------------------- |
 | 204  | None | Properties were set successfully |
 
+
 ## DatasetDestroy (DELETE /servers/:server_uuid/datasets/:dataset)
 
 Destroy a ZFS dataset on a server.
@@ -1649,6 +1704,7 @@ _None_
 | Code | Type | Description                  |
 | ---- | ---- | ---------------------------- |
 | 204  | None | Dataset successfully deleted |
+
 
 ## ZpoolList (GET /servers/:server_uuid/zpools)
 
@@ -1667,7 +1723,5 @@ _None_
 | 200  | Array | List of zpool detail objects |
 
 
-# Meta
 
-- CNAPI version: 1.0.8
-- Doc build date: Wed Aug 06 2014 06:58:38 GMT+0000 (UTC)
+
