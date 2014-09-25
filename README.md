@@ -22,7 +22,7 @@ and destroying tasks, initiating tasks, etc.
 
 To run the  API server:
 
-    git clone git@git.joyent.com:cnapi.git
+    git clone git@github.com:joyent/sdc-cnapi.git
     cd cnapi
     git submodule update --init
     make all
