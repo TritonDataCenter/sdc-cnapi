@@ -131,7 +131,7 @@ function makeTable(params) {
     var headerlines = '';
     var headerout;
 
-    headerout = '| ' + params.headers.map(function(c, w) {
+    headerout = '| ' + params.headers.map(function (c, w) {
         return sprintf('%-'+widths[w]+'s', c);
     }).join(' | ') + ' |';
 
@@ -140,7 +140,7 @@ function makeTable(params) {
     }).join(' | ') + ' |';
 
     padded = rowsout.map(function (row) {
-        return '| ' + row.map(function(c, w) {
+        return '| ' + row.map(function (c, w) {
             return sprintf('%-'+widths[w]+'s', c);
         }).join(' | ') + ' |';
     });
