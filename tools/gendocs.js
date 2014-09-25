@@ -91,7 +91,10 @@ function getTableCellWidths(params) {
         for (var i in params.fields) {
             var field = params.fields[i];
 
-            if (row.hasOwnProperty(field) && row[field].length > widths[i] || !widths[i]) {
+            if (row.hasOwnProperty(field) &&
+                row[field].length > widths[i] ||
+                !widths[i])
+            {
                 if (i > widths.length)  {
                     widths.push(row[field].length);
                 } else {
@@ -112,7 +115,8 @@ function makeTable(params) {
     params.data.forEach(function (row) {
         var rowout = [];
 
-        for (var i in fields) {
+        var i;
+        for (i in fields) {
             var field = fields[i];
             if (row.hasOwnProperty(field)) {
                 rowout.push(row[field]);
@@ -126,29 +130,20 @@ function makeTable(params) {
     var padded = [];
     var headerlines = '';
     var headerout;
-    var row;
 
     headerout = '| ' + params.headers.map(function(c, w) {
-        return sprintf("%-"+widths[w]+"s", c);
+        return sprintf('%-'+widths[w]+'s', c);
     }).join(' | ') + ' |';
-
-//     console.log(headerout);
 
     headerlines = '| ' + fields.map(function (f, fi) {
         return (new Array(1+widths[fi])).join('-');
     }).join(' | ') + ' |';
 
-//     console.log(headerlines);
-
-
-    for (var i in rowsout) {
-        row = rowsout[i];
-        padded.push('| ' + row.map(function(c, w) {
-            return sprintf("%-"+widths[w]+"s", c);
-        }).join(' | ') + ' |');
-    }
-
-//     console.log(padded.join('\n'));
+    padded = rowsout.map(function (row) {
+        return '| ' + row.map(function(c, w) {
+            return sprintf('%-'+widths[w]+'s', c);
+        }).join(' | ') + ' |';
+    });
 
     return headerout + '\n' + headerlines + '\n' + padded.join('\n');
 }
@@ -171,18 +166,6 @@ function main() {
             }
         });
     });
-
-//     console.log(makeTable({
-//         headers: ['NAME', '__TYPE__', 'ID____________'],
-//         fields: ['name', 'type', 'id'],
-//         data: [
-//             { name: "foo", type: "bar", id: "baaaaaaz" },
-//             { name: "foooo", type: "br", id: "baaaaaz" },
-//             { name: "xx" },
-//             { name: "z" },
-//             { name: "xxxxxx", type: "fo" }
-//         ]
-//     }));
 
     var parsed = {};
 
