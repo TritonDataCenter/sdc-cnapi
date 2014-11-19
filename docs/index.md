@@ -1224,6 +1224,28 @@ Shut down a VM which is in the 'running' state.
 | 500  | Error | Error encountered while attempting to fulfill request |
 
 
+## VmKill (POST /servers/:server_uuid/vms/:uuid/kill)
+
+Send a signal to a given VM.
+
+
+### Inputs
+
+| Param  | Type   | Description                                    |
+| ------ | ------ | ---------------------------------------------- |
+| jobid  | String | Post information to workflow with this id      |
+| signal | String | Optional: Signal to send to init process of VM |
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
+
+
 ## VmReboot (POST /servers/:server\_uuid/vms/:uuid/reboot)
 
 Reboot a VM which is in the 'running' state.
@@ -1304,6 +1326,31 @@ _None_
 | Code | Type  | Description                                           |
 | ---- | ----- | ----------------------------------------------------- |
 | 204  | None  | Task was sent to server                               |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
+
+
+## VmDockerExec (POST /servers/:server\_uuid/vms/:uuid/docker-exec)
+
+Send a docker_exec task to the given server/vm. This starts a server on the
+given server which will spawn a process with the given docker payload.
+
+
+### Inputs
+
+| Param   | Type   | Description                                      |
+| ------- | ------ | ------------------------------------------------ |
+| address | String | ip:port where the stdio server will be listening |
+| host    | String | host where the stdio server will be listening    |
+| port    | Number | port on host the stdio server will be listening  |
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such VM                                            |
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
 
