@@ -44,7 +44,6 @@
 			        "calculate-locality",
 			        "hard-filter-reserved",
 			        "hard-filter-headnode",
-			        "hard-filter-ticketed-servers",
 			        "hard-filter-vlans",
 			        "hard-filter-platform-versions",
 			        "hard-filter-traits",
