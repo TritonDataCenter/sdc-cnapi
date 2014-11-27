@@ -9,10 +9,14 @@
 #
 
 set -o xtrace
-expiry_far=$(/usr/node/bin/node -e 'console.log(new Date((new Date().valueOf()) + 10*1000).toISOString())')
-obj="{ \"action\": \"reboot\", \"scope\": \"foo\", \"id\": \"bar\", \"expires_at\": \"$expiry_far\" }"
+expiry_far=$(/usr/node/bin/node -e 'console.log(new Date((new Date().valueOf()) + 20*1000).toISOString())')
+expiry_far2=$(/usr/node/bin/node -e 'console.log(new Date((new Date().valueOf()) + 30*1000).toISOString())')
+obj="{ \"action\": \"reboot\", \"scope\": \"foo\", \"id\": \"bar\", \"expires_at\": \"$expiry_far\", \"extra\": { \"foo\": \"bar\" } }"
+obj2="{ \"action\": \"reboot\", \"scope\": \"foo\", \"id\": \"bar\", \"expires_at\": \"$expiry_far2\", \"extra\": { \"foo\": \"bar\" } }"
 NUM=$1
 
+sdc-cnapi /servers/$(sysinfo |json UUID)/tickets -X POST -d "$obj" &
+
 for i in $(seq 1 $NUM); do
-    sdc-cnapi /servers/$(sysinfo |json UUID)/tickets -X POST -d "$obj" &
+    sdc-cnapi /servers/$(sysinfo |json UUID)/tickets -X POST -d "$obj2" &
 done

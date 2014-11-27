@@ -83,20 +83,22 @@ function testDeleteAllWaitlistTickets(test) {
 
 
 function testCreateTicket(test) {
-    test.expect(55);
+    test.expect(59);
 
     var ticketPayload = {
         scope: 'test',
         id: '123',
         expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString(),
-        action: 'action0'
+        action: 'action0',
+        extra: { foo: 'bar' }
     };
 
     var ticketPayload2 = {
         scope: 'test',
         id: '234',
         expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString(),
-        action: 'action1'
+        action: 'action1',
+        extra: { foo: 'baz' }
     };
 
     var ticketPayloads = [
@@ -160,6 +162,7 @@ function testCreateTicket(test) {
                 test.equal(ticket.expires_at, ticketPayload2.expires_at);
                 test.equal(ticket.server_uuid, serveruuid);
                 test.equal(ticket.id, ticketPayload2.id);
+                test.deepEqual(ticket.extra, ticketPayload2.extra);
 
                 wfcb();
             }
@@ -184,6 +187,7 @@ function testCreateTicket(test) {
                 test.equal(waitlist[0].expires_at, ticketPayload.expires_at);
                 test.equal(waitlist[0].server_uuid, serveruuid);
                 test.equal(waitlist[0].id, ticketPayload.id);
+                test.deepEqual(waitlist[0].extra, ticketPayload.extra);
                 test.equal(waitlist[0].status, 'active');
 
                 test.equal(waitlist[1].scope, ticketPayload.scope);
@@ -191,6 +195,7 @@ function testCreateTicket(test) {
                 test.equal(waitlist[1].expires_at, ticketPayload.expires_at);
                 test.equal(waitlist[1].server_uuid, serveruuid);
                 test.equal(waitlist[1].id, ticketPayload.id);
+                test.deepEqual(waitlist[1].extra, ticketPayload.extra);
                 test.equal(waitlist[1].status, 'queued');
 
                 test.equal(waitlist[2].scope, ticketPayload2.scope);
@@ -198,6 +203,7 @@ function testCreateTicket(test) {
                 test.equal(waitlist[2].expires_at, ticketPayload2.expires_at);
                 test.equal(waitlist[2].server_uuid, serveruuid);
                 test.equal(waitlist[2].id, ticketPayload2.id);
+                test.deepEqual(waitlist[2].extra, ticketPayload2.extra);
                 test.equal(waitlist[2].status, 'active');
 
                 wfcb();

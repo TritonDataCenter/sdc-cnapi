@@ -1480,6 +1480,7 @@ Create a new waitlist ticket.
 | id         | String | The id of the resource of type 'scope'       |
 | expires_at | String | ISO 8601 date string when ticket will expire |
 | action     | String | Description of acting to be undertaken       |
+| extra      | Object | Object containing client specific metadata   |
 
 
 ### Responses
