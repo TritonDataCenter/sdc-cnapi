@@ -37,7 +37,7 @@
 		"url": "http://{{{IMGAPI_SERVICE}}}"
 	},
 	"dapi": {
-		"defaultSpread": "{{#DAPI_DEFAULT_SPREAD}}{{{DAPI_DEFAULT_SPREAD}}}{{/DAPI_DEFAULT_SPREAD}}{{^DAPI_DEFAULT_SPREAD}}min-ram{{/DAPI_DEFAULT_SPREAD}}",
+		"defaultSpread": "{{#ALLOC_SERVER_SPREAD}}{{{ALLOC_SERVER_SPREAD}}}{{/ALLOC_SERVER_SPREAD}}{{^ALLOC_SERVER_SPREAD}}min-ram{{/ALLOC_SERVER_SPREAD}}",
 		"allocationDescription": [
 			"pipe", "hard-filter-setup",
 			        "hard-filter-running",
