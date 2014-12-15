@@ -37,7 +37,12 @@
 		"url": "http://{{{IMGAPI_SERVICE}}}"
 	},
 	"dapi": {
-		"defaultSpread": "{{#ALLOC_SERVER_SPREAD}}{{{ALLOC_SERVER_SPREAD}}}{{/ALLOC_SERVER_SPREAD}}{{^ALLOC_SERVER_SPREAD}}min-ram{{/ALLOC_SERVER_SPREAD}}",
+		"changeDefaults": {
+			"server_spread": "{{{ALLOC_SERVER_SPREAD}}}",
+			"filter_headnode": "{{{ALLOC_FILTER_HEADNODE}}}",
+			"filter_min_resources": "{{{ALLOC_FILTER_MIN_RESOURCES}}}",
+			"filter_large_servers": "{{{ALLOC_FILTER_LARGE_SERVERS}}}"
+		},
 		"allocationDescription": [
 			"pipe", "hard-filter-setup",
 			        "hard-filter-running",

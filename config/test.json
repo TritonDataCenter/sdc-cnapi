@@ -34,7 +34,12 @@
     "host": "10.99.99.19"
   },
   "dapi": {
-    "defaultSpread": "min-ram",
+    "changeDefaults": {
+      "server_spread": "",
+      "filter_headnode": "",
+      "filter_min_resources": "",
+      "filter_large_servers": ""
+    },
     "allocationDescription": [
        "pipe", "hard-filter-setup",
                "hard-filter-running",
