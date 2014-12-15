@@ -9,12 +9,91 @@
  * Copyright (c) 2014, Joyent, Inc.
  */
 
+/**
+ * Generate docs/index.md from parsing of dox comments in JS code
+ * and the docs/index/index.md.ejs template.
+ *
+ * Usage:
+ *      make regen_docs
+ */
+
+var assert = require('assert-plus');
 var dox = require('dox');
 var fs = require('fs');
 var sprintf = require('sprintf').sprintf;
 var file = require('file');
 var async = require('async');
 var path = require('path');
+
+
+/**
+ * Sort an array of objects (in-place).
+ *
+ * @param items {Array} The array of objects to sort.
+ * @param fields {Array} Array of field names (lookups) on which to sort --
+ *      higher priority to fields earlier in the array. The comparison may
+ *      be reversed by prefixing the field with '-'. E.g.:
+ *          ['-age', 'lastname', 'firstname']
+ * @param options {Object} Optional.
+ *      - dottedLookup {Boolean}
+ *
+ * From node-tabula.
+ */
+function sortArrayOfObjects(items, fields, options) {
+    assert.optionalObject(options, 'options');
+    if (!options) {
+        options = {};
+    }
+    assert.optionalBool(options.dottedLookup, 'options.dottedLookup');
+    var dottedLookup = options.dottedLookup;
+
+    function cmp(a, b) {
+        for (var i = 0; i < fields.length; i++) {
+            var field = fields[i];
+            var invert = false;
+            if (field[0] === '-') {
+                invert = true;
+                field = field.slice(1);
+            }
+            assert.ok(field.length, 'zero-length sort field: ' + fields);
+            var a_field, b_field;
+            if (dottedLookup) {
+                // This could be sped up by bring some processing out of `cmp`.
+                var lookup = new Function('return this.' + field);
+                try {
+                    a_field = lookup.call(a);
+                } catch (e) {}
+                try {
+                    b_field = lookup.call(b);
+                } catch (e) {}
+            } else {
+                a_field = a[field];
+                b_field = b[field];
+            }
+            var a_cmp = Number(a_field);
+            var b_cmp = Number(b_field);
+            if (isNaN(a_cmp) || isNaN(b_cmp)) {
+                a_cmp = a_field;
+                b_cmp = b_field;
+            }
+            // Comparing < or > to `undefined` with any value always
+            // returns false.
+            if (a_cmp === undefined && b_cmp === undefined) {
+                /* jsl:pass */
+            } else if (a_cmp === undefined) {
+                return (invert ? 1 : -1);
+            } else if (b_cmp === undefined) {
+                return (invert ? -1 : 1);
+            } else if (a_cmp < b_cmp) {
+                return (invert ? 1 : -1);
+            } else if (a_cmp > b_cmp) {
+                return (invert ? -1 : 1);
+            }
+        }
+        return 0;
+    }
+    items.sort(cmp);
+}
 
 function parse(document) {
     var parsed = {};
@@ -167,20 +246,38 @@ function main() {
         });
     });
 
-    var parsed = {};
+    var endpointsFromSectionName = {};
 
     files.forEach(function (fn) {
         var doc = processFile(fn);
-
-        for (var s in doc) {
-            parsed[s] = doc[s];
+        for (var name in doc) {
+            if (endpointsFromSectionName[name]) {
+                endpointsFromSectionName[name]
+                    = endpointsFromSectionName[name].concat(doc[name]);
+            } else {
+                endpointsFromSectionName[name] = doc[name];
+            }
         }
     });
+
+    var sections = [];
+    Object.keys(endpointsFromSectionName).forEach(function (name) {
+        sections.push({
+            name: name,
+            endpoints: endpointsFromSectionName[name]
+        });
+    });
+    // Sort sections by name for stable doc section order.
+    sortArrayOfObjects(sections, ['name']);
 
     var ejs = require('ejs');
     var expanded = ejs.render(fs.readFileSync(
         __dirname + '/../docs/index/index.md.ejs').toString(),
-        { package: pkg, makeTable: makeTable, doc: parsed });
+        {
+            package: pkg,
+            makeTable: makeTable,
+            sections: sections
+        });
     process.stdout.write(expanded);
 }
 

@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: <%= Object.keys(doc).join(", ") %>
+apisections: <%= sections.map(function (s) { return s.name }).join(", ") %>
 markdown2extras: tables, code-friendly
 ---
 <!--
@@ -12,6 +12,9 @@ markdown2extras: tables, code-friendly
 <!--
     Copyright (c) 2014, Joyent, Inc.
 -->
+
+<!-- WARNING: index.md is generated from docs/index/index.md.ejs.
+    Make you edits to the latter. -->
 
 
 # Overview
@@ -506,33 +509,34 @@ will be allowed to proceed.
 
 
 
-# Reference
+<!-- Genererated API docs -->
+<% sections.forEach(function (section) { %># <%= section.name %>
 
-<% Object.keys(doc).forEach(function (section) { %><% var blocks = doc[section]; %># <%= section %>
+<% section.endpoints.forEach(function (endpoint) { %>## <%= endpoint.name %> (<%= endpoint.endpoint %>)
 
-<% doc[section].forEach(function (block) { %>## <%= block.name %> (<%= block.endpoint %>)
+<%= endpoint.summary %><% if (endpoint.body) { %>
 
-<%= block.summary %><% if (block.body) { %>
-
-<%= block.body %><% } %>
+<%= endpoint.body %><% } %>
 
 ### Inputs
 
-<% if (block.params.length) { %><%= makeTable({
+<% if (endpoint.params.length) { %><%= makeTable({
     headers: ["Param", "Type", "Description"],
     fields: ["name", "type", "description"],
-    data: block.params
-}) %><% } else { %>_None_<% } %>
+    data: endpoint.params
+}) %><% } else { %>None.<% } %>
 
 
 ### Responses
 
-<% if (block.responses.length) { %><%= makeTable({
+<% if (endpoint.responses.length) { %><%= makeTable({
     headers: ["Code", "Type", "Description"],
     fields: ["code", "type", "description"],
-    data: block.responses
+    data: endpoint.responses
 }) %><% } else { %>_None_<% } %>
 
 
 <% }); %>
 <% }); %>
+
+<!-- End of genererated API docs -->

@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Allocation, Capacity, Boot Parameters, Images, Ping, Nics, Platforms, Servers, Provisioner Tasks, Remote Execution, Virtual Machines, Virtual Machine Snapshots, VmImages, Waitlist, ZFS
+apisections: Allocation API, Boot Parameters API, Miscellaneous API, Provisioner Tasks API, Remote Execution API, Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API
 markdown2extras: tables, code-friendly
 ---
 <!--
@@ -12,6 +12,9 @@ markdown2extras: tables, code-friendly
 <!--
     Copyright (c) 2014, Joyent, Inc.
 -->
+
+<!-- WARNING: index.md is generated from docs/index/index.md.ejs.
+    Make you edits to the latter. -->
 
 
 # Overview
@@ -506,9 +509,8 @@ will be allowed to proceed.
 
 
 
-# Reference
-
-# Allocation
+<!-- Genererated API docs -->
+# Allocation API
 
 ## SelectServer (POST /allocate)
 
@@ -541,9 +543,6 @@ parameters must be constructed.
 | 500  | Error  | Could not process request                      |
 
 
-
-# Capacity
-
 ## ServerCapacity (POST /capacity)
 
 Returns how much spare capacity there is on each server, specifically RAM
@@ -570,7 +569,7 @@ desired servers' UUIDs.
 
 
 
-# Boot Parameters
+# Boot Parameters API
 
 ## BootParamsGetDefault (GET /boot/default)
 
@@ -579,7 +578,7 @@ Returns the default boot parameters.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -654,7 +653,7 @@ kernel parameters will be used to boot the server.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -719,31 +718,24 @@ Does not overwrite any values which are not given.
 
 
 
-# Images
+# Miscellaneous API
 
-## ImageGet (GET /servers/:server_uuid/images/:uuid)
+## PlatformList (GET /platforms)
 
-Query the server for the Image's details.
+Returns avaiable platform images in datacenter.
 
 
 ### Inputs
 
-| Param | Type   | Description                               |
-| ----- | ------ | ----------------------------------------- |
-| jobid | String | Post information to workflow with this id |
+None.
 
 
 ### Responses
 
-| Code | Type   | Description       |
-| ---- | ------ | ----------------- |
-| 200  | Object | Request succeeded |
-| 404  | Object | No such Image     |
-| 404  | Object | No such server    |
+| Code | Type  | Description          |
+| ---- | ----- | -------------------- |
+| 200  | Array | The returned servers |
 
-
-
-# Ping
 
 ## Ping (GET /ping)
 
@@ -752,7 +744,7 @@ Return CNAPI's service status details.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -761,9 +753,6 @@ _None_
 | ---- | ------ | --------------- |
 | 200  | Object | Status details. |
 
-
-
-# Nics
 
 ## NicUpdate (PUT /servers/:server_uuid/nics)
 
@@ -801,28 +790,74 @@ parameter must be an array of objects. Those objects must have both the
 | 404  | Error | No such server                      |
 
 
+## ImageGet (GET /servers/:server_uuid/images/:uuid)
 
-# Platforms
-
-## PlatformList (GET /platforms)
-
-Returns avaiable platform images in datacenter.
+Query the server for the Image's details.
 
 
 ### Inputs
 
-_None_
+| Param | Type   | Description                               |
+| ----- | ------ | ----------------------------------------- |
+| jobid | String | Post information to workflow with this id |
 
 
 ### Responses
 
-| Code | Type  | Description          |
-| ---- | ----- | -------------------- |
-| 200  | Array | The returned servers |
+| Code | Type   | Description       |
+| ---- | ------ | ----------------- |
+| 200  | Object | Request succeeded |
+| 404  | Object | No such Image     |
+| 404  | Object | No such server    |
 
 
 
-# Servers
+# Provisioner Tasks API
+
+## TaskGet (GET /tasks/:task_id)
+
+Returns the details of the given task.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type   | Description        |
+| ---- | ------ | ------------------ |
+| 200  | Object | Task details       |
+| 404  | None   | No such task found |
+
+
+
+# Remote Execution API
+
+## CommandExecute (POST /servers/:server_uuid/execute)
+
+Synchronously execute a command on the target server.
+
+
+### Inputs
+
+| Param  | Type   | Description                                             |
+| ------ | ------ | ------------------------------------------------------- |
+| args   | Array  | Array containing arguments to be passed in to command   |
+| env    | Object | Object containing environment variables to be passed in |
+| script | String | Script to be executed. Must have a shebang line         |
+
+
+### Responses
+
+| Code | Type | Description    |
+| ---- | ---- | -------------- |
+| 404  | None | No such server |
+
+
+
+# Server API
 
 ## ServerList (GET /servers)
 
@@ -858,7 +893,7 @@ Look up a single Server by UUID.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -906,7 +941,7 @@ Reboot the server.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -924,7 +959,7 @@ Reset the server back to a factory state.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -964,7 +999,7 @@ Fetch a given server's sysinfo values and store them in the server object.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -983,7 +1018,7 @@ actual server.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1002,7 +1037,7 @@ provisioner was started.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1014,52 +1049,7 @@ _None_
 
 
 
-# Provisioner Tasks
-
-## TaskGet (GET /tasks/:task_id)
-
-Returns the details of the given task.
-
-
-### Inputs
-
-_None_
-
-
-### Responses
-
-| Code | Type   | Description        |
-| ---- | ------ | ------------------ |
-| 200  | Object | Task details       |
-| 404  | None   | No such task found |
-
-
-
-# Remote Execution
-
-## CommandExecute (POST /servers/:server_uuid/execute)
-
-Synchronously execute a command on the target server.
-
-
-### Inputs
-
-| Param  | Type   | Description                                             |
-| ------ | ------ | ------------------------------------------------------- |
-| args   | Array  | Array containing arguments to be passed in to command   |
-| env    | Object | Object containing environment variables to be passed in |
-| script | String | Script to be executed. Must have a shebang line         |
-
-
-### Responses
-
-| Code | Type | Description    |
-| ---- | ---- | -------------- |
-| 404  | None | No such server |
-
-
-
-# Virtual Machines
+# Virtual Machine API
 
 ## VmList (GET /servers/:server_uuid/vms)
 
@@ -1068,7 +1058,7 @@ Query the server for a list of VMs.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1107,7 +1097,7 @@ Query the server for the VM's `vmadm info` output.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1126,7 +1116,7 @@ Query the server for the VM's VNC host and port.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1318,7 +1308,7 @@ Delete the specified VM.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1356,67 +1346,7 @@ given server which will spawn a process with the given docker payload.
 
 
 
-# Virtual Machine Snapshots
-
-## VmSnapshotCreate (PUT /servers/:server_uuid/vms/:uuid/snapshots)
-
-Task a snapshot of a VM.
-
-
-### Inputs
-
-_None_
-
-
-### Responses
-
-| Code | Type  | Description                                           |
-| ---- | ----- | ----------------------------------------------------- |
-| 204  | None  | Task was sent to server                               |
-| 404  | Error | No such server                                        |
-| 500  | Error | Error encountered while attempting to fulfill request |
-
-
-## VmSnapshotRollback (PUT /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name/rollback)
-
-Roll back to a previous snapshot of a VM.
-
-
-### Inputs
-
-_None_
-
-
-### Responses
-
-| Code | Type  | Description                                           |
-| ---- | ----- | ----------------------------------------------------- |
-| 204  | None  | Task was sent to server                               |
-| 404  | Error | No such server                                        |
-| 500  | Error | Error encountered while attempting to fulfill request |
-
-
-## VmSnapshotDestroy (DELETE /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name)
-
-Delete a VM's snapshot.
-
-
-### Inputs
-
-_None_
-
-
-### Responses
-
-| Code | Type  | Description                                           |
-| ---- | ----- | ----------------------------------------------------- |
-| 204  | None  | Task was sent to server                               |
-| 404  | Error | No such server                                        |
-| 500  | Error | Error encountered while attempting to fulfill request |
-
-
-
-# VmImages
+# Virtual Machine Images API
 
 ## VmImagesCreate (POST /servers/:server_uuid/vms/:uuid/images)
 
@@ -1445,7 +1375,67 @@ Create a VM image.
 
 
 
-# Waitlist
+# Virtual Machine Snapshots API
+
+## VmSnapshotCreate (PUT /servers/:server_uuid/vms/:uuid/snapshots)
+
+Task a snapshot of a VM.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
+
+
+## VmSnapshotRollback (PUT /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name/rollback)
+
+Roll back to a previous snapshot of a VM.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
+
+
+## VmSnapshotDestroy (DELETE /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name)
+
+Delete a VM's snapshot.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
+
+
+
+# Waitlist API
 
 ## ServerWaitlistList (GET /servers/:server_uuid/tickets)
 
@@ -1456,7 +1446,7 @@ scope queue.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1498,7 +1488,7 @@ Retrieve a waitlist ticket.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1516,7 +1506,7 @@ Delete a waitlist ticket.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1554,7 +1544,7 @@ Wait until a waitlist ticket either expires or becomes active.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1572,7 +1562,7 @@ Release a currently active or queued waitlist ticket.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1584,7 +1574,7 @@ _None_
 
 
 
-# ZFS
+# ZFS API
 
 ## DatasetsList (GET GET /servers/:server_uuid/datasets)
 
@@ -1593,7 +1583,7 @@ List ZFS datasets on a server.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1610,7 +1600,7 @@ Create a ZFS dataset on a server.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1665,7 +1655,7 @@ List all snapshots on a dataset
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1744,7 +1734,7 @@ Destroy a ZFS dataset on a server.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1761,7 +1751,7 @@ List the ZFS pools on a server.
 
 ### Inputs
 
-_None_
+None.
 
 
 ### Responses
@@ -1773,3 +1763,5 @@ _None_
 
 
 
+
+<!-- End of genererated API docs -->

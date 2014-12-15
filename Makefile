@@ -44,6 +44,11 @@ SMF_DTD		= $(REPO_ROOT)/tools/service_bundle.dtd.1
 
 NODE_PREBUILT_VERSION=v0.8.26
 NODE_PREBUILT_TAG=zone
+ifeq ($(shell uname -s),SunOS)
+	# Allow building on a SmartOS image other than sdc-smartos@1.6.3.
+	NODE_PREBUILT_IMAGE=fd2cc906-8938-11e3-beab-4359c665ac99
+endif
+
 
 #
 # Included definitions
@@ -99,7 +104,7 @@ release: all deps docs $(SMF_MANIFESTS)
 	@rm -rf $(RELSTAGEDIR)
 
 regen_docs:
-	$(NODE) ./tools/gendocs.js lib/endpoints > docs/index.restdown
+	$(NODE) ./tools/gendocs.js lib/endpoints > docs/index.md
 
 .PHONY: publish
 publish: release
