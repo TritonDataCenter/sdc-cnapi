@@ -35,6 +35,74 @@ When a compute node is started up from a shutdown state, regardless if it has
 been set up, it will broadcast a message containing the payload from the
 sysinfo utility. This broadcast message is picked up by CNAPI.
 
+# Configuration
+
+Reference for configuration variables in cnapi, which are stored in
+config/config.json in a running setup. An example of this configuration can be
+found in sapi_manifests/cnapi/template.
+
+| Var                       | Type   | Default | Description                                                         |
+| ------------------------- | ------ | ------- | ------------------------------------------------------------------- |
+| **logLevel**              | String | info    | Level at which to log. One of the supported Bunyan log levels.      |
+| **datacenter_name**       | String | -       | Name of the SDC datacenter on which CNAPI is running.               |
+| **adminUuid**             | String | -       | The UUID of the admin user in this SDC standup.                     |
+| **serverStatusTransport** | String | amqp    | Transport over which status information is sent from CNs to CNAPI.  |
+| **serverTaskTransport**   | String | amqp    | Transport over which tasks are sent from CNAPI to CNs.              |
+| **amqp**                  | Object | -       | If either transport above specifies "amqp", this section is needed. |
+| **amqp.host**             | String | -       | Host of AMQP broker.                                                |
+| **moray.host**            | String | -       | The Moray API URL.                                                  |
+| **moray.port**            | Number | 2020    | The Moray API port.                                                 |
+| **api.port**              | Number | 80      | Port number on which to listen.                                     |
+| **wfapi.workflows**       | Array  | []      | Array of workflows to load.                                         |
+| **wfapi.url**             | String | -       | The Workflow API URL.                                               |
+| **napi.url**              | String | -       | The NAPI API URL.                                                   |
+| **assets.url**            | String | -       |                                                                     |
+| **cnapi.url**             | String | -       | The CNAPI API URL (e.g. of this instance)                           |
+| **imgapi.url**            | String | -       | The IMGAPI API URL.                                                 |
+| **dapi.changeDefaults**   | Object | -       | This provides some means to override VM allocation behaviour.       |
+| **dapi.changeDefaults.server_spread**        | String | min-ram      | How VMs are spread across CNs (one of: min-ram, min-owner, and random)   |
+| **dapi.changeDefaults.filter_headnode**      | String | true         | Whether VMs cannot allocate on the headnode.                             |
+| **dapi.changeDefaults.filter_min_resources** | String | true         | Whether CPU/RAM/disk limits are ignored when allocating.                 |
+| **dapi.changeDefaults.filter_large_servers** | String | true         | Whether large servers are reserved for larger allocations.               |
+| **dapi.allocationDescription**               | Array  | see template | The pipeline used by the allocator to decide where a VM goes across CNs. |
+
+dapi.changeDefaults is a bit of an oddball, due to limitations in the hogan.js
+template engine. Booleans are represented by the "true" and "false" strings, not
+raw booleans; an empty string is treated as the default value. Be careful when
+changing from the defaults in production.
+
+# SAPI Configuration
+
+When using the config-agent service in the CNAPI zone, which draws metadata from
+SAPI, it's possible to change the dapi.changeDefaults outlined in the
+`Configuration` section above.
+
+In the SAPI application named `sdc`, adding or changing the following keys in
+`metadata` will affect allocation behaviour. This is useful for testing, or
+specialized circumstances in production.
+
+| Key                            | Type    | Default | Description                                                                  |
+| ------------------------------ | ------- | ------- | ---------------------------------------------------------------------------- |
+| **ALLOC_SERVER_SPREAD**        | String  | min-ram | How the allocator spreads VMs across CNs.                                    |
+| **ALLOC_FILTER_HEADNODE**      | Boolean | true    | Whether the headnode should be removed from consideration during allocation. |
+| **ALLOC_FILTER_MIN_RESOURCES** | Boolean | true    | Whether CNs with insufficient spare CPU/RAM/disk should be removed.          |
+| **ALLOC_FILTER_LARGE_SERVERS** | Boolean | true    | Whether large servers should be reserved primarily for large allocations.    |
+
+If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
+if the default value was specified. Be careful when changing from the default
+values in production.
+
+ALLOC_SERVER_SPREAD is of particular interest to certain specialised production
+installs. It can have one of three values: `min-ram`, `min-owner`, and `random`.
+`min-ram` selects CNs which have the least amount of sufficient space for a new
+VM; this is desirable to keep emptier servers free for larger allocations.
+`min-owner` makes the allocator much more aggressive about balancing all VMs
+belonging to one user across all CNs. And `random` assigns randomly across CNs.
+
+### Example
+
+    sdc_uuid=$(sdc-sapi /services?name=sdc | json -Ha uuid)
+    sdc-sapi /services/$sdc_uuid -X PUT -d '{ "metadata": { "ALLOC_FILTER_HEADNODE": "min-owner" } }'
 
 # Interacting with CNAPI
 
