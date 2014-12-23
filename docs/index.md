@@ -46,8 +46,6 @@ found in sapi_manifests/cnapi/template.
 | **logLevel**              | String | info    | Level at which to log. One of the supported Bunyan log levels.      |
 | **datacenter_name**       | String | -       | Name of the SDC datacenter on which CNAPI is running.               |
 | **adminUuid**             | String | -       | The UUID of the admin user in this SDC standup.                     |
-| **serverStatusTransport** | String | amqp    | Transport over which status information is sent from CNs to CNAPI.  |
-| **serverTaskTransport**   | String | amqp    | Transport over which tasks are sent from CNAPI to CNs.              |
 | **amqp**                  | Object | -       | If either transport above specifies "amqp", this section is needed. |
 | **amqp.host**             | String | -       | Host of AMQP broker.                                                |
 | **moray.host**            | String | -       | The Moray API URL.                                                  |
