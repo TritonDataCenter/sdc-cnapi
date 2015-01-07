@@ -76,32 +76,6 @@ function testAllocator(t) {
 }
 
 
-function testAllocatorWithServerUuids(t) {
-    var data = deepCopy(allocData);
-    data.servers = [headnodeUuid];
-
-    // this will always 409 since it's a headnode, and DAPI filters them out
-    client.post('/allocate', data, function (er, req, res, body) {
-        t.ok(er);
-        t.equal(er.statusCode, 409);
-
-        t.ok(body);
-        t.equal(body.code, 'InvalidArgument');
-
-        var steps = body.steps;
-
-        client.get('/servers?headnode=true', function (er2, rq, rs, servers) {
-            t.ifError(er2);
-
-            var headnode = servers[0].uuid;
-            t.deepEqual(steps[0].remaining, [headnode]);
-
-            t.done();
-         });
-    });
-}
-
-
 function testMalformedVM(t) {
     var data = deepCopy(allocData);
     delete data.vm.vm_uuid;
@@ -248,7 +222,6 @@ function deepCopy(obj) {
 module.exports = {
     setUp: setup,
     'allocate server': testAllocator,
-    'allocate server with server UUIDs': testAllocatorWithServerUuids,
     'allocate with malformed VM': testMalformedVM,
     'allocate with malformed server UUIDs': testMalformedServerUuids,
     'allocate with missing nic_tags': testMissingTags,
