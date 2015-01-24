@@ -29,7 +29,7 @@
 		"url": "http://{{{assets_admin_ips}}}"
 	},
 	"cnapi": {
-		"url": "http://{{{ADMIN_IP}}}"
+		"url": "http://{{{auto.ADMIN_IP}}}"
 	},
 	"imgapi": {
 		"url": "http://{{{IMGAPI_SERVICE}}}"

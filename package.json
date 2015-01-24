@@ -1,7 +1,7 @@
 {
   "name": "cnapi",
   "description": "SmartDataCenter Compute Node API",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
@@ -32,6 +32,9 @@
   "devDependencies": {
     "ejs": "0.8.3",
     "file": "0.2.1"
+  },
+  "sdcDependencies": {
+    "config-agent": ">=1.1.0"
   },
   "license": "MPL-2.0"
 }
