@@ -100,7 +100,7 @@ belonging to one user across all CNs. And `random` assigns randomly across CNs.
 ### Example
 
     sdc_uuid=$(sdc-sapi /services?name=sdc | json -Ha uuid)
-    sdc-sapi /services/$sdc_uuid -X PUT -d '{ "metadata": { "ALLOC_FILTER_HEADNODE": "min-owner" } }'
+    sdc-sapi /services/$sdc_uuid -X PUT -d '{ "metadata": { "ALLOC_FILTER_HEADNODE": false } }'
 
 # Interacting with CNAPI
 
@@ -1390,6 +1390,31 @@ None.
 
 Send a docker_exec task to the given server/vm. This starts a server on the
 given server which will spawn a process with the given docker payload.
+
+
+### Inputs
+
+| Param   | Type   | Description                                      |
+| ------- | ------ | ------------------------------------------------ |
+| address | String | ip:port where the stdio server will be listening |
+| host    | String | host where the stdio server will be listening    |
+| port    | Number | port on host the stdio server will be listening  |
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such VM                                            |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
+
+
+## VmDockerCopy (POST /servers/:server\_uuid/vms/:uuid/docker-copy)
+
+Send a docker_copy task to the given server/vm. This starts a temporary
+service on the given server which will stream the the requested file.
 
 
 ### Inputs
