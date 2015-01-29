@@ -99,8 +99,8 @@ belonging to one user across all CNs. And `random` assigns randomly across CNs.
 
 ### Example
 
-    sdc_uuid=$(sdc-sapi /services?name=sdc | json -Ha uuid)
-    sdc-sapi /services/$sdc_uuid -X PUT -d '{ "metadata": { "ALLOC_FILTER_HEADNODE": false } }'
+    cnapi_svc=$(sdc-sapi /services?name=cnapi | json -Ha uuid)
+    sdc-sapi /services/$cnapi_svc -X PUT -d '{ "metadata": { "ALLOC_FILTER_HEADNODE": false } }'
 
 # Interacting with CNAPI
 
