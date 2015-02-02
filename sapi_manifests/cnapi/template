@@ -64,6 +64,7 @@
 			               "identity"],
 			        "soft-filter-locality-hints",
 			        "sort-min-ram",
+			        "sort-max-ram",
 			        "sort-min-owner",
 			        "sort-random",
 			        "pick-weighted-random"]
