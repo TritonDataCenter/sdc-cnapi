@@ -52,7 +52,6 @@
                "hard-filter-platform-versions",
                "hard-filter-traits",
                "hard-filter-sick-servers",
-               "hard-filter-overprovision-ratios",
                "override-overprovisioning",
                "calculate-server-unreserved",
                "hard-filter-overprovision-ratios",
@@ -64,6 +63,9 @@
                       "identity"],
                "soft-filter-locality-hints",
                "sort-min-ram",
+               "sort-max-ram",
+               "sort-min-owner",
+               "sort-random",
                "pick-weighted-random"]
   }
 }

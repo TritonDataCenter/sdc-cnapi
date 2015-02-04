@@ -58,7 +58,7 @@ found in sapi_manifests/cnapi/template.
 | **cnapi.url**             | String | -       | The CNAPI API URL (e.g. of this instance)                           |
 | **imgapi.url**            | String | -       | The IMGAPI API URL.                                                 |
 | **dapi.changeDefaults**   | Object | -       | This provides some means to override VM allocation behaviour.       |
-| **dapi.changeDefaults.server_spread**        | String | min-ram      | How VMs are spread across CNs (one of: min-ram, min-owner, and random)   |
+| **dapi.changeDefaults.server_spread**        | String | min-ram      | How VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random)   |
 | **dapi.changeDefaults.filter_headnode**      | String | true         | Whether VMs cannot allocate on the headnode.                             |
 | **dapi.changeDefaults.filter_min_resources** | String | true         | Whether CPU/RAM/disk limits are ignored when allocating.                 |
 | **dapi.changeDefaults.filter_large_servers** | String | true         | Whether large servers are reserved for larger allocations.               |
@@ -91,11 +91,14 @@ if the default value was specified. Be careful when changing from the default
 values in production.
 
 ALLOC_SERVER_SPREAD is of particular interest to certain specialised production
-installs. It can have one of three values: `min-ram`, `min-owner`, and `random`.
-`min-ram` selects CNs which have the least amount of sufficient space for a new
-VM; this is desirable to keep emptier servers free for larger allocations.
-`min-owner` makes the allocator much more aggressive about balancing all VMs
-belonging to one user across all CNs. And `random` assigns randomly across CNs.
+installs. It can have one of four values: `min-ram`, `max-ram`, `min-owner`,
+and `random`.  `min-ram` selects CNs which have the least amount of sufficient
+space for a new VM; this is desirable to keep emptier servers free for larger
+allocations.  `max-ram` selects CNs which have the *most* amount of free
+space; this can be desirable for private SDCs to give VMs the currently least
+busy servers. `min-owner` makes the allocator much more aggressive about
+balancing all VMs belonging to one user across all CNs. And `random` assigns
+randomly across CNs.
 
 ### Example
 
@@ -585,9 +588,8 @@ as well as the steps taken to reach that decision. This does not cause the VM
 to actually be created (see VmCreate for that), but rather returns the UUID
 of an eligible server.
 
-See [sdc-designation docs](https://github.com/joyent/sdc-designation/blob/master/docs/index.restdown)
-for more details on how the vm, package, image and nic_tags parameters must be
-constructed.
+See DAPI docs for more details on how the vm, package, image and nic_tags
+parameters must be constructed.
 
 
 ### Inputs
