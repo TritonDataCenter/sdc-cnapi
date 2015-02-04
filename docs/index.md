@@ -585,8 +585,9 @@ as well as the steps taken to reach that decision. This does not cause the VM
 to actually be created (see VmCreate for that), but rather returns the UUID
 of an eligible server.
 
-See DAPI docs for more details on how the vm, package, image and nic_tags
-parameters must be constructed.
+See [sdc-designation docs](https://github.com/joyent/sdc-designation/blob/master/docs/index.restdown)
+for more details on how the vm, package, image and nic_tags parameters must be
+constructed.
 
 
 ### Inputs
