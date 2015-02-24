@@ -54,7 +54,14 @@ endif
 # Included definitions
 #
 include ./tools/mk/Makefile.defs
-include ./tools/mk/Makefile.node_prebuilt.defs
+ifeq ($(shell uname -s),SunOS)
+	include ./tools/mk/Makefile.node_prebuilt.defs
+else
+	NPM=npm
+	NODE=node
+	NPM_EXEC=$(shell which npm)
+	NODE_EXEC=$(shell which node)
+endif
 include ./tools/mk/Makefile.smf.defs
 
 ROOT            := $(shell pwd)
@@ -120,7 +127,9 @@ publish: release
 # Includes
 #
 include ./tools/mk/Makefile.deps
-include ./tools/mk/Makefile.node_prebuilt.targ
+ifeq ($(shell uname -s),SunOS)
+    include ./tools/mk/Makefile.node_prebuilt.targ
+endif
 include ./tools/mk/Makefile.smf.targ
 include ./tools/mk/Makefile.targ
 
