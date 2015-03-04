@@ -45,6 +45,7 @@
 			"pipe", "hard-filter-setup",
 			        "hard-filter-running",
 			        "hard-filter-invalid-servers",
+		                "hard-filter-volumes-from",
 			        "calculate-ticketed-vms",
 			        "calculate-locality",
 			        "hard-filter-reserved",
