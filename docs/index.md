@@ -438,6 +438,7 @@ A CNAPI server record looks like the following
 | **status**                           | *Boolean*     | The server's current state of activity                                     |
 | **sysinfo**                          | *Object*      | The last given sysinfo payload for server                                  |
 | **traits**                           | *Object*      |                                                                            |
+| **transport**                        | *String*      | The method via which CNAPI is received updates from CN's. (http or amqp)   |
 | **transitional_status**              | *String*      | Takes precedense over `status` when a server is undergoing a status change |
 | **unreserved_cpu**                   |               |
 | **unreserved_disk**                  |               |
