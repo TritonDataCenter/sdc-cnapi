@@ -5,6 +5,9 @@
 	"amqp": {
 		"host": "{{{RABBITMQ_SERVICE}}}"
 	},
+{{#experimental_fluentd_host}}
+	"fluentd_host": "{{{experimental_fluentd_host}}}",
+{{/experimental_fluentd_host}}
 	"moray": {
 		"host": "{{{MORAY_SERVICE}}}",
 		"port": 2020
