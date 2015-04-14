@@ -56,23 +56,7 @@ function setup(callback) {
 
 
 function testAllocator(t) {
-    client.post('/allocate', allocData, function (err, req, res, body) {
-        if (err && err.statusCode !== 409)
-            t.ifError(err);
-
-        t.ok(body);
-
-        if (body.code === 'InvalidArgument') {
-            t.ok(/No allocatable servers found/.test(body.message));
-            console.warn('Test requires COAL and an empty setup CN. Skipping.');
-            // but look at the bright side, it wasn't a 500!
-        } else {
-            t.ok(body.server);
-            t.ok(body.steps);
-        }
-
-        t.done();
-    });
+    callApiSuccess(t, allocData);
 }
 
 
@@ -100,12 +84,12 @@ function testMissingTags(t) {
 }
 
 
+// package is optional
 function testMissingPkg(t) {
     var data = deepCopy(allocData);
     delete data.package;
 
-    var msg = 'value is not an object. (was: [object Undefined])';
-    callApiErr(t, '/allocate', data, 'package', msg);
+    callApiSuccess(t, data);
 }
 
 
@@ -190,32 +174,29 @@ function validateCapacityResults(t, results) {
 }
 
 
+function callApiSuccess(t, data) {
+    client.post('/allocate', allocData, function (err, req, res, body) {
+        if (err && err.statusCode !== 409)
+            t.ifError(err);
+
+        t.ok(body);
+
+        if (body.code === 'InvalidArgument') {
+            t.ok(/No allocatable servers found/.test(body.message));
+            console.warn('Test requires COAL and an empty setup CN. Skipping.');
+            // but look at the bright side, it wasn't a 500!
+        } else {
+            t.ok(body.server);
+            t.ok(body.steps);
+        }
+
+        t.done();
+    });
+}
+
+
 function deepCopy(obj) {
-    var type = typeof (obj);
-
-    if (type !== 'object')
-        return obj;
-
-    if (obj === null)
-        return null;
-
-    var clone;
-    if (Array.isArray(obj)) {
-        clone = [];
-
-        for (var i = obj.length - 1; i >= 0; i--) {
-          clone[i] = deepCopy(obj[i]);
-        }
-
-    } else {
-        clone = {};
-
-        for (i in obj) {
-            clone[i] = deepCopy(obj[i]);
-        }
-    }
-
-    return clone;
+    return JSON.parse(JSON.stringify(obj));
 }
 
 
