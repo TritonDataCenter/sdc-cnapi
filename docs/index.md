@@ -936,17 +936,17 @@ Returns Servers present in datacenter.
 
 ### Inputs
 
-| Param     | Type    | Description                                                       |
-| --------- | ------- | ----------------------------------------------------------------- |
-| uuids     | String  | Comma seperated list of UUIDs to look up                          |
-| setup     | Boolean | Return only setup servers                                         |
-| headnode  | Boolean | Return only headnodes                                             |
-| reserved  | Boolean | Return only reserved servers                                      |
-| reservoir | Boolean | Return only reservoir servers                                     |
-| hostname  | String  | Return machine with given hostname                                |
-| extras    | String  | Comma seperated values: vms, memory, disk, sysinfo, capacity, all |
-| limit     | Number  | Maximum number of results to show                                 |
-| offset    | Number  | Offset the subset of results returned                             |
+| Param     | Type    | Description                                                               |
+| --------- | ------- | ------------------------------------------------------------------------- |
+| uuids     | String  | Comma seperated list of UUIDs to look up                                  |
+| setup     | Boolean | Return only setup servers                                                 |
+| headnode  | Boolean | Return only headnodes                                                     |
+| reserved  | Boolean | Return only reserved servers                                              |
+| reservoir | Boolean | Return only reservoir servers                                             |
+| hostname  | String  | Return machine with given hostname                                        |
+| extras    | String  | Comma seperated values: agents, vms, memory, disk, sysinfo, capacity, all |
+| limit     | Number  | Maximum number of results to show                                         |
+| offset    | Number  | Offset the subset of results returned                                     |
 
 
 ### Responses
@@ -1108,6 +1108,29 @@ provisioner was started.
 ### Inputs
 
 None.
+
+
+### Responses
+
+| Code | Type  | Description                 |
+| ---- | ----- | --------------------------- |
+| 204  | None  | Tasks returned successfully |
+| 500  | Error | Could not process request   |
+
+
+## ServerInstallAgent (GET /servers/:server_uuid/install-agent)
+
+Instruct server to install given agent. Pass in image uuid of package to
+install and server will download and install package.
+
+
+### Inputs
+
+| Param        | Type   | Description              |
+| ------------ | ------ | ------------------------ |
+| image_uuid   | String | UUID of image to install |
+| package_name | String | Package name             |
+| package_file | String | Package file             |
 
 
 ### Responses
