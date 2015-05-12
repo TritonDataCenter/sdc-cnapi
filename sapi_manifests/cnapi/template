@@ -42,17 +42,21 @@
 			"server_spread": "{{{ALLOC_SERVER_SPREAD}}}",
 			"filter_headnode": "{{{ALLOC_FILTER_HEADNODE}}}",
 			"filter_min_resources": "{{{ALLOC_FILTER_MIN_RESOURCES}}}",
-			"filter_large_servers": "{{{ALLOC_FILTER_LARGE_SERVERS}}}"
+			"filter_large_servers": "{{{ALLOC_FILTER_LARGE_SERVERS}}}",
+			"filter_vm_limit": "{{{ALLOC_FILTER_VM_COUNT}}}"
 		},
 		"allocationDescription": [
 			"pipe", "hard-filter-setup",
 			        "hard-filter-running",
 			        "hard-filter-invalid-servers",
-		                "hard-filter-volumes-from",
+			        "hard-filter-volumes-from",
 			        "calculate-ticketed-vms",
 			        "calculate-locality",
 			        "hard-filter-reserved",
 			        "hard-filter-headnode",
+{{#ALLOC_FILTER_VM_COUNT}}
+			        "hard-filter-vm-count",
+{{/ALLOC_FILTER_VM_COUNT}}
 			        "hard-filter-vlans",
 			        "hard-filter-platform-versions",
 			        "hard-filter-traits",
