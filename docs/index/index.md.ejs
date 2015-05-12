@@ -83,6 +83,7 @@ specialized circumstances in production.
 | ------------------------------ | ------- | ------- | ---------------------------------------------------------------------------- |
 | **ALLOC_SERVER_SPREAD**        | String  | min-ram | How the allocator spreads VMs across CNs.                                    |
 | **ALLOC_FILTER_HEADNODE**      | Boolean | true    | Whether the headnode should be removed from consideration during allocation. |
+| **ALLOC_FILTER_MIN_DISK**      | Boolean | false   | Whether CNs with insufficient spare disk should be removed.                  |
 | **ALLOC_FILTER_MIN_RESOURCES** | Boolean | true    | Whether CNs with insufficient spare CPU/RAM/disk should be removed.          |
 | **ALLOC_FILTER_LARGE_SERVERS** | Boolean | true    | Whether large servers should be reserved primarily for large allocations.    |
 | **ALLOC_FILTER_VM_COUNT**      | Integer | null    | If set, CNs with more VMs than the count will be removed from consideration. |
@@ -100,6 +101,10 @@ space; this can be desirable for private SDCs to give VMs the currently least
 busy servers. `min-owner` makes the allocator much more aggressive about
 balancing all VMs belonging to one user across all CNs. And `random` assigns
 randomly across CNs.
+
+A note of warning about ALLOC_FILTER_MIN_DISK: if this is set to true, but
+ALLOC_FILTER_MIN_RESOURCES is set to false, then disk checks will be ignored.
+Both must be true for disk checks to proceed.
 
 ### Example
 

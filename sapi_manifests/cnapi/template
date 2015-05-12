@@ -66,6 +66,9 @@
 			        "hard-filter-overprovision-ratios",
 			        "hard-filter-min-ram",
 			        "hard-filter-min-cpu",
+{{#ALLOC_FILTER_MIN_DISK}}
+			        "hard-filter-min-disk",
+{{/ALLOC_FILTER_MIN_DISK}}
 			        ["or", "hard-filter-reservoir",
 			               "identity"],
 			        ["or", "hard-filter-large-servers",
