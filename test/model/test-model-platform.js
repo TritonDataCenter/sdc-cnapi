@@ -101,7 +101,7 @@ function testListPlatformsAllNoLatest(test) {
         ModelPlatform.list({}, function (listError, platforms) {
             test.deepEqual(
                 platforms,
-                { '12345Z': {}, '4567Z': {}});
+                { '12345Z': {}, '4567Z': { latest: true }});
             test.done();
         });
 
