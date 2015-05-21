@@ -5,11 +5,11 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2015, Joyent, Inc.
  */
 
 /*
- * test-waitlist-expiry.js: Tests for ZFS endpoints
+ * test-waitlist-expiry.js
  */
 
 var Logger = require('bunyan');
@@ -107,7 +107,7 @@ function testExpireSingleTicket(test) {
         function (wfcb) {
             setTimeout(function () {
                 wfcb();
-            }, (1+expireTimeSeconds) * 1000);
+            }, (2+expireTimeSeconds) * 1000);
         },
         function (wfcb) {
             client.get(wlurl, function (err, req, res, waitlist) {
