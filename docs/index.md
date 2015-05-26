@@ -83,8 +83,10 @@ specialized circumstances in production.
 | ------------------------------ | ------- | ------- | ---------------------------------------------------------------------------- |
 | **ALLOC_SERVER_SPREAD**        | String  | min-ram | How the allocator spreads VMs across CNs.                                    |
 | **ALLOC_FILTER_HEADNODE**      | Boolean | true    | Whether the headnode should be removed from consideration during allocation. |
+| **ALLOC_FILTER_MIN_DISK**      | Boolean | false   | Whether CNs with insufficient spare disk should be removed.                  |
 | **ALLOC_FILTER_MIN_RESOURCES** | Boolean | true    | Whether CNs with insufficient spare CPU/RAM/disk should be removed.          |
 | **ALLOC_FILTER_LARGE_SERVERS** | Boolean | true    | Whether large servers should be reserved primarily for large allocations.    |
+| **ALLOC_FILTER_VM_COUNT**      | Integer | null    | If set, CNs with more VMs than the count will be removed from consideration. |
 
 If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
 if the default value was specified. Be careful when changing from the default
@@ -99,6 +101,10 @@ space; this can be desirable for private SDCs to give VMs the currently least
 busy servers. `min-owner` makes the allocator much more aggressive about
 balancing all VMs belonging to one user across all CNs. And `random` assigns
 randomly across CNs.
+
+A note of warning about ALLOC_FILTER_MIN_DISK: if this is set to true, but
+ALLOC_FILTER_MIN_RESOURCES is set to false, then disk checks will be ignored.
+Both must be true for disk checks to proceed.
 
 ### Example
 
@@ -250,6 +256,13 @@ Or, sdc-cnapi:
 
     -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup \
                     -X PUT
+
+
+To run a script after successful setup completion, use the `postsetup_script`
+parameter. The script will be run within the global zone of the compute node in
+question:
+
+    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup -X PUT -d '{ "postsetup_script": "#!/bin/bash\necho > /var/tmp/myfile" }'
 
 
 # Updating Nics

@@ -258,6 +258,13 @@ Or, sdc-cnapi:
                     -X PUT
 
 
+To run a script after successful setup completion, use the `postsetup_script`
+parameter. The script will be run within the global zone of the compute node in
+question:
+
+    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup -X PUT -d '{ "postsetup_script": "#!/bin/bash\necho > /var/tmp/myfile" }'
+
+
 # Updating Nics
 
 The only parameter of the server's nics that can be changed is
