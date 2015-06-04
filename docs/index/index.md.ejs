@@ -75,7 +75,7 @@ When using the config-agent service in the CNAPI zone, which draws metadata from
 SAPI, it's possible to change the dapi.changeDefaults outlined in the
 `Configuration` section above.
 
-In the SAPI application named `sdc`, adding or changing the following keys in
+In the SAPI "cnapi" service, adding or changing the following keys in
 `metadata` will affect allocation behaviour. This is useful for testing, or
 specialized circumstances in production.
 
