@@ -57,6 +57,7 @@
 {{#ALLOC_FILTER_VM_COUNT}}
 			        "hard-filter-vm-count",
 {{/ALLOC_FILTER_VM_COUNT}}
+			        "hard-filter-capness",
 			        "hard-filter-vlans",
 			        "hard-filter-platform-versions",
 			        "hard-filter-traits",
