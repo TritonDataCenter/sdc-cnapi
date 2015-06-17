@@ -2,6 +2,9 @@
 	"logLevel": "info",
 	"datacenter_name": "{{{datacenter_name}}}",
 	"adminUuid": "{{{ufds_admin_uuid}}}",
+{{#no_rabbit}}
+        "useCnAgent": true,
+{{/no_rabbit}}
 	"amqp": {
 		"host": "{{{RABBITMQ_SERVICE}}}"
 	},
