@@ -29,7 +29,8 @@ var allocData = {
     },
     image: {},
     package: {
-        min_platform: {'7.0': '20130122T122401Z'}
+        min_platform: {'7.0': '20130122T122401Z'},
+        cpu_cap: 100
     },
     nic_tags: ['external', 'admin']
 };
