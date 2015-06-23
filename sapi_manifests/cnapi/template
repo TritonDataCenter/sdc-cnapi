@@ -57,9 +57,7 @@
 			        "calculate-locality",
 			        "hard-filter-reserved",
 			        "hard-filter-headnode",
-{{#ALLOC_FILTER_VM_COUNT}}
 			        "hard-filter-vm-count",
-{{/ALLOC_FILTER_VM_COUNT}}
 			        "hard-filter-capness",
 			        "hard-filter-vlans",
 			        "hard-filter-platform-versions",
