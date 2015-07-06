@@ -31,6 +31,7 @@ function MockMoray() {
         delObject: []
     };
     this.reqs = [];
+    this.results = [];
 }
 
 
@@ -48,6 +49,11 @@ MockMoray.prototype._emitResults = function (list) {
         self._lastReq().emit('record', { value: i });
     });
     self._lastReq().emit('end');
+};
+
+MockMoray.prototype._findObjectsResults = function (list) {
+    var self = this;
+    self.results.push(list);
 };
 
 
@@ -79,9 +85,17 @@ MockMoray.prototype.delObject = function (bucket, key, callback) {
 
 
 MockMoray.prototype.findObjects = function (bucket, filter, opts) {
+    var self = this;
     this.history.push(['findObjects', bucket, filter, opts]);
     var req = new process.EventEmitter();
     this.reqs.push(req);
+    var results = self.results.shift();
+    process.nextTick(function () {
+        results.forEach(function (i) {
+            req.emit('record', { value: i });
+        });
+        req.emit('end');
+    });
     return req;
 };
 

@@ -39,6 +39,12 @@ function testListPlatformsAll(test) {
         }
     ];
 
+    var expSearchResults2 = [
+        {
+            server_uuid: uuids[0], last_heartbeat: (new Date()).toISOString()
+        }
+    ];
+
     var expUrResult = [
         null,
         '12345Z\n4567Z latest\n\n',
@@ -55,6 +61,9 @@ function testListPlatformsAll(test) {
 
         moray.client.when('findObjects');
         moray.client.when('getObject', [], []);
+
+        moray.client._findObjectsResults(expSearchResults);
+        moray.client._findObjectsResults(expSearchResults2);
 
         ur.when('execute', [], expUrResult);
 
@@ -80,6 +89,13 @@ function testListPlatformsAllNoLatest(test) {
         }
     ];
 
+    var expSearchResults2 = [
+        {
+            server_uuid: uuids[0], last_heartbeat: (new Date()).toISOString()
+        }
+    ];
+
+
     var expUrResult = [
         null,
         '12345Z\n4567Z\n\n',
@@ -98,16 +114,15 @@ function testListPlatformsAllNoLatest(test) {
         moray.client.when('getObject', [], []);
         ur.when('execute', [], expUrResult);
 
+        moray.client._findObjectsResults(expSearchResults);
+        moray.client._findObjectsResults(expSearchResults2);
+
         ModelPlatform.list({}, function (listError, platforms) {
             test.deepEqual(
                 platforms,
                 { '12345Z': {}, '4567Z': {}});
             test.done();
         });
-
-        setTimeout(function () {
-            moray.client._emitResults(expSearchResults);
-        }, 100);
     });
 }
 

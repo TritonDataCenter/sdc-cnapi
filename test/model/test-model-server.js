@@ -41,16 +41,25 @@ function testListServersAll(test) {
         { uuid: uuids[1], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
+    var expSearchResults2 = [
+        { server_uuid: uuids[0], last_heartbeat: (new Date()).toISOString() },
+        { server_uuid: uuids[1], last_heartbeat: (new Date()).toISOString() }
+    ];
+
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
 
         moray.client.when('findObjects');
+        moray.client.when('findObjects');
 
         ModelServer.init(app);
 
         var options = {};
+
+        moray.client._findObjectsResults(expSearchResults);
+        moray.client._findObjectsResults(expSearchResults2);
 
         ModelServer.list(options, function (listError, servers) {
             test.equal(listError, null, 'should not encounter an error');
@@ -80,7 +89,6 @@ function testListServersAll(test) {
             test.done();
         });
 
-        moray.client._emitResults(expSearchResults);
     });
 }
 
@@ -92,11 +100,19 @@ function testListServersByUuids(test) {
         { uuid: uuids[2], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
+    var expSearchResults2 = [
+        { server_uuid: uuids[0], last_heartbeat: (new Date()).toISOString() },
+        { server_uuid: uuids[1], last_heartbeat: (new Date()).toISOString() }
+    ];
+
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
         moray.client.when('findObjects');
+
+        moray.client._findObjectsResults(expSearchResults);
+        moray.client._findObjectsResults(expSearchResults2);
 
         ModelServer.init(app);
 
@@ -163,12 +179,19 @@ function testListServersSetup(test) {
         { uuid: uuids[1], ram: '56789', sysinfo: { 'setup': true } }
     ];
 
+    var expSearchResults2 = [
+        { server_uuid: uuids[0], last_heartbeat: (new Date()).toISOString() },
+        { server_uuid: uuids[1], last_heartbeat: (new Date()).toISOString() }
+    ];
+
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
 
         moray.client.when('findObjects');
+        moray.client._findObjectsResults(expSearchResults);
+        moray.client._findObjectsResults(expSearchResults2);
 
         ModelServer.init(app);
 
