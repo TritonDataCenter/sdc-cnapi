@@ -86,7 +86,7 @@ specialized circumstances in production.
 | **ALLOC_FILTER_MIN_DISK**      | Boolean | false   | Whether CNs with insufficient spare disk should be removed.                  |
 | **ALLOC_FILTER_MIN_RESOURCES** | Boolean | true    | Whether CNs with insufficient spare CPU/RAM/disk should be removed.          |
 | **ALLOC_FILTER_LARGE_SERVERS** | Boolean | true    | Whether large servers should be reserved primarily for large allocations.    |
-| **ALLOC_FILTER_VM_COUNT**      | Integer | null    | If set, CNs with more VMs than the count will be removed from consideration. |
+| **ALLOC_FILTER_VM_COUNT**      | Integer | 224     | CNs with equal or more VMs than this will be removed from consideration.     |
 
 If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
 if the default value was specified. Be careful when changing from the default
@@ -604,6 +604,11 @@ of an eligible server.
 
 See DAPI docs for more details on how the vm, package, image and nic_tags
 parameters must be constructed.
+
+Be aware when inpecting steps output that the servers which are considered
+for allocation must be both setup and unreserved. If a server you expected
+does not turn up in steps output, its because the server didn't meet those
+two criteria.
 
 
 ### Inputs
@@ -1479,24 +1484,16 @@ service on the given server which will stream the the requested file.
 ## VmDockerStats (POST /servers/:server\_uuid/vms/:uuid/docker-stats)
 
 Send a docker_stats task to the given server/vm. This starts a temporary
-service on the given server which will be used to stream the stats.
+service on the given server which will stream back the container stats.
 
 
 ### Inputs
 
-| Param  | Type    | Description                                         |
-| ------ | ------- | --------------------------------------------------- |
-| stream | Boolean | Optional. True (default), continously streams stats |
-
-
-### Outputs
-
-A JSON object with the following fields:
-
-| Field   | Type   | Description                                  |
-| ------- | ------ | -------------------------------------------- |
-| host    | String | host where the stats server is listening     |
-| port    | Number | port on host the stats server is listening   |
+| Param   | Type   | Description                                      |
+| ------- | ------ | ------------------------------------------------ |
+| address | String | ip:port where the stdio server will be listening |
+| host    | String | host where the stdio server will be listening    |
+| port    | Number | port on host the stdio server will be listening  |
 
 
 ### Responses
