@@ -1476,6 +1476,39 @@ service on the given server which will stream the the requested file.
 | 500  | Error | Error encountered while attempting to fulfill request |
 
 
+## VmDockerStats (POST /servers/:server\_uuid/vms/:uuid/docker-stats)
+
+Send a docker_stats task to the given server/vm. This starts a temporary
+service on the given server which will be used to stream the stats.
+
+
+### Inputs
+
+| Param  | Type    | Description                                         |
+| ------ | ------- | --------------------------------------------------- |
+| stream | Boolean | Optional. True (default), continously streams stats |
+
+
+### Outputs
+
+A JSON object with the following fields:
+
+| Field   | Type   | Description                                  |
+| ------- | ------ | -------------------------------------------- |
+| host    | String | host where the stats server is listening     |
+| port    | Number | port on host the stats server is listening   |
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such VM                                            |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
+
+
 
 # Virtual Machine Images API
 
