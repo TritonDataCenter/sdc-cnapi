@@ -47,7 +47,7 @@ function testListPlatformsAll(test) {
 
     var expUrResult = [
         null,
-        '12345Z\n4567Z latest\n\n',
+        '20130521T084103Z\n20150819T020110Z latest\n\n',
         ''
     ];
     mock.newApp(function (error, app, components) {
@@ -70,7 +70,8 @@ function testListPlatformsAll(test) {
         ModelPlatform.list({}, function (listError, platforms) {
             test.deepEqual(
                 platforms,
-                { '12345Z': {}, '4567Z': { latest: true }});
+                { '20130521T084103Z': {},
+                  '20150819T020110Z': { latest: true }});
             test.done();
         });
 
@@ -98,7 +99,7 @@ function testListPlatformsAllNoLatest(test) {
 
     var expUrResult = [
         null,
-        '12345Z\n4567Z\n\n',
+        '20130521T084103Z\n20150819T020110Z\n\n',
         ''
     ];
     mock.newApp(function (error, app, components) {
@@ -120,7 +121,8 @@ function testListPlatformsAllNoLatest(test) {
         ModelPlatform.list({}, function (listError, platforms) {
             test.deepEqual(
                 platforms,
-                { '12345Z': {}, '4567Z': { latest: true }});
+                { '20130521T084103Z': {},
+                  '20150819T020110Z': { latest: true }});
             test.done();
         });
     });
