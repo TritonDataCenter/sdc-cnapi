@@ -73,18 +73,6 @@ template engine. Booleans are represented by the "true" and "false" strings, not
 raw booleans; an empty string is treated as the default value. Be careful when
 changing from the defaults in production.
 
-dapi.changeDefaults.overprovision_ratio_* is playing with fire. While twiddling
-with the default cpu overprovision ratio is fairly safe, RAM and disk are
-hazardous to increase beyond 1.0 if KVM instances are ever provisioned; it can
-lead to KVM instances which cannot boot, or KVM instances with corrupt
-filesystems.  It's recommended you don't fiddle with this values unless you know
-what you're doing, have tested this heavily before pushing to production, and
-are willing to deal with the consequences if things go bad.
-
-dapi.changeDefaults.disable_override_overprovisioning should only be set to true
-if all CNs and packages have had sane overprovision values set, after careful
-consideration of how the DC will be split up for the differing ratios. If in
-doubt, don't change the default.
 
 # SAPI Configuration
 
@@ -104,6 +92,11 @@ specialized circumstances in production.
 | **ALLOC_FILTER_MIN_RESOURCES** | Boolean | true    | Whether CNs with insufficient spare CPU/RAM/disk should be removed.          |
 | **ALLOC_FILTER_LARGE_SERVERS** | Boolean | true    | Whether large servers should be reserved primarily for large allocations.    |
 | **ALLOC_FILTER_VM_COUNT**      | Integer | 224     | CNs with equal or more VMs than this will be removed from consideration.     |
+| **ALLOC_DISABLE_OVERRIDE_OVERPROVISIONING** | Boolean | false | If true, allow packages and CNs to dictate overprovision ratios.  |
+| **ALLOC_OVERRIDE_OVERPROVISION_CPU**        | Float   | 4.0   | The ratio of CPU overprovisioning that will be hard set.          |
+| **ALLOC_OVERRIDE_OVERPROVISION_RAM**        | Float   | 1.0   | The ratio of RAM overprovisioning that will be hard set.          |
+| **ALLOC_OVERRIDE_OVERPROVISION_DISK**       | Float   | 1.0   | The ratio of disk overprovisioning that will be hard set.         |
+
 
 If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
 if the default value was specified. Be careful when changing from the default
@@ -122,6 +115,20 @@ randomly across CNs.
 A note of warning about ALLOC_FILTER_MIN_DISK: if this is set to true, but
 ALLOC_FILTER_MIN_RESOURCES is set to false, then disk checks will be ignored.
 Both must be true for disk checks to proceed.
+
+ALLOC_OVERRIDE_OVERPROVISION_\* is playing with fire. While twiddling with the
+default cpu overprovision ratio is fairly safe, RAM and disk are hazardous to
+increase beyond 1.0 if KVM instances are ever provisioned; it can lead to KVM
+instances which cannot boot, or KVM instances with corrupt filesystems.  It's
+recommended you don't fiddle with these values unless you know what you're
+doing, have tested this heavily before pushing to production, and are willing to
+deal with the consequences if things go bad.
+
+ALLOC_DISABLE_OVERRIDE_OVERPROVISIONING should only be set to true if all CNs
+and packages have had sane overprovision values set, after careful consideration
+of how the DC will be split up for the differing ratios. If in doubt, don't
+change the default.
+
 
 ### Example
 
