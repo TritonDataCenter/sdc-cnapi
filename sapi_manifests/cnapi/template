@@ -46,7 +46,11 @@
 			"filter_headnode": "{{{ALLOC_FILTER_HEADNODE}}}",
 			"filter_min_resources": "{{{ALLOC_FILTER_MIN_RESOURCES}}}",
 			"filter_large_servers": "{{{ALLOC_FILTER_LARGE_SERVERS}}}",
-			"filter_vm_limit": "{{{ALLOC_FILTER_VM_COUNT}}}"
+			"filter_vm_limit": "{{{ALLOC_FILTER_VM_COUNT}}}",
+			"disable_override_overprovisioning": "{{{ALLOC_DISABLE_OVERRIDE_OVERPROVISIONING}}}",
+			"overprovision_ratio_cpu": "{{{ALLOC_OVERRIDE_OVERPROVISION_CPU}}}",
+			"overprovision_ratio_ram": "{{{ALLOC_OVERRIDE_OVERPROVISION_RAM}}}",
+			"overprovision_ratio_disk": "{{{ALLOC_OVERRIDE_OVERPROVISION_DISK}}}"
 		},
 		"allocationDescription": [
 			"pipe", "hard-filter-setup",

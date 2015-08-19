@@ -62,12 +62,29 @@ found in sapi_manifests/cnapi/template.
 | **dapi.changeDefaults.filter_headnode**      | String | true         | Whether VMs cannot allocate on the headnode.                             |
 | **dapi.changeDefaults.filter_min_resources** | String | true         | Whether CPU/RAM/disk limits are ignored when allocating.                 |
 | **dapi.changeDefaults.filter_large_servers** | String | true         | Whether large servers are reserved for larger allocations.               |
+| **dapi.changeDefaults.overprovision_ratio_cpu**  | String | 4.0      | How much CPU will be overprovisioned per CN by default.                  |
+| **dapi.changeDefaults.overprovision_ratio_ram**  | String | 1.0      | How much RAM will be overprovisioned per CN by default.                  |
+| **dapi.changeDefaults.overprovision_ratio_disk** | String | 1.0      | How much disk will be overprovisioned per CN by default.                 |
+| **dapi.changeDefaults.disable_override_overprovisioning** | String | false | Whether to turn off the hard setting of defaults for provisioning across CNs and packages. |
 | **dapi.allocationDescription**               | Array  | see template | The pipeline used by the allocator to decide where a VM goes across CNs. |
 
 dapi.changeDefaults is a bit of an oddball, due to limitations in the hogan.js
 template engine. Booleans are represented by the "true" and "false" strings, not
 raw booleans; an empty string is treated as the default value. Be careful when
 changing from the defaults in production.
+
+dapi.changeDefaults.overprovision_ratio_* is playing with fire. While twiddling
+with the default cpu overprovision ratio is fairly safe, RAM and disk are
+hazardous to increase beyond 1.0 if KVM instances are ever provisioned; it can
+lead to KVM instances which cannot boot, or KVM instances with corrupt
+filesystems.  It's recommended you don't fiddle with this values unless you know
+what you're doing, have tested this heavily before pushing to production, and
+are willing to deal with the consequences if things go bad.
+
+dapi.changeDefaults.disable_override_overprovisioning should only be set to true
+if all CNs and packages have had sane overprovision values set, after careful
+consideration of how the DC will be split up for the differing ratios. If in
+doubt, don't change the default.
 
 # SAPI Configuration
 
