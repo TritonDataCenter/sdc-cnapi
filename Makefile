@@ -82,6 +82,17 @@ test: $(NODEUNIT)
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-allocator.js
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test/test-servers.js
 
+.PHONY: test-coal
+COAL=root@10.99.99.7
+test-coal:
+	./tools/rsync-to coal
+	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter default test/waitlist"'
+
+.PHONY: test-coal-quick
+COAL=root@10.99.99.7
+test-coal-quick:
+	./tools/rsync-to coal
+	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose test/api $(shell ls test/*.js | grep -v zfs) test/model"'
 
 .PHONY: release
 release: all deps docs $(SMF_MANIFESTS)

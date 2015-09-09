@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Allocation API, Boot Parameters API, Miscellaneous API, Provisioner Tasks API, Remote Execution API, Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API
+apisections: Allocation API, Boot Parameters API, Compute Node Agent Tasks API, Miscellaneous API, Remote Execution API, Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API
 markdown2extras: tables, code-friendly
 ---
 <!--
@@ -830,6 +830,45 @@ Does not overwrite any values which are not given.
 
 
 
+# Compute Node Agent Tasks API
+
+## TaskGet (GET /tasks/:task_id)
+
+Returns the details of the given task.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type   | Description        |
+| ---- | ------ | ------------------ |
+| 200  | Object | Task details       |
+| 404  | None   | No such task found |
+
+
+## TaskWait (GET /tasks/:task_id/wait)
+
+Waits for a given task to return or an expiry to be reached.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type   | Description        |
+| ---- | ------ | ------------------ |
+| 200  | Object | Task details       |
+| 404  | None   | No such task found |
+
+
+
 # Miscellaneous API
 
 ## ImageGet (GET /servers/:server_uuid/images/:uuid)
@@ -921,27 +960,6 @@ None.
 | Code | Type  | Description          |
 | ---- | ----- | -------------------- |
 | 200  | Array | The returned servers |
-
-
-
-# Provisioner Tasks API
-
-## TaskGet (GET /tasks/:task_id)
-
-Returns the details of the given task.
-
-
-### Inputs
-
-None.
-
-
-### Responses
-
-| Code | Type   | Description        |
-| ---- | ------ | ------------------ |
-| 200  | Object | Task details       |
-| 404  | None   | No such task found |
 
 
 

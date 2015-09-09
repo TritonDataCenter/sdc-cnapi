@@ -49,9 +49,12 @@ rsync -av ${TOP}/ \
     --exclude /tmp/
 
 state=$(ssh ${NODE} svcs -z ${ZONE} -H -o state $ROLE)
-if [[ "$state" == "maintenance" ]]; then
-    ssh ${NODE} svcadm -z ${ZONE} clear $ROLE
-else
-    ssh ${NODE} svcadm -z ${ZONE} restart $ROLE
+
+if [[ "$NORESTART" != "1" ]]; then
+    if [[ "$state" == "maintenance" ]]; then
+        ssh ${NODE} svcadm -z ${ZONE} clear $ROLE
+    else
+        ssh ${NODE} svcadm -z ${ZONE} restart $ROLE
+    fi
+    ssh ${NODE} svcadm -z ${ZONE} restart config-agent
 fi
-ssh ${NODE} svcadm -z ${ZONE} restart config-agent
