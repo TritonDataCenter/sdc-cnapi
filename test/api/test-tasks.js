@@ -93,6 +93,102 @@ function testCreateTask(test) {
 }
 
 
+function testTaskError(test) {
+    test.expect(4);
+
+    var id;
+
+    async.waterfall([
+        function (next) {
+            client.post(servurl + '/nop', { error: 'die' }, onpost);
+
+            function onpost(err, req, res, obj) {
+                test.ok(obj.id);
+                id = obj.id;
+                next();
+            }
+        }, function (next) {
+            client.get(sprintf('/tasks/%s/wait', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.deepEqual(obj.status, 'failure');
+                next();
+            }
+        }, function (next) {
+            client.get(sprintf('/tasks/%s', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.equals(obj.status, 'failure');
+                next();
+            }
+        }
+    ],
+    function (err) {
+        test.ifError(err, 'no error');
+        test.done();
+    });
+}
+
+
+
+function testTaskExpiry(test) {
+    test.expect(9);
+
+    var id;
+
+    async.waterfall([
+        // Create a task that will sleep at least 3 seconds
+        function (next) {
+            client.post(servurl + '/nop', { sleep: 3 }, onpost);
+
+            function onpost(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.ok(obj.id);
+                id = obj.id;
+                next();
+            }
+        },
+
+        // Wait for 1 second before timing out, check that we do
+        function (next) {
+            client.get(sprintf('/tasks/%s/wait?timeout=1', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ok(err);
+                test.equals(obj.status, 'active');
+                next();
+            }
+        },
+
+        // Wait for 3 more seconds before timing out, check that we do not
+        function (next) {
+            client.get(sprintf('/tasks/%s/wait?timeout=3', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.equals(obj.status, 'complete');
+                next();
+            }
+        },
+
+        // Explicitly fetching task should corroborate above
+        function (next) {
+            client.get(sprintf('/tasks/%s', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.equals(obj.status, 'complete');
+                next();
+            }
+        }
+    ],
+    function (err) {
+        test.ifError(err, 'no error');
+        test.done();
+    });
+}
+
+
 function testCreateTaskMultipleWait(test) {
     test.expect(12);
 
@@ -154,41 +250,6 @@ function testCreateTaskMultipleWait(test) {
 }
 
 
-function testTaskError(test) {
-    test.expect(4);
-
-    var id;
-
-    async.waterfall([
-        function (next) {
-            client.post(servurl + '/nop', { error: 'die' }, onpost);
-
-            function onpost(err, req, res, obj) {
-                test.ok(obj.id);
-                id = obj.id;
-                next();
-            }
-        }, function (next) {
-            client.get(sprintf('/tasks/%s/wait', id), onget);
-
-            function onget(err, req, res, obj) {
-                test.deepEqual(obj.status, 'failure');
-                next();
-            }
-        }, function (next) {
-            client.get(sprintf('/tasks/%s', id), onget);
-
-            function onget(err, req, res, obj) {
-                test.equals(obj.status, 'failure');
-                next();
-            }
-        }
-    ],
-    function (err) {
-        test.ifError(err, 'no error');
-        test.done();
-    });
-}
 
 
 function testCreateTaskMultipleWaitError(test) {
@@ -247,71 +308,27 @@ function testCreateTaskMultipleWaitError(test) {
 }
 
 
-function testTaskExpiry(test) {
-    test.expect(9);
-
-    var id;
-
-    async.waterfall([
-        // Create a task that will sleep at least 3 seconds
-        function (next) {
-            client.post(servurl + '/nop', { sleep: 3 }, onpost);
-
-            function onpost(err, req, res, obj) {
-                test.ifError(err, 'no error');
-                test.ok(obj.id);
-                id = obj.id;
-                next();
-            }
-        },
-
-        // Wait for 1 second before timing out, check that we do
-        function (next) {
-            client.get(sprintf('/tasks/%s/wait?timeout=1', id), onget);
-
-            function onget(err, req, res, obj) {
-                test.ok(err);
-                test.equals(obj.status, 'active');
-                next();
-            }
-        },
-
-        // Wait for 3 more seconds before timing out, check that we do not
-        function (next) {
-            client.get(sprintf('/tasks/%s/wait?timeout=3', id), onget);
-
-            function onget(err, req, res, obj) {
-                test.ifError(err, 'no error');
-                test.equals(obj.status, 'complete');
-                next();
-            }
-        },
-
-        // Explicitly fetching task should corroborate above
-        function (next) {
-            client.get(sprintf('/tasks/%s', id), onget);
-
-            function onget(err, req, res, obj) {
-                test.ifError(err, 'no error');
-                test.equals(obj.status, 'complete');
-                next();
-            }
-        }
-    ],
-    function (err) {
-        test.ifError(err, 'no error');
-        test.done();
-    });
-}
-
 
 module.exports = {
     setUp: setup,
     tearDown: teardown,
     'create and wait on task': testCreateTask,
-    'create task and wait multiple times on it': testCreateTaskMultipleWait,
     'execute task with error': testTaskError,
-    'execute task with error many waits': testTaskError,
     'task expiry': testTaskExpiry,
+    'create task and wait multiple times on it': testCreateTaskMultipleWait,
     'create task and wait multiple times on it': testCreateTaskMultipleWaitError
+    // TODO: overlapping expiry times
+    //   wait1    x------------x
+    //   wait2            x------------x
+    //
+    //   wait1    x--------------x
+    //   wait2             x------------x
+    //
+    //
+    //   wait1         x-----------x
+    //   wait2   x------------x
+    //
+    //
+    //   wait1                       x-----------x
+    //   wait2   x------------x
 };
