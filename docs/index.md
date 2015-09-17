@@ -1758,7 +1758,7 @@ None.
 | 500  | Error | Could not process request |
 
 
-## ServerWaitlistTicketsWait (GET /tickets/:ticket_uuid/release)
+## ServerWaitlistTicketsRelease (GET /tickets/:ticket_uuid/release)
 
 Release a currently active or queued waitlist ticket.
 
