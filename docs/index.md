@@ -217,7 +217,7 @@ execute, the arguments to that script and any environment variables.
 
 When a compute node boots up, its boot-loader fetches the necessary information
 from booter. These booter in turn requests this data, consisting of
-`boot_platform`, `kernel_flags` and `kernel_modules` from CNAPI.
+`platform`, `kernel_flags` and `kernel_modules` from CNAPI.
 
 Operations on boot parameters are done via the `/boot` endpoint.
 
@@ -228,7 +228,7 @@ Setting the default boot platform for new compute nodes:
 
     -bash-4.1# sdc-cnapi /boot/ac586cae-9ace-11e3-a64e-7f4008875a90 \
         -X PUT \
-        -d '{ "boot_platform": "20140219T205617Z" }'
+        -d '{ "platform": "20140219T205617Z" }'
 
 
 Kernel arguments are key/value pairs passed in to the kernel. They are distinct
@@ -831,6 +831,42 @@ Does not overwrite any values which are not given.
 
 
 # Compute Node Agent Tasks API
+
+## TaskGet (GET /tasks/:task_id)
+
+Returns the details of the given task.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type   | Description        |
+| ---- | ------ | ------------------ |
+| 200  | Object | Task details       |
+| 404  | None   | No such task found |
+
+
+## TaskWait (GET /tasks/:task_id/wait)
+
+Waits for a given task to return or an expiry to be reached.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type   | Description        |
+| ---- | ------ | ------------------ |
+| 200  | Object | Task details       |
+| 404  | None   | No such task found |
+
 
 ## TaskGet (GET /tasks/:task_id)
 
