@@ -93,6 +93,90 @@ function testCreateTask(test) {
 }
 
 
+function testWaitFinishedTask(test) {
+    test.expect(7);
+
+    var id;
+
+    async.waterfall([
+        function (next) {
+            client.post(servurl + '/nop', {}, onpost);
+
+            function onpost(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.ok(obj.id);
+                id = obj.id;
+                next();
+            }
+        }, function (next) {
+            setTimeout(next, 1000);
+        }, function (next) {
+            client.get(sprintf('/tasks/%s/wait', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.equals(obj.status, 'complete');
+                next();
+            }
+        }, function (next) {
+            client.get(sprintf('/tasks/%s', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.equals(obj.status, 'complete');
+                next();
+            }
+        }
+    ],
+    function (err) {
+        test.ifError(err, 'no error');
+        test.done();
+    });
+}
+
+
+function testWaitFinishedTaskError(test) {
+    test.expect(7);
+
+    var id;
+
+    async.waterfall([
+        function (next) {
+            client.post(servurl + '/nop', { error: 'die' }, onpost);
+
+            function onpost(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.ok(obj.id);
+                id = obj.id;
+                next();
+            }
+        }, function (next) {
+            setTimeout(next, 1000);
+        }, function (next) {
+            client.get(sprintf('/tasks/%s/wait', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.equals(obj.status, 'failure');
+                next();
+            }
+        }, function (next) {
+            client.get(sprintf('/tasks/%s', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.equals(obj.status, 'failure');
+                next();
+            }
+        }
+    ],
+    function (err) {
+        test.ifError(err, 'no error');
+        test.done();
+    });
+}
+
+
 function testTaskError(test) {
     test.expect(4);
 
@@ -313,10 +397,12 @@ module.exports = {
     setUp: setup,
     tearDown: teardown,
     'create and wait on task': testCreateTask,
+    'create and wait on task already finished': testWaitFinishedTask,
+    'create and wait on task already finished (with error)': testWaitFinishedTaskError,
     'execute task with error': testTaskError,
     'task expiry': testTaskExpiry,
     'create task and wait multiple times on it': testCreateTaskMultipleWait,
-    'create task and wait multiple times on it': testCreateTaskMultipleWaitError
+    'create task (with error) and wait multiple times on it': testCreateTaskMultipleWaitError
     // TODO: overlapping expiry times
     //   wait1    x------------x
     //   wait2            x------------x
