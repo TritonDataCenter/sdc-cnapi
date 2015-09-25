@@ -398,11 +398,13 @@ module.exports = {
     tearDown: teardown,
     'create and wait on task': testCreateTask,
     'create and wait on task already finished': testWaitFinishedTask,
-    'create and wait on task already finished (with error)': testWaitFinishedTaskError,
+    'create and wait on task already finished (with error)':
+        testWaitFinishedTaskError,
     'execute task with error': testTaskError,
     'task expiry': testTaskExpiry,
     'create task and wait multiple times on it': testCreateTaskMultipleWait,
-    'create task (with error) and wait multiple times on it': testCreateTaskMultipleWaitError
+    'create task (with error) and wait multiple times on it':
+        testCreateTaskMultipleWaitError
     // TODO: overlapping expiry times
     //   wait1    x------------x
     //   wait2            x------------x
