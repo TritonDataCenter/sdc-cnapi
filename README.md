@@ -28,7 +28,7 @@ To run the  API server:
     make all
     node bin/cnapi.js
 
-To update the guidelines, edit "docs/index.restdown" and run `make docs`
+To update the guidelines, edit "docs/index.md" and run `make docs`
 to update "docs/index.html".
 
 Before commiting/pushing run `make prepush` and, if possible, get a code
