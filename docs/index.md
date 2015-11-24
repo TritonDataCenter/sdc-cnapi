@@ -868,42 +868,6 @@ None.
 | 404  | None   | No such task found |
 
 
-## TaskGet (GET /tasks/:task_id)
-
-Returns the details of the given task.
-
-
-### Inputs
-
-None.
-
-
-### Responses
-
-| Code | Type   | Description        |
-| ---- | ------ | ------------------ |
-| 200  | Object | Task details       |
-| 404  | None   | No such task found |
-
-
-## TaskWait (GET /tasks/:task_id/wait)
-
-Waits for a given task to return or an expiry to be reached.
-
-
-### Inputs
-
-None.
-
-
-### Responses
-
-| Code | Type   | Description        |
-| ---- | ------ | ------------------ |
-| 200  | Object | Task details       |
-| 404  | None   | No such task found |
-
-
 
 # Miscellaneous API
 
