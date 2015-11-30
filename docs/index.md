@@ -1161,8 +1161,8 @@ None.
 
 ## ServerTaskHistory (GET /servers/:server_uuid/task-history)
 
-Return details of all provisioner tasks run on the compute node since
-provisioner was started.
+Return details of most recent cn-agent tasks run on the compute node since
+cn-agent was started.
 
 
 ### Inputs
