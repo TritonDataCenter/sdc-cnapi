@@ -241,6 +241,18 @@ For example, to set the kernel arguments and flags for a compute node with uuid
         -X POST
         -d '{ "kernel_args": { "foo": "bar" }, "kernel_flags": { "-k": true } }'
 
+The same as the above, but with -kd:
+
+    -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
+        -X POST
+        -d '{ "kernel_args": { "foo": "bar" }, "kernel_flags": { "-kd": true } }'
+
+Setting `noimport`:
+
+    -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
+        -X POST
+        -d '{ "kernel_args": { "noimport": "true" } }'
+
 
 Passing `null` as the value to a key deletes that key/value.
 
