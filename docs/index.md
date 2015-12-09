@@ -1218,6 +1218,8 @@ install and server will download and install package.
 
 ## VmList (GET /servers/:server_uuid/vms)
 
+(DEPRECATED: use VMAPI instead)
+
 Query the server for a list of VMs.
 
 
@@ -1235,6 +1237,8 @@ None.
 
 
 ## VmLoad (GET /servers/:server_uuid/vms/:uuid)
+
+(DEPRECATED: use VMAPI instead)
 
 Query the server for the VM's details.
 
