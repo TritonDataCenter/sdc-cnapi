@@ -128,7 +128,7 @@ release: all deps docs $(SMF_MANIFESTS)
 	@rm -rf $(RELSTAGEDIR)
 
 regen_docs:
-	$(NODE) ./tools/gendocs.js lib/endpoints > docs/index.md
+	$(NODE) ./tools/gendocs.js docs/static.md lib/endpoints > docs/index.md
 
 .PHONY: publish
 publish: release

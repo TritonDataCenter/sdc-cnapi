@@ -17,6 +17,9 @@ markdown2extras: tables, code-friendly
     Make you edits to the latter. -->
 
 
+
+<!-- Static component of documentation -->
+
 # Overview
 
 CNAPI is the 'Compute Node API' which presents an API to communicate and
@@ -46,7 +49,7 @@ found in sapi_manifests/cnapi/template.
 | **logLevel**              | String | info    | Level at which to log. One of the supported Bunyan log levels.      |
 | **datacenter_name**       | String | -       | Name of the SDC datacenter on which CNAPI is running.               |
 | **adminUuid**             | String | -       | The UUID of the admin user in this SDC standup.                     |
-| **amqp**                  | Object | -       | If either transport above specifies "amqp", this section is needed. |
+| **amqp**                  | Object | -       | If either transport above specifies &quot;amqp&quot;, this section is needed. |
 | **amqp.host**             | String | -       | Host of AMQP broker.                                                |
 | **moray.host**            | String | -       | The Moray API URL.                                                  |
 | **moray.port**            | Number | 2020    | The Moray API port.                                                 |
@@ -69,7 +72,7 @@ found in sapi_manifests/cnapi/template.
 | **dapi.allocationDescription**               | Array  | see template | The pipeline used by the allocator to decide where a VM goes across CNs. |
 
 dapi.changeDefaults is a bit of an oddball, due to limitations in the hogan.js
-template engine. Booleans are represented by the "true" and "false" strings, not
+template engine. Booleans are represented by the &quot;true&quot; and &quot;false&quot; strings, not
 raw booleans; an empty string is treated as the default value. Be careful when
 changing from the defaults in production.
 
@@ -80,7 +83,7 @@ When using the config-agent service in the CNAPI zone, which draws metadata from
 SAPI, it's possible to change the dapi.changeDefaults outlined in the
 `Configuration` section above.
 
-In the SAPI "cnapi" service, adding or changing the following keys in
+In the SAPI &quot;cnapi&quot; service, adding or changing the following keys in
 `metadata` will affect allocation behaviour. This is useful for testing, or
 specialized circumstances in production.
 
@@ -133,7 +136,7 @@ change the default.
 ### Example
 
     cnapi_svc=$(sdc-sapi /services?name=cnapi | json -Ha uuid)
-    sdc-sapi /services/$cnapi_svc -X PUT -d '{ "metadata": { "ALLOC_FILTER_HEADNODE": false } }'
+    sdc-sapi /services/$cnapi_svc -X PUT -d '{ &quot;metadata&quot;: { &quot;ALLOC_FILTER_HEADNODE&quot;: false } }'
 
 # Interacting with CNAPI
 
@@ -144,14 +147,14 @@ Use it as so:
 
     -bash-4.1# sdc-cnapi /servers/5e4bafa8-9dfd-11e3-982d-a7dee2e79ac4 \
                     -X POST \
-                    -d '{ "datacenter_name": "foo" }'
+                    -d '{ &quot;datacenter_name&quot;: &quot;foo&quot; }'
 
 
 # Heartbeats
 
 Each compute node is populated with services which allow the headnode to
 monitor usage and interact with the compute nodes in general. One of these is
-the "heartbeater" agent, its responsibility is to periodically emit server and
+the &quot;heartbeater&quot; agent, its responsibility is to periodically emit server and
 zone information to AMQP. CNAPI is connects to AMQP and listens for these
 heartbeat messages from all servers. It uses the periodic action of these
 heartbeats to determine whether a compute node is up.
@@ -178,7 +181,7 @@ To reset a compute node to its factory default state, `PUT` to the server's
     Connection: keep-alive
 
     {
-      "job_uuid": "4a664491-aa29-4d77-9fc2-592308d56922"
+      &quot;job_uuid&quot;: &quot;4a664491-aa29-4d77-9fc2-592308d56922&quot;
     }
 
 The UUID of the factory reset job is returned and can be used to poll for the
@@ -206,8 +209,8 @@ CNAPI exposes a mechanism to allow remote execution of commands.
 
     -bash-4.1# sdc-cnapi /servers/$(sysinfo |json UUID)/execute \
             -X POST \
-            -d '{ "script": "#!/bin/bash\necho hi $1 $FOO", "args": ["hello"],
-                  "env": { "FOO": "1" } }'
+            -d '{ &quot;script&quot;: &quot;#!/bin/bash\necho hi $1 $FOO&quot;, &quot;args&quot;: [&quot;hello&quot;],
+                  &quot;env&quot;: { &quot;FOO&quot;: &quot;1&quot; } }'
 
 Using the script, args, and env properties we can control the source we
 execute, the arguments to that script and any environment variables.
@@ -221,14 +224,14 @@ from booter. These booter in turn requests this data, consisting of
 
 Operations on boot parameters are done via the `/boot` endpoint.
 
-On the the initial, boot from a "factory default" state, the "default" boot
+On the the initial, boot from a &quot;factory default&quot; state, the &quot;default&quot; boot
 parameters will be fetched from the `/boot/default` endpoint.
 
 Setting the default boot platform for new compute nodes:
 
     -bash-4.1# sdc-cnapi /boot/ac586cae-9ace-11e3-a64e-7f4008875a90 \
         -X PUT \
-        -d '{ "platform": "20140219T205617Z" }'
+        -d '{ &quot;platform&quot;: &quot;20140219T205617Z&quot; }'
 
 
 Kernel arguments are key/value pairs passed in to the kernel. They are distinct
@@ -239,19 +242,19 @@ For example, to set the kernel arguments and flags for a compute node with uuid
 
     -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
         -X POST
-        -d '{ "kernel_args": { "foo": "bar" }, "kernel_flags": { "-k": true } }'
+        -d '{ &quot;kernel_args&quot;: { &quot;foo&quot;: &quot;bar&quot; }, &quot;kernel_flags&quot;: { &quot;-k&quot;: true } }'
 
 The same as the above, but with -kd:
 
     -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
         -X POST
-        -d '{ "kernel_args": { "foo": "bar" }, "kernel_flags": { "-kd": true } }'
+        -d '{ &quot;kernel_args&quot;: { &quot;foo&quot;: &quot;bar&quot; }, &quot;kernel_flags&quot;: { &quot;-kd&quot;: true } }'
 
 Setting `noimport`:
 
     -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
         -X POST
-        -d '{ "kernel_args": { "noimport": "true" } }'
+        -d '{ &quot;kernel_args&quot;: { &quot;noimport&quot;: &quot;true&quot; } }'
 
 
 Passing `null` as the value to a key deletes that key/value.
@@ -260,14 +263,14 @@ For instance, to delete the `foo` key:
 
     sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
         -X POST
-        -d '{ "kernel_args": { "foo": null } }'
+        -d '{ &quot;kernel_args&quot;: { &quot;foo&quot;: null } }'
 
 
 To completely overwrite values, use PUT instead of POST:
 
     -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
         -X PUT
-        -d '{ "kernel_args": { "alpha": "able" } }'
+        -d '{ &quot;kernel_args&quot;: { &quot;alpha&quot;: &quot;able&quot; } }'
 
 
 # Setting up a new Server
@@ -298,7 +301,7 @@ To run a script after successful setup completion, use the `postsetup_script`
 parameter. The script will be run within the global zone of the compute node in
 question:
 
-    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup -X PUT -d '{ "postsetup_script": "#!/bin/bash\necho > /var/tmp/myfile" }'
+    -bash-4.1# sdc-cnapi /servers/564d5f0d-3517-5f60-78f1-ce6d0b8f58df/setup -X PUT -d '{ &quot;postsetup_script&quot;: &quot;#!/bin/bash\necho &gt; /var/tmp/myfile&quot; }'
 
 
 # Updating Nics
@@ -321,11 +324,11 @@ Add the manta nic tag to a nic with sdc-cnapi:
     sdc-cnapi /servers/564d4d2c-ddd0-7be7-40ae-bae473a1d53e/nics \
     -X PUT '\
         {
-            "action": "update",
-            "nics": [
+            &quot;action&quot;: &quot;update&quot;,
+            &quot;nics&quot;: [
                 {
-                    "mac": "00:0c:29:a1:d5:3e",
-                    "nic_tags_provided": [ "manta" ]
+                    &quot;mac&quot;: &quot;00:0c:29:a1:d5:3e&quot;,
+                    &quot;nic_tags_provided&quot;: [ &quot;manta&quot; ]
                 }
             ]
         }'
@@ -343,11 +346,11 @@ tags) with sdc-cnapi:
     sdc-cnapi /servers/564d4d2c-ddd0-7be7-40ae-bae473a1d53e/nics \
     -X PUT '\
         {
-            "action": "replace",
-            "nics": [
+            &quot;action&quot;: &quot;replace&quot;,
+            &quot;nics&quot;: [
                 {
-                    "mac": "00:0c:29:a1:d5:3e",
-                    "nic_tags_provided": [ "external", "mantanat" ]
+                    &quot;mac&quot;: &quot;00:0c:29:a1:d5:3e&quot;,
+                    &quot;nic_tags_provided&quot;: [ &quot;external&quot;, &quot;mantanat&quot; ]
                 }
             ]
         }'
@@ -364,11 +367,11 @@ Remove the mantanat nic tag from a nic with sdc-cnapi:
     sdc-cnapi /servers/564d4d2c-ddd0-7be7-40ae-bae473a1d53e/nics \
     -X PUT '\
         {
-            "action": "delete",
-            "nics": [
+            &quot;action&quot;: &quot;delete&quot;,
+            &quot;nics&quot;: [
                 {
-                    "mac": "00:0c:29:a1:d5:3e",
-                    "nic_tags_provided": [ "mantanat" ]
+                    &quot;mac&quot;: &quot;00:0c:29:a1:d5:3e&quot;,
+                    &quot;nic_tags_provided&quot;: [ &quot;mantanat&quot; ]
                 }
             ]
         }'
@@ -395,105 +398,105 @@ A CNAPI server record looks like the following
     Connection: keep-alive
 
     {
-      "sysinfo": {
+      &quot;sysinfo&quot;: {
          --- compute node sysinfo ---
       },
-      "ram": 4095,
-      "current_platform": "20140421T214627Z",
-      "headnode": true,
-      "boot_platform": "20140421T214627Z",
-      "datacenter": "coal",
-      "overprovision_ratio": 1,
-      "reservation_ratio": 0.15,
-      "reservoir": false,
-      "traits": {},
-      "rack_identifier": "",
-      "comments": "",
-      "uuid": "564d4374-d703-b97b-ca9f-7375f05f337c",
-      "hostname": "headnode",
-      "reserved": false,
-      "boot_params": {
-        "rabbitmq": "guest:guest:rabbitmq.coal.joyent.us:5672"
+      &quot;ram&quot;: 4095,
+      &quot;current_platform&quot;: &quot;20140421T214627Z&quot;,
+      &quot;headnode&quot;: true,
+      &quot;boot_platform&quot;: &quot;20140421T214627Z&quot;,
+      &quot;datacenter&quot;: &quot;coal&quot;,
+      &quot;overprovision_ratio&quot;: 1,
+      &quot;reservation_ratio&quot;: 0.15,
+      &quot;reservoir&quot;: false,
+      &quot;traits&quot;: {},
+      &quot;rack_identifier&quot;: &quot;&quot;,
+      &quot;comments&quot;: &quot;&quot;,
+      &quot;uuid&quot;: &quot;564d4374-d703-b97b-ca9f-7375f05f337c&quot;,
+      &quot;hostname&quot;: &quot;headnode&quot;,
+      &quot;reserved&quot;: false,
+      &quot;boot_params&quot;: {
+        &quot;rabbitmq&quot;: &quot;guest:guest:rabbitmq.coal.joyent.us:5672&quot;
       },
-      "kernel_flags": {},
-      "default_console": "vga",
-      "serial": "ttyb",
-      "setup": true,
-      "setting_up": false,
-      "last_boot": "2014-04-22T07:39:50.000Z",
-      "created": "2014-04-22T07:37:30.000Z",
-      "vms": {
+      &quot;kernel_flags&quot;: {},
+      &quot;default_console&quot;: &quot;vga&quot;,
+      &quot;serial&quot;: &quot;ttyb&quot;,
+      &quot;setup&quot;: true,
+      &quot;setting_up&quot;: false,
+      &quot;last_boot&quot;: &quot;2014-04-22T07:39:50.000Z&quot;,
+      &quot;created&quot;: &quot;2014-04-22T07:37:30.000Z&quot;,
+      &quot;vms&quot;: {
          --- compute node vm objects ---
       },
-      "transitional_status": "",
-      "last_heartbeat": "2014-04-22T08:35:07.776Z",
-      "status": "running",
-      "memory_available_bytes": 2044813312,
-      "memory_arc_bytes": 184096272,
-      "memory_total_bytes": 4284993536,
-      "memory_provisionable_bytes": -44936986624,
-      "disk_kvm_zvol_used_bytes": 0,
-      "disk_kvm_zvol_volsize_bytes": 0,
-      "disk_kvm_quota_bytes": 0,
-      "disk_zone_quota_bytes": 536870912000,
-      "disk_cores_quota_bytes": 429496729600,
-      "disk_installed_images_used_bytes": 950053376,
-      "disk_pool_size_bytes": 159987531776,
-      "overprovision_ratios": {
-        "ram": 1
+      &quot;transitional_status&quot;: &quot;&quot;,
+      &quot;last_heartbeat&quot;: &quot;2014-04-22T08:35:07.776Z&quot;,
+      &quot;status&quot;: &quot;running&quot;,
+      &quot;memory_available_bytes&quot;: 2044813312,
+      &quot;memory_arc_bytes&quot;: 184096272,
+      &quot;memory_total_bytes&quot;: 4284993536,
+      &quot;memory_provisionable_bytes&quot;: -44936986624,
+      &quot;disk_kvm_zvol_used_bytes&quot;: 0,
+      &quot;disk_kvm_zvol_volsize_bytes&quot;: 0,
+      &quot;disk_kvm_quota_bytes&quot;: 0,
+      &quot;disk_zone_quota_bytes&quot;: 536870912000,
+      &quot;disk_cores_quota_bytes&quot;: 429496729600,
+      &quot;disk_installed_images_used_bytes&quot;: 950053376,
+      &quot;disk_pool_size_bytes&quot;: 159987531776,
+      &quot;overprovision_ratios&quot;: {
+        &quot;ram&quot;: 1
       },
-      "unreserved_cpu": 400,
-      "unreserved_ram": -42863,
-      "unreserved_disk": 151669
+      &quot;unreserved_cpu&quot;: 400,
+      &quot;unreserved_ram&quot;: -42863,
+      &quot;unreserved_disk&quot;: 151669
     }
 
 ## Server properties
 
-| Param                                | Type          | Description                                                                |
-| ------------------------------------ | ------------- | -------------------------------------------------------------------------- |
-| **boot_params**                      | *Object*      |
-| **boot_platform**                    | *String*      | The platform image to be booted from on next boot                          |
-| **current_platform**                 | *String*      | The platform image currently in use by server                              |
-| **comments**                         | *String*      | Description of server                                                      |
-| **created**                          | *String date* | Date of server creation                                                    |
-| **datacenter**                       | *String*      | Datacenter in which server resides                                         |
-| **default_console**                  |               |
-| **disk_cores_quota_bytes**           |               |
-| **disk_installed_images_used_bytes** |               |
-| **disk_kvm_quota_bytes**             |               |
-| **disk_kvm_zvol_used_bytes**         |               |
-| **disk_kvm_zvol_volsize_bytes**      |               |
-| **disk_pool_size_bytes**             |               |
-| **disk_zone_quota_bytes**            |               |
-| **headnode**                         | *Boolean*     | Whether server is a headnode                                               |
-| **hostname**                         | *String*      | Hostname if any                                                            |
-| **kernel_flags**                     |               |
-| **last_boot**                        |               |
-| **last_heartbeat**                   |               |
-| **memory_arc_bytes**                 |               |
-| **memory_available_bytes**           |               |
-| **memory_provisionable_bytes**       |               |
-| **memory_total_bytes**               |               |
-| **overprovision_ratio**              |               |
-| **overprovision_ratios**             |               |
-| **rack_identifier**                  |               |
-| **ram**                              | *Number*      |                                                                            |
-| **reservation_ratio**                |               |
-| **reserved**                         | *Boolean*     |                                                                            |
-| **reservoir**                        | *Boolean*     |                                                                            |
-| **serial**                           | *String*      |                                                                            |
-| **setting_up**                       | *Boolean*     | Whether server is in the process of setting up                             |
-| **setup**                            | *Boolean*     | Whether server has been marked as set up                                   |
-| **status**                           | *Boolean*     | The server's current state of activity                                     |
-| **sysinfo**                          | *Object*      | The last given sysinfo payload for server                                  |
-| **traits**                           | *Object*      |                                                                            |
-| **transport**                        | *String*      | The method via which CNAPI is received updates from CN's. (http or amqp)   |
-| **transitional_status**              | *String*      | Takes precedense over `status` when a server is undergoing a status change |
-| **unreserved_cpu**                   |               |
-| **unreserved_disk**                  |               |
-| **unreserved_ram**                   |               |
-| **uuid**                             | *String*      | The server's unique identifier                                             |
-| **vms**                              | *Object*      | A object representing all the vms on server                                |
+| Param                                | Type             | Description                                                                |
+| ------------------------------------ | ---------------- | -------------------------------------------------------------------------- |
+| **boot_params**                      | *Object*         |
+| **boot_platform**                    | *String*         | The platform image to be booted from on next boot                          |
+| **current_platform**                 | *String*         | The platform image currently in use by server                              |
+| **comments**                         | *String*         | Description of server                                                      |
+| **created**                          | *String date*    | Date of server creation                                                    |
+| **datacenter**                       | *String*         | Datacenter in which server resides                                         |
+| **default_console**                  |                  |
+| **disk_cores_quota_bytes**           |                  |
+| **disk_installed_images_used_bytes** |                  |
+| **disk_kvm_quota_bytes**             |                  |
+| **disk_kvm_zvol_used_bytes**         |                  |
+| **disk_kvm_zvol_volsize_bytes**      |                  |
+| **disk_pool_size_bytes**             |                  |
+| **disk_zone_quota_bytes**            |                  |
+| **headnode**                         | *Boolean*        | Whether server is a headnode                                               |
+| **hostname**                         | *String*         | Hostname of server if any                                                  |
+| **kernel_flags**                     |                  |
+| **last_boot**                        | *ISODate String* | Time of last boot
+| **last_heartbeat**                   |                  |
+| **memory_arc_bytes**                 |                  |
+| **memory_available_bytes**           |                  |
+| **memory_provisionable_bytes**       |                  |
+| **memory_total_bytes**               |                  |
+| **overprovision_ratio**              |                  |
+| **overprovision_ratios**             |                  |
+| **rack_identifier**                  |                  |
+| **ram**                              | *Number*         |                                                                            |
+| **reservation_ratio**                |                  |
+| **reserved**                         | *Boolean*        |                                                                            |
+| **reservoir**                        | *Boolean*        |                                                                            |
+| **serial**                           | *String*         |                                                                            |
+| **setting_up**                       | *Boolean*        | Whether server is in the process of setting up                             |
+| **setup**                            | *Boolean*        | Whether server has been marked as set up                                   |
+| **status**                           | *Boolean*        | The server's current state of activity                                     |
+| **sysinfo**                          | *Object*         | The last given sysinfo payload for server                                  |
+| **traits**                           | *Object*         |                                                                            |
+| **transport**                        | *String*         | The method via which CNAPI is received updates from CN's. (http or amqp)   |
+| **transitional_status**              | *String*         | Takes precedense over `status` when a server is undergoing a status change |
+| **unreserved_cpu**                   |                  |
+| **unreserved_disk**                  |                  |
+| **unreserved_ram**                   |                  |
+| **uuid**                             | *String*         | The server's unique identifier                                             |
+| **vms**                              | *Object*         | A object representing all the vms on server                                |
 
 # Waitlist
 
@@ -502,7 +505,7 @@ zfs dataset import it is possible that concurrent jobs may interfere with each
 other.
 
 To prevent this, a mechanism is required that will queue jobs based on the
-type of resource they're acting on. Jobs should be grouped by "scope" and
+type of resource they're acting on. Jobs should be grouped by &quot;scope&quot; and
 serialized such that a server can will only execute be executing one job per
 scope group at a time. In this way it would be possible to enforce that only
 one job be active on a vm on a server, but would still allow jobs to be run
@@ -537,7 +540,7 @@ preceding tickets are resolved. To find out whether a ticket has become
 'active' (ie indicating the job may proceed and do its work), the job may poll
 the ticket values, or use the blocking `wait` endpoint for that ticket.
 
-Once the work has been completed, it is up to the job to "release" the ticket,
+Once the work has been completed, it is up to the job to &quot;release&quot; the ticket,
 so that subsequent tickets for that scope/id combination can be serviced.
 
 Acquiring a ticket before performing work is an explicit step (as opposed to
@@ -551,7 +554,7 @@ Using the waitlist begins with requesting a ticket. POST to the
 CreateWaitlistTicket endpoint. Specify the scope and unique id. An expiry date
 must also be specified. Endpoint returns a ticket uuid.
 
-    -bash-4.1# sdc-cnapi /servers/$(sysinfo | json UUID)/tickets -X POST -d '{ "scope": "vm", "id": "nuts", "expires_at": "2015-10-10T00:00:00"}'
+    -bash-4.1# sdc-cnapi /servers/$(sysinfo | json UUID)/tickets -X POST -d '{ &quot;scope&quot;: &quot;vm&quot;, &quot;id&quot;: &quot;nuts&quot;, &quot;expires_at&quot;: &quot;2015-10-10T00:00:00&quot;}'
     HTTP/1.1 202 Accepted
     Content-Type: application/json
     Content-Length: 47
@@ -563,7 +566,7 @@ must also be specified. Endpoint returns a ticket uuid.
     Connection: keep-alive
 
     {
-      "uuid": "ec8d5ef3-24b6-4582-ade8-c9e9bfb70906"
+      &quot;uuid&quot;: &quot;ec8d5ef3-24b6-4582-ade8-c9e9bfb70906&quot;
     }
 
 
@@ -582,21 +585,21 @@ must also be specified. Endpoint returns a ticket uuid.
 
     [
       {
-        "uuid": "ec8d5ef3-24b6-4582-ade8-c9e9bfb70906",
-        "server_uuid": "564d6e71-b375-4b81-07ec-ad77fe5fa680",
-        "scope": "vm",
-        "id": "nuts",
-        "expires_at": "2015-10-10T00:00:00",
-        "created_at": "2014-06-27T19:36:47.708Z",
-        "updated_at": "2014-06-27T19:36:47.708Z",
-        "status": "active"
+        &quot;uuid&quot;: &quot;ec8d5ef3-24b6-4582-ade8-c9e9bfb70906&quot;,
+        &quot;server_uuid&quot;: &quot;564d6e71-b375-4b81-07ec-ad77fe5fa680&quot;,
+        &quot;scope&quot;: &quot;vm&quot;,
+        &quot;id&quot;: &quot;nuts&quot;,
+        &quot;expires_at&quot;: &quot;2015-10-10T00:00:00&quot;,
+        &quot;created_at&quot;: &quot;2014-06-27T19:36:47.708Z&quot;,
+        &quot;updated_at&quot;: &quot;2014-06-27T19:36:47.708Z&quot;,
+        &quot;status&quot;: &quot;active&quot;
       }
     ]
 
 ### Wait on a ticket
 
     -bash-4.1# sdc-cnapi /tickets/bb5038c2-7498-4e07-b919-df072c76d2dc/wait
-    <returns when ticket is released or expires>
+    &lt;returns when ticket is released or expires&gt;
 
 
 ### Release a ticket
@@ -625,7 +628,6 @@ will be allowed to proceed.
     x-response-time: 14
     x-server-name: 9d2c3229-1e92-4c3f-98fd-5a7ac5fb28ed
     Connection: keep-alive
-
 
 
 <!-- Genererated API docs -->

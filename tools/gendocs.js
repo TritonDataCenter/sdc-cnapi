@@ -18,6 +18,7 @@
  */
 
 var assert = require('assert-plus');
+var ejs = require('ejs');
 var dox = require('dox');
 var fs = require('fs');
 var sprintf = require('sprintf').sprintf;
@@ -230,15 +231,25 @@ function makeTable(params) {
 function main() {
     if (process.argv.length < 3) {
         console.error('Error: Insufficient number of arguments');
-        console.error('%s %s <directory>', process.argv[0], process.argv[1]);
+        console.error('%s %s [static markdown file] <directory>',
+                      process.argv[0], process.argv[1]);
         process.exit(1);
     }
 
     var data = fs.readFileSync(__dirname + '/../package.json');
     var pkg = JSON.parse(data.toString());
+    var staticData = '';
+    var directory;
+
+    if (process.argv.length === 3) {
+        directory = process.argv[2];
+    } else if (process.argv.length === 4) {
+        staticData = fs.readFileSync(process.argv[2]).toString();
+        directory = process.argv[3];
+    }
 
     var files = [];
-    file.walkSync(process.argv[2], function (dir, dirs, filenames) {
+    file.walkSync(directory, function (dir, dirs, filenames) {
         filenames.forEach(function (fn) {
             if (/\.js$/.exec(fn)) {
                 files.push(path.join(dir, fn));
@@ -270,13 +281,13 @@ function main() {
     // Sort sections by name for stable doc section order.
     sortArrayOfObjects(sections, ['name']);
 
-    var ejs = require('ejs');
     var expanded = ejs.render(fs.readFileSync(
         __dirname + '/../docs/index/index.md.ejs').toString(),
         {
             package: pkg,
             makeTable: makeTable,
-            sections: sections
+            sections: sections,
+            static: staticData
         });
     process.stdout.write(expanded);
 }
