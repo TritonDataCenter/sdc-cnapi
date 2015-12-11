@@ -31,11 +31,6 @@
 		"username": "{{{napi_http_admin_user}}}",
 		"password": "{{{napi_http_admin_pw}}}"
 	},
-	"vmapi": {
-		"url": "http://{{{VMAPI_SERVICE}}}",
-		"username": "{{{vmapi_http_admin_user}}}",
-		"password": "{{{vmapi_http_admin_pw}}}"
-	},
 	"assets": {
 		"url": "http://{{{assets_admin_ips}}}"
 	},
