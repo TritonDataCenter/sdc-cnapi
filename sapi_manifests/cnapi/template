@@ -46,6 +46,9 @@
 		"url": "http://{{{IMGAPI_SERVICE}}}"
 	},
 	"dapi": {
+{{^ALLOC_USE_CNAPI_VMS}}
+		"useVmapi": true,
+{{/ALLOC_USE_CNAPI_VMS}}
 		"changeDefaults": {
 			"server_spread": "{{{ALLOC_SERVER_SPREAD}}}",
 			"filter_headnode": "{{{ALLOC_FILTER_HEADNODE}}}",
