@@ -992,6 +992,7 @@ Synchronously execute a command on the target server.
 | args   | Array  | Array containing arguments to be passed in to command   |
 | env    | Object | Object containing environment variables to be passed in |
 | script | String | Script to be executed. Must have a shebang line         |
+| timeout | Number | Maximum time to wait for a reply from the server, expressed in seconds |
 
 
 ### Responses
