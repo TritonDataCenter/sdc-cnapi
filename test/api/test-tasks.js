@@ -406,6 +406,34 @@ function testTaskHistory(test) {
     client.get(sprintf('/servers/%s/task-history', serveruuid), getCb);
 }
 
+function testPauseCnAgent(test) {
+    test.expect(2);
+
+    function postCb(err, req, res, obj) {
+        test.ifError(err, 'no error');
+        if (!err) {
+            test.equal(res.statusCode, 204, '/cn-agent/pause returns 204 OK');
+        }
+        test.done();
+    }
+
+    client.post(sprintf('/servers/%s/cn-agent/pause', serveruuid), {}, postCb);
+}
+
+function testResumeCnAgent(test) {
+    test.expect(2);
+
+    function postCb(err, req, res, obj) {
+        test.ifError(err, 'no error');
+        if (!err) {
+            test.equal(res.statusCode, 204, '/cn-agent/resume returns 204 OK');
+        }
+        test.done();
+    }
+
+    client.post(sprintf('/servers/%s/cn-agent/resume', serveruuid), {}, postCb);
+}
+
 module.exports = {
     setUp: setup,
     tearDown: teardown,
@@ -418,7 +446,9 @@ module.exports = {
     'create task and wait multiple times on it': testCreateTaskMultipleWait,
     'create task (with error) and wait multiple times on it':
         testCreateTaskMultipleWaitError,
-    'task history': testTaskHistory
+    'task history': testTaskHistory,
+    'pause cn-agent': testPauseCnAgent,
+    'resume cn-agent': testResumeCnAgent
     // TODO: overlapping expiry times
     //   wait1    x------------x
     //   wait2            x------------x
