@@ -1216,6 +1216,43 @@ install and server will download and install package.
 | 500  | Error | Could not process request        |
 
 
+## ServerCnAgentPause (GET /servers/:server_uuid/cn-agent/pause)
+
+Makes cn-agent stop accepting new tasks.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description                 |
+| ---- | ----- | --------------------------- |
+| 204  | None  | Request returned ok         |
+| 500  | Error | Could not process request   |
+
+
+## ServerCnAgentResume (GET /servers/:server_uuid/cn-agent/resume)
+
+Makes cn-agent accept new tasks again. Note that this is the default
+behavior and therefore it has no sense to call this method unless
+the task agent has been paused before.
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description                 |
+| ---- | ----- | --------------------------- |
+| 204  | None  | Request returned ok         |
+| 500  | Error | Could not process request   |
+
+
 
 # Virtual Machine API
 
