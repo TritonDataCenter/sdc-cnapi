@@ -1086,7 +1086,9 @@ Reboot the server.
 
 ### Inputs
 
-None.
+| Param  | Type    | Description                                                                  |
+| ------ | ------- | ---------------------------------------------------------------------------- |
+| drain  | Boolean | Wait for server's cn-agent to be drained before sending the reboot command   |
 
 
 ### Responses
