@@ -1089,11 +1089,12 @@ Reboot the server.
 
 ### Inputs
 
-| Param        | Type   | Description |
-| ------------ | ------ | ----------- |
-| origin       | String |             |
-| creator_uuid | String |             |
 
+| Param        | Type    | Description                                                                  |
+| ------------ | ------- | ---------------------------------------------------------------------------- |
+| drain        | Boolean | Wait for server's cn-agent to be drained before sending the reboot command   |
+| origin       | String  |                                                                              |
+| creator_uuid | String  |                                                                              |
 
 ### Responses
 
