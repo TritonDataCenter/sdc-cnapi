@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: <%= sections.map(function (s) { return s.name }).join(", ") %>
+apisections: <%- sections.map(function (s) { return s.name }).join(", ") %>
 markdown2extras: tables, code-friendly
 ---
 <!--
@@ -20,20 +20,20 @@ markdown2extras: tables, code-friendly
 
 <!-- Static component of documentation -->
 
-<%= static %>
+<%- static %>
 
 <!-- Genererated API docs -->
-<% sections.forEach(function (section) { %># <%= section.name %>
+<% sections.forEach(function (section) { %># <%- section.name %>
 
-<% section.endpoints.forEach(function (endpoint) { %>## <%= endpoint.name %> (<%= endpoint.endpoint %>)
+<% section.endpoints.forEach(function (endpoint) { %>## <%- endpoint.name %> (<%- endpoint.endpoint %>)
 
-<%= endpoint.summary %><% if (endpoint.body) { %>
+<%- endpoint.summary %><% if (endpoint.body) { %>
 
-<%= endpoint.body %><% } %>
+<%- endpoint.body %><% } %>
 
 ### Inputs
 
-<% if (endpoint.params.length) { %><%= makeTable({
+<% if (endpoint.params.length) { %><%- makeTable({
     headers: ["Param", "Type", "Description"],
     fields: ["name", "type", "description"],
     data: endpoint.params
@@ -42,7 +42,7 @@ markdown2extras: tables, code-friendly
 
 ### Responses
 
-<% if (endpoint.responses.length) { %><%= makeTable({
+<% if (endpoint.responses.length) { %><%- makeTable({
     headers: ["Code", "Type", "Description"],
     fields: ["code", "type", "description"],
     data: endpoint.responses
