@@ -36,13 +36,13 @@ function setup(callback) {
 
 var UUID_RE = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 
-function validatePlan(t, plan, options) {
-    t.ok(plan.uuid);
-    t.ok(UUID_RE.test(plan.uuid));
-    t.equal(plan.state, 'created');
+function validatePlan(t, p, options) {
+    t.ok(p.uuid);
+    t.ok(UUID_RE.test(p.uuid));
+    t.equal(p.state, 'created');
     if (options.reboots) {
-        t.ok(Array.isArray(plan.reboots));
-        plan.reboots.forEach(function (r) {
+        t.ok(Array.isArray(p.reboots));
+        p.reboots.forEach(function (r) {
             t.ok(r.server_uuid);
             t.ok(r.server_hostname);
             if (r.started_at) {
@@ -112,8 +112,8 @@ function testListRebootPlans(t) {
         t.ifError(err);
         t.ok(body);
 
-        body.forEach(function (plan) {
-            validatePlan(t, plan, {});
+        body.forEach(function (p) {
+            validatePlan(t, p, {});
         });
 
         t.done();
@@ -121,12 +121,13 @@ function testListRebootPlans(t) {
 }
 
 function testListRebootPlansWithReboots(t) {
-    client.get('/reboot-plans?include_reboots=true', function (err, req, res, body) {
+    client.get('/reboot-plans?include_reboots=true',
+            function (err, req, res, body) {
         t.ifError(err);
         t.ok(body);
 
-        body.forEach(function (plan) {
-            validatePlan(t, plan, {reboots: true});
+        body.forEach(function (p) {
+            validatePlan(t, p, {reboots: true});
         });
 
         t.done();
