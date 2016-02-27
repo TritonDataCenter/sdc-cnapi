@@ -1240,8 +1240,6 @@ None.
 
 ## VmLoad (GET /servers/:server_uuid/vms/:uuid)
 
-(DEPRECATED: use VMAPI instead)
-
 Query the server for the VM's details.
 
 
