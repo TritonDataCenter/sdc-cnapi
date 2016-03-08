@@ -1056,10 +1056,12 @@ Set the value of a Server's attribute.
 
 | Param                | Type    | Description                                                                                                                      |
 | -------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| agents               | Array   | Array of agents present on this server                                                                                           |
 | boot_platform        | String  | The platform image to be used on next boot                                                                                       |
 | default_console      | String  | Console type                                                                                                                     |
 | rack_identifier      | String  | The id of the server's rack                                                                                                      |
 | comments             | String  | Any comments about the server                                                                                                    |
+| nics                 | Array   | List of NICs to update (see `Updating NICs` section)                                                                             |
 | reserved             | Boolean | Server is available for provisioning                                                                                             |
 | reservoir            | Boolean | Server should be considered last for provisioning                                                                                |
 | reservation_ratio    | Nmber   | The reservation ratio                                                                                                            |
@@ -1085,7 +1087,10 @@ Reboot the server.
 
 ### Inputs
 
-None.
+| Param        | Type   | Description |
+| ------------ | ------ | ----------- |
+| origin       | String |             |
+| creator_uuid | String |             |
 
 
 ### Responses

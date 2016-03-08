@@ -15,6 +15,7 @@
 var async   = require('async');
 var http    = require('http');
 var restify = require('restify');
+var util = require('util');
 
 
 var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
@@ -132,6 +133,16 @@ function testListServersWithAll2(t) {
                                         memory: true });
         });
 
+        t.done();
+    });
+}
+
+
+function testListServersUnknownParam(t) {
+    client.get('/servers?unknown=true', function (err, req, res, body) {
+        t.expect(2);
+        t.ok(err);
+        t.equal(err.statusCode, 409);
         t.done();
     });
 }
@@ -325,6 +336,7 @@ module.exports = {
     'list servers with capacity': testListServersWithCapacity,
     'list servers with all 1': testListServersWithAll1,
     'list servers with all 2': testListServersWithAll2,
+    'list servers using unknown parameter': testListServersUnknownParam,
     'get server': testGetServer,
     'update server': testUpdateServer
 };
