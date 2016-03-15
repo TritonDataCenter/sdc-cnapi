@@ -1197,6 +1197,29 @@ None.
 | 500  | Error | Could not process request   |
 
 
+## ServerEnsureImage (GET /servers/:server_uuid/ensure-image)
+
+Assert an image is present on a compute node and ready for use in
+provisioning. If this is not the case, fetch and install the image onto the
+compute node zpool.
+
+
+### Inputs
+
+| Param                 | Type   | Description                     |
+| --------------------- | ------ | ------------------------------- |
+| image_uuid            | String | UUID of image to install        |
+| zfs_storage_pool_name | String | zpool on which to install image |
+
+
+### Responses
+
+| Code | Type  | Description                 |
+| ---- | ----- | --------------------------- |
+| 204  | None  | Tasks returned successfully |
+| 500  | Error | Could not process request   |
+
+
 ## ServerInstallAgent (GET /servers/:server_uuid/install-agent)
 
 Instruct server to install given agent. Pass in image uuid of package to
