@@ -45,6 +45,9 @@ function validatePlan(t, p, options) {
         p.reboots.forEach(function (r) {
             t.ok(r.server_uuid);
             t.ok(r.server_hostname);
+            t.ok(r.boot_platform);
+            t.ok(r.current_platform);
+            t.ok(typeof (r.headnode) !== 'undefined');
             if (r.started_at) {
                 var s = new Date(r.started_at);
                 t.notEqual(s.toString(), 'Invalid Date');
