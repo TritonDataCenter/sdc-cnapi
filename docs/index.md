@@ -487,7 +487,7 @@ A CNAPI server record looks like the following
 | **serial**                           | *String*         |                                                                            |
 | **setting_up**                       | *Boolean*        | Whether server is in the process of setting up                             |
 | **setup**                            | *Boolean*        | Whether server has been marked as set up                                   |
-| **status**                           | *Boolean*        | The server's current state of activity                                     |
+| **status**                           | *String*         | Either 'running' or 'unknown' based on how recently CNAPI has heard from server |
 | **sysinfo**                          | *Object*         | The last given sysinfo payload for server                                  |
 | **traits**                           | *Object*         |                                                                            |
 | **transport**                        | *String*         | The method via which CNAPI is received updates from CN's. (http or amqp)   |
@@ -1042,9 +1042,9 @@ None.
 
 ### Responses
 
-| Code | Type   | Description        |
-| ---- | ------ | ------------------ |
-| 200  | Object | The server object> |
+| Code | Type   | Description       |
+| ---- | ------ | ----------------- |
+| 200  | Object | The server object |
 
 
 ## ServerUpdate (POST /servers/:server_uuid)
