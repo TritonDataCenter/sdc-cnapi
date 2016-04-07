@@ -94,6 +94,11 @@ COAL=root@10.99.99.7
 test-coal-task:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/api/*.js | grep task)"'
 
+.PHONY: test-coal-model
+COAL=root@10.99.99.7
+test-coal-model:
+	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/model/*.js)"'
+
 .PHONY: release
 release: all deps docs $(SMF_MANIFESTS)
 	@echo "Building $(RELEASE_TARBALL)"

@@ -41,7 +41,7 @@ function testListPlatformsAll(test) {
 
     var expSearchResults2 = [
         {
-            server_uuid: uuids[0], last_heartbeat: (new Date()).toISOString()
+            server_uuid: uuids[0]
         }
     ];
 
@@ -59,8 +59,17 @@ function testListPlatformsAll(test) {
         ModelServer.init(app);
         ModelPlatform.init(app);
 
+        var expGetResults = [
+            {
+                uuid: uuids[0],
+                setup: true, sysinfo: { 'setup': true },
+                last_heartbeat: (new Date()).toISOString()
+            }
+        ];
+
+        moray.client.when('getObject', [], { value: expGetResults[0] });
         moray.client.when('findObjects');
-        moray.client.when('getObject', [], []);
+        moray.client.when('getObject', [], { value: expGetResults[0] });
 
         moray.client._findObjectsResults(expSearchResults);
         moray.client._findObjectsResults(expSearchResults2);
@@ -111,8 +120,17 @@ function testListPlatformsAllNoLatest(test) {
         ModelServer.init(app);
         ModelPlatform.init(app);
 
+        var expGetResults = [
+            {
+                uuid: uuids[0],
+                setup: true, sysinfo: { 'setup': true },
+                last_heartbeat: (new Date()).toISOString()
+            }
+        ];
+
+        moray.client.when('getObject', [], { value: expGetResults[0] });
         moray.client.when('findObjects');
-        moray.client.when('getObject', [], []);
+        moray.client.when('getObject', [], { value: expGetResults[0] });
         ur.when('execute', [], expUrResult);
 
         moray.client._findObjectsResults(expSearchResults);
