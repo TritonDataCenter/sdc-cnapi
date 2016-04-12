@@ -66,7 +66,6 @@
 			        "hard-filter-invalid-servers",
 			        "hard-filter-volumes-from",
 			        "calculate-ticketed-vms",
-			        "calculate-locality",
 			        "hard-filter-reserved",
 			        "hard-filter-headnode",
 			        "hard-filter-vm-count",
