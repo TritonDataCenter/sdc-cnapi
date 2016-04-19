@@ -238,7 +238,7 @@ function testTaskExpiry(test) {
             client.get(sprintf('/tasks/%s/wait?timeout=1', id), onget);
 
             function onget(err, req, res, obj) {
-                test.ok(err);
+                test.ifError(err);
                 test.equals(obj.status, 'active');
                 next();
             }
