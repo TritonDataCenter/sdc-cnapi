@@ -23,7 +23,7 @@
     <exec_method
       type="method"
       name="start"
-      exec="/usr/bin/ctrun -l child -o noorphan @@NODE@@ @@PREFIX@@/bin/cnapi.js &amp;"
+      exec="/usr/bin/ctrun -l child -o noorphan @@NODE@@ --abort-on-uncaught-exception @@PREFIX@@/bin/cnapi.js &amp;"
       timeout_seconds="30">
       <method_context working_directory="/opt/smartdc/cnapi">
         <method_credential user="nobody" group="nobody" privileges="basic,net_privaddr"/>
