@@ -424,6 +424,7 @@ A CNAPI server record looks like the following
       "setup": true,
       "setting_up": false,
       "last_boot": "2014-04-22T07:39:50.000Z",
+      "next_reboot: "2016-03-10T10:22:35.000Z",
       "created": "2014-04-22T07:37:30.000Z",
       "vms": {
          --- compute node vm objects ---
@@ -477,6 +478,7 @@ A CNAPI server record looks like the following
 | **memory_available_bytes**           |                  |
 | **memory_provisionable_bytes**       |                  |
 | **memory_total_bytes**               |                  |
+| **next_reboot**                      | *ISODate String* | When the server is next scheduled for reboot (currently manually)          |
 | **overprovision_ratio**              |                  |
 | **overprovision_ratios**             |                  |
 | **rack_identifier**                  |                  |

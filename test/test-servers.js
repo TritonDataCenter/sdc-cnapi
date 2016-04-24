@@ -170,6 +170,7 @@ function testGetServer(t) {
 function testUpdateServer(t) {
     var uuid;
     var oldRatio;
+    var oldNextReboot;
 
     async.waterfall([
         function (next) {
@@ -182,12 +183,16 @@ function testUpdateServer(t) {
 
                 uuid = body[0].uuid;
                 oldRatio = body[0].reservation_ratio;
+                oldNextReboot = body[0].next_reboot;
 
                 next();
             });
         },
         function (next) {
-            var changes = { reservation_ratio: 0.50 };
+            var changes = {
+                reservation_ratio: 0.50,
+                next_reboot: '2016-04-22T12:50:40.512Z'
+            };
 
             client.post('/servers/' + uuid, changes,
                         function (err, req, res, body) {
@@ -202,12 +207,16 @@ function testUpdateServer(t) {
                 }
 
                 t.equal(body.reservation_ratio, 0.50);
+                t.equal(body.next_reboot, '2016-04-22T12:50:40.512Z');
 
                 next();
             });
         }
     ], function (err) {
-        var changes = { reservation_ratio: oldRatio };
+        var changes = {
+            reservation_ratio: oldRatio,
+            next_reboot: oldNextReboot || ''
+        };
 
         client.post('/servers/' + uuid, changes,
                     function (err2, req, res, body) {
@@ -231,6 +240,10 @@ function validateServer(t, server, options) {
     t.ok(UUID_RE.test(server.uuid));
     t.equal(typeof (server.reserved), 'boolean');
     t.equal(typeof (server.reservation_ratio), 'number');
+
+    if (server.next_reboot) {
+        t.equal(server.next_reboot, new Date(server.next_reboot).toISOString());
+    }
 
     var diskAttr = [
         'disk_pool_size_bytes', 'disk_installed_images_used_bytes',
