@@ -130,15 +130,24 @@ Use it as so:
 
 # Heartbeats
 
-Each compute node is populated with services which allow the headnode to
-monitor usage and interact with the compute nodes in general. One of these is
-the "heartbeater" agent, its responsibility is to periodically emit server and
-zone information to AMQP. CNAPI is connects to AMQP and listens for these
-heartbeat messages from all servers. It uses the periodic action of these
-heartbeats to determine whether a compute node is up.
+Each server is populated with services which allow the headnode to monitor
+usage and interact with the compute nodes in general. One of these is the
+`cn-agent` agent, its responsibility is to execute tasks on the server in
+addition to periodically posting server usage and information to the headnode.
+CNAPI in turn uses these heartbeat events to determine whether a compute node
+is running.
 
-If a compute node is not setup (and therefore has no agents besides ur), CNAPI
+If a compute node is not setup (and therefore has no agents besides Ur), CNAPI
 uses the frequency of the sysinfo messages sent by Ur.
+
+Server status, stored in the `status` property on `/server` entries, is
+calculated based on the time of the last received heartbeat (corresponding to
+the `last_heartbeat` property) and can hold the values "running" or "unknown".
+These heartbeat requests originate on the `cn-agent` running on each setup
+compute node. Every time a CNAPI instance receives a heartbeat message from a
+compute node, it refreshes a timeout corresponding to 2x the heartbeat period.
+If a heartbeat is not received again before this timeout expires, the server is
+marked as having `status` "uknown".
 
 
 # Resetting to Factory Defaults

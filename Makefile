@@ -49,6 +49,7 @@ ifeq ($(shell uname -s),SunOS)
 	NODE_PREBUILT_IMAGE=fd2cc906-8938-11e3-beab-4359c665ac99
 endif
 
+COAL ?= root@10.99.99.7
 
 #
 # Included definitions
@@ -80,22 +81,19 @@ test: $(NODEUNIT)
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test
 
 .PHONY: test-coal
-COAL=root@10.99.99.7
 test-coal:
-	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter default test test/model test/api test/waitlist"'
+	#ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter default test"'
+	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && ./test/runtests -r verbose"'
 
 .PHONY: test-coal-quick
-COAL=root@10.99.99.7
 test-coal-quick:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose test/api $(shell ls test/*.js | grep -v zfs) test/model"'
 
 .PHONY: test-coal-task
-COAL=root@10.99.99.7
 test-coal-task:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/api/*.js | grep task)"'
 
 .PHONY: test-coal-model
-COAL=root@10.99.99.7
 test-coal-model:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/model/*.js)"'
 
