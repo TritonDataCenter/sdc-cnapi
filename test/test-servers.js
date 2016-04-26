@@ -211,7 +211,28 @@ function testUpdateServer(t) {
 
                 next();
             });
+        },
+        function (next) {
+            var changes = { next_reboot: '' };
+
+            client.post('/servers/' + uuid, changes,
+                        function (err, req, res, body) {
+                next(err);
+            });
+        },
+        function (next) {
+            client.get('/servers/' + uuid, function (err, req, res, body) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+
+                t.equal(body.next_reboot, '');
+
+                next();
+            });
         }
+
     ], function (err) {
         var changes = {
             reservation_ratio: oldRatio,
