@@ -44,18 +44,8 @@ function validatePlan(t, p, options) {
         t.ok(Array.isArray(p.reboots));
         p.reboots.forEach(function (r) {
             t.ok(r.server_uuid);
-            t.ok(r.server_hostname);
             t.ok(r.boot_platform);
             t.ok(r.current_platform);
-            t.ok(typeof (r.headnode) !== 'undefined');
-            if (r.started_at) {
-                var s = new Date(r.started_at);
-                t.notEqual(s.toString(), 'Invalid Date');
-            }
-            if (r.finished_at) {
-                var f = new Date(r.started_at);
-                t.notEqual(f.toString(), 'Invalid Date');
-            }
             if (r.job_uuid) {
                 t.ok(UUID_RE.test(r.job_uuid));
             }
