@@ -111,7 +111,7 @@ function testListServersWithAll1(t) {
         t.ok(body);
 
         body.forEach(function (server) {
-            validateServer(t, server, { sysinfo: true, vms: true,
+            validateServer(t, server, { sysinfo: true,
                                         capacity: true, disk: true,
                                         memory: true });
         });
@@ -158,7 +158,7 @@ function testGetServer(t) {
         client.get('/servers/' + uuid, function (err2, req2, res2, body2) {
             t.ifError(err2);
 
-            validateServer(t, body2, { sysinfo: true, vms: true,
+            validateServer(t, body2, { sysinfo: true, vms: false,
                                        capacity: true, disk: true,
                                        memory: true });
             t.done();
@@ -277,7 +277,7 @@ function validateServer(t, server, options) {
         });
     } else {
         diskAttr.forEach(function (attr) {
-            t.ifError(server[attr]);
+            t.equal(server[attr], null);
         });
     }
 
@@ -288,7 +288,7 @@ function validateServer(t, server, options) {
         });
     } else {
         memoryAttr.forEach(function (attr) {
-            t.ifError(server[attr]);
+            t.equal(server[attr], null);
         });
     }
 
@@ -319,7 +319,7 @@ function validateServer(t, server, options) {
         t.ok(typeof (sysinfo) === 'object' && !Array.isArray(sysinfo));
         t.equal(typeof (server.sysinfo['CPU Total Cores']), 'number');
     } else {
-        t.ifError(sysinfo);
+        t.equal(sysinfo, null);
     }
 
     var capAttr = ['unreserved_cpu', 'unreserved_ram', 'unreserved_disk'];
@@ -329,7 +329,7 @@ function validateServer(t, server, options) {
         });
     } else {
         capAttr.forEach(function (attr) {
-            t.ifError(server[attr]);
+            t.equal(server[attr], null);
         });
     }
 
@@ -356,7 +356,7 @@ function validateServer(t, server, options) {
             t.equal(typeof (vm.state), 'string');
         }
     } else {
-        t.ifError(vms);
+        t.equal(vms, null);
     }
 }
 

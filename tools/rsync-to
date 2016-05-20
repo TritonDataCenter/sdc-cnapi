@@ -46,7 +46,8 @@ rsync -av ${TOP}/ \
     --exclude /scripts/ \
     --exclude /boot/ \
     --exclude /tools/ \
-    --exclude /tmp/
+    --exclude /tmp/ \
+    --exclude /smf
 
 state=$(ssh ${NODE} svcs -z ${ZONE} -H -o state $ROLE)
 
