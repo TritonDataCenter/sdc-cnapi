@@ -94,10 +94,11 @@
 			        ["or", "hard-filter-large-servers",
 			               "identity"],
 			        "soft-filter-locality-hints",
-			        "sort-min-ram",
-			        "sort-max-ram",
-			        "sort-min-owner",
-			        "sort-random",
-			        "pick-weighted-random"]
+			        "score-unreserved-ram",
+			        "score-unreserved-disk",
+			        "score-num-owner-zones",
+			        "score-current-platform",
+			        "score-next-reboot",
+			        "score-uniform-random"]
 	}
 }
