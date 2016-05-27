@@ -45,6 +45,7 @@ rsync -av ${TOP}/ \
     --exclude /node_modules/ \
     --exclude /scripts/ \
     --exclude /boot/ \
+    --exclude /smf/ \
     --exclude /tools/ \
     --exclude /tmp/
 
