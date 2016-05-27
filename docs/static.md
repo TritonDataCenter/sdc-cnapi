@@ -39,7 +39,8 @@ found in sapi_manifests/cnapi/template.
 | **cnapi.url**             | String | -       | The CNAPI API URL (e.g. of this instance)                           |
 | **imgapi.url**            | String | -       | The IMGAPI API URL.                                                 |
 | **dapi.changeDefaults**   | Object | -       | This provides some means to override VM allocation behaviour.       |
-| **dapi.changeDefaults.server_spread**        | String | min-ram      | How VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random)   |
+| **dapi.changeDefaults.server_spread**        | String | -            | **DEPRECATED** How VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random)   |
+| **dapi.changeDefaults.filter_docker_min_platform** | String | -      | If present, minimum platform version useful for Docker instances.        |
 | **dapi.changeDefaults.filter_headnode**      | String | true         | Whether VMs cannot allocate on the headnode.                             |
 | **dapi.changeDefaults.filter_min_resources** | String | true         | Whether CPU/RAM/disk limits are ignored when allocating.                 |
 | **dapi.changeDefaults.filter_large_servers** | String | true         | Whether large servers are reserved for larger allocations.               |
@@ -47,6 +48,12 @@ found in sapi_manifests/cnapi/template.
 | **dapi.changeDefaults.overprovision_ratio_ram**  | String | 1.0      | How much RAM will be overprovisioned per CN by default.                  |
 | **dapi.changeDefaults.overprovision_ratio_disk** | String | 1.0      | How much disk will be overprovisioned per CN by default.                 |
 | **dapi.changeDefaults.disable_override_overprovisioning** | String | false | Whether to turn off the hard setting of defaults for provisioning across CNs and packages. |
+| **dapi.changeDefaults.weight_current_platform**  | String     | 1.0  | Bias selection towards CNs with newer platforms.                         |
+| **dapi.changeDefaults.weight_next_reboot**       | String     | 0.5  | Bias selection away from CNs with nearer scheduled reboots.              |
+| **dapi.changeDefaults.weight_num_owner_zones**   | String     | 0.0  | Bias selection away from CNs with more VMs belonging to the current owner. |
+| **dapi.changeDefaults.weight_uniform_random**    | String     | 0.5  | Bias selection towards random CNs.                                       |
+| **dapi.changeDefaults.weight_unreserved_disk**   | String     | 1.0  | Bias selection towards CNs with more unreserved disk.                    |
+| **dapi.changeDefaults.weight_unreserved_ram**    | String     | 2.0  | Bias selection towards CNs with more unreserved disk.                    |
 | **dapi.allocationDescription**               | Array  | see template | The pipeline used by the allocator to decide where a VM goes across CNs. |
 
 dapi.changeDefaults is a bit of an oddball, due to limitations in the hogan.js
@@ -67,7 +74,7 @@ specialized circumstances in production.
 
 | Key                            | Type    | Default | Description                                                                  |
 | ------------------------------ | ------- | ------- | ---------------------------------------------------------------------------- |
-| **ALLOC_SERVER_SPREAD**        | String  | min-ram | How the allocator spreads VMs across CNs.                                    |
+| **ALLOC_SERVER_SPREAD**        | String  | -       | **DEPRECATED** How the allocator spreads VMs across CNs.                     |
 | **ALLOC_FILTER_HEADNODE**      | Boolean | true    | Whether the headnode should be removed from consideration during allocation. |
 | **ALLOC_FILTER_MIN_DISK**      | Boolean | false   | Whether CNs with insufficient spare disk should be removed.                  |
 | **ALLOC_FILTER_MIN_RESOURCES** | Boolean | true    | Whether CNs with insufficient spare CPU/RAM/disk should be removed.          |
@@ -78,21 +85,30 @@ specialized circumstances in production.
 | **ALLOC_OVERRIDE_OVERPROVISION_CPU**        | Float   | 4.0   | The ratio of CPU overprovisioning that will be hard set.          |
 | **ALLOC_OVERRIDE_OVERPROVISION_RAM**        | Float   | 1.0   | The ratio of RAM overprovisioning that will be hard set.          |
 | **ALLOC_OVERRIDE_OVERPROVISION_DISK**       | Float   | 1.0   | The ratio of disk overprovisioning that will be hard set.         |
-
+| **ALLOC_WEIGHT_CURRENT_PLATFORM**  | Float | 1.0   | Bias selection towards CNs with newer platforms.                             |
+| **ALLOC_WEIGHT_NEXT_REBOOT**       | Float | 0.5   | Bias selection away from CNs with nearer scheduled reboots.                  |
+| **ALLOC_WEIGHT_NUM_OWNER_ZONES**   | Float | 0.0   | Bias selection away from CNs with more VMs belonging to the current owner.   |
+| **ALLOC_WEIGHT_UNIFORM_RANDOM**    | Float | 0.5   | Bias selection towards random CNs.                                           |
+| **ALLOC_WEIGHT_UNRESERVED_DISK**   | Float | 1.0   | Bias selection towards CNs with more unreserved disk.                        |
+| **ALLOC_WEIGHT_UNRESERVED_RAM**    | Float | 2.0   | Bias selection towards CNs with more unreserved memory.                      |
 
 If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
 if the default value was specified. Be careful when changing from the default
 values in production.
 
-ALLOC_SERVER_SPREAD is of particular interest to certain specialised production
-installs. It can have one of four values: `min-ram`, `max-ram`, `min-owner`,
-and `random`.  `min-ram` selects CNs which have the least amount of sufficient
-space for a new VM; this is desirable to keep emptier servers free for larger
-allocations.  `max-ram` selects CNs which have the *most* amount of free
-space; this can be desirable for private SDCs to give VMs the currently least
-busy servers. `min-owner` makes the allocator much more aggressive about
-balancing all VMs belonging to one user across all CNs. And `random` assigns
-randomly across CNs.
+ALLOC_SERVER_SPREAD is deprecated in favour of ALLOC_WEIGHT_\*.  It can have one
+of four values: `min-ram`, `max-ram`, `min-owner`, and `random`.  `min-ram`
+selects CNs which have the least amount of sufficient space for a new VM.
+`max-ram` selects CNs which have the *most* amount of free space.  `min-owner`
+makes the allocator much more aggressive about balancing all VMs belonging to
+one user across all CNs. And `random` assigns randomly across CNs.
+
+
+ALLOC_WEIGHT_\* attributes can have negative values, not just positive. Negative
+values have the opposite effect of negative values; e.g. a postive
+ALLOC_WEIGHT_NUM_OWNER_ZONES biases selection towards CNs with fewer VMs
+belonging to the owner of the current allocation, while a negative value would
+bias towards CNs with more such VMs.
 
 A note of warning about ALLOC_FILTER_MIN_DISK: if this is set to true, but
 ALLOC_FILTER_MIN_RESOURCES is set to false, then disk checks will be ignored.

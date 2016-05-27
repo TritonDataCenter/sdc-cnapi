@@ -59,7 +59,13 @@
 			"disable_override_overprovisioning": "{{{ALLOC_DISABLE_OVERRIDE_OVERPROVISIONING}}}",
 			"overprovision_ratio_cpu": "{{{ALLOC_OVERRIDE_OVERPROVISION_CPU}}}",
 			"overprovision_ratio_ram": "{{{ALLOC_OVERRIDE_OVERPROVISION_RAM}}}",
-			"overprovision_ratio_disk": "{{{ALLOC_OVERRIDE_OVERPROVISION_DISK}}}"
+			"overprovision_ratio_disk": "{{{ALLOC_OVERRIDE_OVERPROVISION_DISK}}}",
+			"weight_current_platform": "{{{ALLOC_WEIGHT_CURRENT_PLATFORM}}}",
+			"weight_next_reboot": "{{{ALLOC_WEIGHT_NEXT_REBOOT}}}",
+			"weight_num_owner_zones": "{{{ALLOC_WEIGHT_NUM_OWNER_ZONES}}}",
+			"weight_uniform_random": "{{{ALLOC_WEIGHT_UNIFORM_RANDOM}}}",
+			"weight_unreserved_disk": "{{{ALLOC_WEIGHT_UNRESERVED_DISK}}}",
+			"weight_unreserved_ram": "{{{ALLOC_WEIGHT_UNRESERVED_RAM}}}"
 		},
 		"allocationDescription": [
 			"pipe", "hard-filter-setup",

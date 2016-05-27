@@ -9,7 +9,7 @@
     "assert-plus": "0.1.5",
     "async": "0.1.18",
     "bunyan": "1.3.4",
-    "dapi": "git+ssh://git@github.com:joyent/sdc-designation.git#9ba235b144e3ca3951e864431bf0c768d82e735a",
+    "dapi": "git+ssh://git@github.com:joyent/sdc-designation.git#7dd0557c3171112009b63e9047be79e0d5f8d263",
     "deep-equal": "git://github.com/substack/node-deep-equal.git#b2cfeb95da6982f8bc2e676231820a3a47385db3",
     "dox": "0.4.1",
     "effluent-logger": "git+https://github.com/joshwilsdon/effluent-logger.git#d662f161a07f94045ad2afb45442931511c40e51",
