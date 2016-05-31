@@ -56,6 +56,9 @@
 			"filter_large_servers": "{{{ALLOC_FILTER_LARGE_SERVERS}}}",
 			"filter_docker_min_platform": "{{{ALLOC_FILTER_DOCKER_MIN_PLATFORM}}}",
 			"filter_vm_limit": "{{{ALLOC_FILTER_VM_COUNT}}}",
+{{#ALLOC_FILTER_OWNER_SERVER_EXPERIMENTAL}}
+			"filter_owner_server": {{{ALLOC_FILTER_OWNER_SERVER_EXPERIMENTAL}}},
+{{/ALLOC_FILTER_OWNER_SERVER_EXPERIMENTAL}}
 			"disable_override_overprovisioning": "{{{ALLOC_DISABLE_OVERRIDE_OVERPROVISIONING}}}",
 			"overprovision_ratio_cpu": "{{{ALLOC_OVERRIDE_OVERPROVISION_CPU}}}",
 			"overprovision_ratio_ram": "{{{ALLOC_OVERRIDE_OVERPROVISION_RAM}}}",
@@ -80,6 +83,7 @@
 			        "hard-filter-vlans",
 			        "hard-filter-platform-versions",
 			        "hard-filter-traits",
+			        "hard-filter-owners-servers",
 			        "hard-filter-sick-servers",
 			        "override-overprovisioning",
 			        "calculate-server-unreserved",
