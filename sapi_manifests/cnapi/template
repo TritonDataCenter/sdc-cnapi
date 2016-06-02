@@ -93,11 +93,11 @@
 {{#ALLOC_FILTER_MIN_DISK}}
 			        "hard-filter-min-disk",
 {{/ALLOC_FILTER_MIN_DISK}}
+			        "soft-filter-locality-hints",
 			        ["or", "hard-filter-reservoir",
 			               "identity"],
 			        ["or", "hard-filter-large-servers",
 			               "identity"],
-			        "soft-filter-locality-hints",
 			        "score-unreserved-ram",
 			        "score-unreserved-disk",
 			        "score-num-owner-zones",
