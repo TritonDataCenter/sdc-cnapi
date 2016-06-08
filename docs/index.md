@@ -10,7 +10,7 @@ markdown2extras: tables, code-friendly
 -->
 
 <!--
-    Copyright (c) 2014, Joyent, Inc.
+    Copyright 2016, Joyent, Inc.
 -->
 
 <!-- WARNING: index.md is generated from docs/index/index.md.ejs.
@@ -1089,11 +1089,12 @@ Reboot the server.
 
 ### Inputs
 
-| Param        | Type   | Description |
-| ------------ | ------ | ----------- |
-| origin       | String |             |
-| creator_uuid | String |             |
 
+| Param        | Type    | Description                                                                  |
+| ------------ | ------- | ---------------------------------------------------------------------------- |
+| drain        | Boolean | Wait for server's cn-agent to be drained before sending the reboot command   |
+| origin       | String  |                                                                              |
+| creator_uuid | String  |                                                                              |
 
 ### Responses
 
@@ -1195,7 +1196,7 @@ None.
 
 | Code | Type  | Description                 |
 | ---- | ----- | --------------------------- |
-| 204  | None  | Tasks returned successfully |
+| 200  | None  | Tasks returned successfully |
 | 500  | Error | Could not process request   |
 
 
@@ -1222,7 +1223,7 @@ compute node zpool.
 | 500  | Error | Could not process request   |
 
 
-## ServerInstallAgent (GET /servers/:server_uuid/install-agent)
+## ServerInstallAgent (POST /servers/:server_uuid/install-agent)
 
 Instruct server to install given agent. Pass in image uuid of package to
 install and server will download and install package.
@@ -1239,9 +1240,46 @@ install and server will download and install package.
 
 ### Responses
 
+| Code | Type  | Description                      |
+| ---- | ----- | -------------------------------- |
+| 200  | None  | Successfully initiated the setup |
+| 500  | Error | Could not process request        |
+
+
+## ServerCnAgentPause (GET /servers/:server_uuid/cn-agent/pause)
+
+Makes cn-agent stop accepting new tasks.
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
 | Code | Type  | Description                 |
 | ---- | ----- | --------------------------- |
-| 204  | None  | Tasks returned successfully |
+| 204  | None  | Request returned ok         |
+| 500  | Error | Could not process request   |
+
+
+## ServerCnAgentResume (GET /servers/:server_uuid/cn-agent/resume)
+
+Makes cn-agent accept new tasks again. Note that this is the default
+behavior and therefore it has no sense to call this method unless
+the task agent has been paused before.
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description                 |
+| ---- | ----- | --------------------------- |
+| 204  | None  | Request returned ok         |
 | 500  | Error | Could not process request   |
 
 

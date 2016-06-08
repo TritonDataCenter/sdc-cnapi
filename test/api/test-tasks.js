@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright 2016, Joyent, Inc.
  */
 
 var Logger = require('bunyan');
@@ -391,7 +391,48 @@ function testCreateTaskMultipleWaitError(test) {
     });
 }
 
+function testTaskHistory(test) {
+    test.expect(3);
 
+    function getCb(err, req, res, obj) {
+        test.ifError(err, 'no error');
+        if (!err) {
+            test.equal(res.statusCode, 200, '/task-history returns 200 OK');
+            test.ok(Array.isArray(obj), 'task history is an array of tasks');
+        }
+        test.done();
+    }
+
+    client.get(sprintf('/servers/%s/task-history', serveruuid), getCb);
+}
+
+function testPauseCnAgent(test) {
+    test.expect(2);
+
+    function postCb(err, req, res, obj) {
+        test.ifError(err, 'no error');
+        if (!err) {
+            test.equal(res.statusCode, 204, '/cn-agent/pause returns 204 OK');
+        }
+        test.done();
+    }
+
+    client.post(sprintf('/servers/%s/cn-agent/pause', serveruuid), {}, postCb);
+}
+
+function testResumeCnAgent(test) {
+    test.expect(2);
+
+    function postCb(err, req, res, obj) {
+        test.ifError(err, 'no error');
+        if (!err) {
+            test.equal(res.statusCode, 204, '/cn-agent/resume returns 204 OK');
+        }
+        test.done();
+    }
+
+    client.post(sprintf('/servers/%s/cn-agent/resume', serveruuid), {}, postCb);
+}
 
 module.exports = {
     setUp: setup,
@@ -404,7 +445,10 @@ module.exports = {
     'task expiry': testTaskExpiry,
     'create task and wait multiple times on it': testCreateTaskMultipleWait,
     'create task (with error) and wait multiple times on it':
-        testCreateTaskMultipleWaitError
+        testCreateTaskMultipleWaitError,
+    'task history': testTaskHistory,
+    'pause cn-agent': testPauseCnAgent,
+    'resume cn-agent': testResumeCnAgent
     // TODO: overlapping expiry times
     //   wait1    x------------x
     //   wait2            x------------x
