@@ -357,7 +357,8 @@ function testRebootServer(test) {
                             server_uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                             target: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                             creator_uuid: undefined,
-                            origin: undefined
+                            origin: undefined,
+                            drain: false
                         }
                     ]
                 ]);
