@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2016, Joyent, Inc.
  */
 
 var Logger = require('bunyan');
@@ -20,13 +20,13 @@ var path = require('path');
 var uuid = require('node-uuid');
 var sprintf = require('sprintf').sprintf;
 
+
 var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
 var client;
-
 var wlurl;
 var serveruuid;
-
 var ticketuuid;
+
 
 function setup(callback) {
     client = restify.createJsonClient({
@@ -140,8 +140,6 @@ function testCreateTicket(test) {
                 test.equal(queues[1][0].action, 'action0');
                 test.equal(queues[1][1].action, 'action0');
                 test.equal(queues[2][0].action, 'action1');
-
-                console.error(util.inspect(queues));
                 wfcb();
             }
         },
@@ -355,12 +353,324 @@ function testUpdateTicket(test) {
 }
 
 
+/**
+ * Try listing tickets using legal and bogus `limit` and `offset` values.
+ */
+
+function testLimitOffsetValidation(test) {
+    test.expect(36);
+    var count = 5;
+
+    var badopts = [
+        'limit=-1',
+        'offset=-1',
+        'limit=pizzacake',
+        'limit=1up',
+        'limit=bad1'
+    ];
+
+    var goodopts = [
+        'limit=1',
+        'offset=1',
+        'limit=0',
+        'offset=0'
+    ];
+
+    async.waterfall([
+        // Create number of tickets given by `count`
+        function (wfcb) {
+            createTickets({
+                test: test,
+                count: count
+            }, function (err, tickets) {
+                if (err) {
+                    wfcb(err);
+                    return;
+                }
+
+                wfcb();
+            });
+        },
+        function (wfcb) {
+            async.forEach(
+                badopts,
+                function (q, fecb) {
+                    var geturl = sprintf(
+                        '/servers/%s/tickets?%s', serveruuid, q);
+                    client.get(geturl, getcb);
+                    function getcb(err, req, res, results) {
+                        test.ok(err, 'should have gotten an error');
+                        fecb();
+                    }
+                },
+                function (err) {
+                    wfcb(err);
+                });
+        },
+        function (wfcb) {
+            async.forEach(
+                goodopts,
+                function (q, fecb) {
+                    var geturl = sprintf(
+                        '/servers/%s/tickets?%s', serveruuid, q);
+                    client.get(geturl, getcb);
+                    function getcb(err, req, res, results) {
+                        test.ok(!err, 'should not have gotten an error');
+                        fecb();
+                    }
+                },
+                function (err) {
+                    wfcb(err);
+                });
+        }
+    ],
+    function (err) {
+        test.ok(!err, 'no errors returned');
+        test.done();
+    });
+}
+
+
+/**
+ * Confirm we can page through the waitlist tickets for a compute node when
+ * there are greater than 1000 tickets (the default moray limit). Exercises
+ * `limit` and `offset` parameters.
+ */
+
+function testFetchTicketsWithPaging(test) {
+    test.expect(6641);
+
+    var count = 1100;
+    var limit = 100;
+    var offset = 0;
+
+    var ticketUuids;
+
+    async.waterfall([
+        // Create number of tickets given by `count`
+        function (wfcb) {
+            createTickets({
+                test: test,
+                count: count
+            }, function (err, tickets) {
+                if (err) {
+                    wfcb(err);
+                    return;
+                }
+                ticketUuids = tickets;
+                test.ok(Object.keys(ticketUuids).length >= count,
+                    'server at least has many tickets as were added');
+                wfcb();
+            });
+        },
+
+        // Page through in amounts given by `limit`, tally them and check that
+        // the UUIDs are the ones we created.
+        function (wfcb) {
+            var fetchMore = true;
+
+            var listOfResults = [];
+            var tickets = [];
+
+            async.whilst(
+                function () {
+                    return fetchMore;
+                },
+                doFetch,
+                function (err) {
+                    test.ok(listOfResults.length,
+                            'should be multiple pages of results (there were '
+                            + listOfResults.length + ')');
+
+                    for (var ri in listOfResults) {
+                        var result = listOfResults[ri];
+                        if (ri < listOfResults.length-1) {
+                            test.equal(listOfResults[ri].length, limit,
+                                'each page has right number of results');
+                        } else {
+                            test.equal(
+                               listOfResults[ri].length,
+                               count % limit,
+                               'last page should have `count % limit`' +
+                               ' number of results');
+                        }
+
+                        // Ensure ticket is one of the ones we created
+                        for (var r in result) {
+                            var ticket = result[r];
+                            test.ok(ticketUuids[ticket.uuid],
+                                    'found ticket we created');
+                        }
+                    }
+
+                    test.equal(listOfResults.length, 1+count/limit,
+                               'right number of pages');
+                    wfcb(err);
+                });
+
+            // Fetch all the created tickets
+            function doFetch(wlcb) {
+                var geturl = sprintf(
+                    '/servers/%s/tickets?limit=%d&offset=%d',
+                    serveruuid, limit, offset);
+                client.get(geturl, getcb);
+                function getcb(err, req, res, results) {
+                    test.ok(Array.isArray(results), 'result is an array');
+                    test.ok(results.length <= limit,
+                            'result length <= `limit`');
+
+                    listOfResults.push(results);
+                    Array.prototype.push.apply(tickets, results);
+
+
+                    // Check if we have reached the end of the results
+                    if (results.length < limit) {
+                        fetchMore = false;
+                    }
+                    offset += limit;
+                    wlcb();
+                }
+            }
+        }
+    ],
+    function (error) {
+        test.ok(!error, 'no errors returned');
+        test.done();
+    });
+}
+
+
+/**
+ *
+ * Create over 1000 tickets (the default moray limit) and make sure we
+ * can hit the delete ticket endpoint and all tickets are removed.
+ *
+ */
+
+function testDeleteOver1000Tickets(test) {
+    test.expect(5506);
+    var count = 1100;
+
+    async.waterfall([
+        function (wfcb) {
+            createTickets({
+                test: test,
+                count: count
+            }, function (err, tickets) {
+                if (err) {
+                    wfcb(err);
+                    return;
+                }
+                wfcb();
+            });
+        },
+        function (wfcb) {
+            // Fetch all the created tickets back
+            var geturl = sprintf('/servers/%s/tickets', serveruuid);
+            client.get(geturl, getcb);
+            function getcb(err, req, res, results) {
+                test.ok(Array.isArray(results), 'result is an array');
+                test.notEqual(results.length, 0, 'result array not empty');
+                wfcb();
+            }
+
+        },
+        function (wfcb) {
+            var delurl = sprintf('/servers/%s/tickets?force=true', serveruuid);
+            client.del(delurl, delcb);
+            function delcb(err, req, res, results) {
+                test.equal(err, null, 'no error returned');
+                wfcb();
+            }
+        },
+        function (wfcb) {
+            // Fetch all the created tickets back
+            var geturl = sprintf('/servers/%s/tickets', serveruuid);
+            client.get(geturl, getcb);
+            function getcb(err, req, res, results) {
+                test.ok(Array.isArray(results), 'result is an array');
+                test.equal(results.length, 0,
+                           'result length is 0 (was ' +
+                               results.length + ')');
+                wfcb();
+            }
+
+        }
+    ], function (err) {
+        test.done();
+    });
+}
+
+
+/**
+ *
+ * Support functions
+ *
+ */
+
+function createTickets(opts, callback) {
+    var ticketUuids = {};
+
+    var count = opts.count;
+    var test = opts.test;
+
+    async.waterfall([
+        // Create N tickets
+        function (wfcb) {
+            var num = 0;
+            var i;
+
+            // Set up payloads
+            var payloads = [];
+            for (i = 0; i < count; i++) {
+                payloads.push({
+                    scope: 'test1',
+                    id: '111',
+                    expires_at:
+                        (new Date((new Date().valueOf()) +
+                         i*1000 + 600*1000)).toISOString()
+                });
+            }
+
+            // Fire off create requests
+            async.forEachSeries(payloads, onPayload, onFinish);
+            function onPayload(t, fecb) {
+                client.post(wlurl, t, function (err, req, res, ticket) {
+                    test.deepEqual(err, null, 'no error returned');
+                    test.equal(res.statusCode, 202,
+                               'POST waitlist ticket returned 202');
+                    test.ok(res, 'http response');
+                    test.ok(ticket, 'ticket created');
+                    test.ok(ticket.uuid, 'ticket had a UUID');
+
+                    ticketuuid = ticket.uuid;
+                    ticketUuids[ticket.uuid] = true;
+
+                    console.log('created %s (#%d)', ticketuuid, num++);
+                    fecb();
+                });
+            }
+
+            function onFinish(err) {
+                wfcb(err);
+            }
+        }
+    ], function (err) {
+        test.equal(err, null, 'no error returned');
+        callback(err, ticketUuids);
+    });
+}
+
+
+
 
 module.exports = {
     setUp: setup,
     tearDown: teardown,
     'delete all tickets': testDeleteAllWaitlistTickets,
-    'create tickets then get one or many': testCreateTicket
-//     'waiting on a ticket': testWaitOnTicket
-//    'create ticket and update status': testUpdateTicket
+    'create tickets then get one or many': testCreateTicket,
+    'limit, offset parameter validation': testLimitOffsetValidation,
+    'list from server with paging': testFetchTicketsWithPaging,
+    'delete from server with over 1000 results':
+        testDeleteOver1000Tickets
 };

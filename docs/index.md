@@ -10,11 +10,20 @@ markdown2extras: tables, code-friendly
 -->
 
 <!--
-    Copyright 2016, Joyent, Inc.
+    Copyright (c) 2016, Joyent, Inc.
 -->
 
-<!-- WARNING: index.md is generated from docs/index/index.md.ejs.
-    Make you edits to the latter. -->
+<!--
+
+    WARNING! index.md is generated from:
+
+        docs/index/index.md.ejs.
+        docs/static
+
+    Make your edits there or risk having them lost during the automatic
+    documentation generation.
+
+-->
 
 
 
@@ -597,6 +606,16 @@ must also be specified. Endpoint returns a ticket uuid.
         "status": "active"
       }
     ]
+
+By default this endpoint will return 1000 tickets, sorted by creation time.
+This endpoint supports the use of `limit` and `offset` parameters to allow one
+to page through the results, with the caveat that the use of paging via `limit`
+and `offset` does not guarantee that duplicates will not be seen.
+
+Additionally, if `attribute` is passed in, overriding the value on which to
+sort (creation time), it is possible that existing tickets may be missed from
+the results list if tickets are deleted.
+
 
 ### Wait on a ticket
 

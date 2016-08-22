@@ -5,7 +5,7 @@
 #
 
 #
-# Copyright (c) 2014, Joyent, Inc.
+# Copyright (c) 2016, Joyent, Inc.
 #
 
 #
@@ -82,8 +82,7 @@ test: $(NODEUNIT)
 
 .PHONY: test-coal
 test-coal:
-	#ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter default test"'
-	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && ./test/runtests -r verbose"'
+	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && ./test/runtests -r verbose $(TEST_ARGS)"'
 
 .PHONY: test-coal-quick
 test-coal-quick:

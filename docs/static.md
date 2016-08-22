@@ -600,6 +600,16 @@ must also be specified. Endpoint returns a ticket uuid.
       }
     ]
 
+By default this endpoint will return 1000 tickets, sorted by creation time.
+This endpoint supports the use of `limit` and `offset` parameters to allow one
+to page through the results, with the caveat that the use of paging via `limit`
+and `offset` does not guarantee that duplicates will not be seen.
+
+Additionally, if `attribute` is passed in, overriding the value on which to
+sort (creation time), it is possible that existing tickets may be missed from
+the results list if tickets are deleted.
+
+
 ### Wait on a ticket
 
     -bash-4.1# sdc-cnapi /tickets/bb5038c2-7498-4e07-b919-df072c76d2dc/wait
