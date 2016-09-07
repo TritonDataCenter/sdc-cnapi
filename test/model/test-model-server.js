@@ -166,8 +166,6 @@ function testListServersByUuids(test) {
 
             test.done();
         });
-
-        moray.client._emitResults(expSearchResults);
     });
 }
 
@@ -228,8 +226,6 @@ function testListServersSetup(test) {
                 'moray history should match');
             test.done();
         });
-
-        moray.client._emitResults(expSearchResults);
     });
 }
 

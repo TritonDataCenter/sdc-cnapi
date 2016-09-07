@@ -83,10 +83,6 @@ function testListPlatformsAll(test) {
                   '20150819T020110Z': { latest: true }});
             test.done();
         });
-
-        setTimeout(function () {
-            moray.client._emitResults(expSearchResults);
-        }, 100);
     });
 }
 
