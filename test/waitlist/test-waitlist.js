@@ -366,13 +366,13 @@ function testLimitOffsetValidation(test) {
         'offset=-1',
         'limit=pizzacake',
         'limit=1up',
-        'limit=bad1'
+        'limit=bad1',
+        'limit=0'
     ];
 
     var goodopts = [
         'limit=1',
         'offset=1',
-        'limit=0',
         'offset=0'
     ];
 
