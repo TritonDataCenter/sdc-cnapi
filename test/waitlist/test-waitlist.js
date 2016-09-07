@@ -438,10 +438,10 @@ function testLimitOffsetValidation(test) {
  */
 
 function testFetchTicketsWithPaging(test) {
-    test.expect(6641);
+    test.expect(638);
 
-    var count = 1100;
-    var limit = 100;
+    var count = 100;
+    var limit = 10;
     var offset = 0;
 
     var ticketUuids;
