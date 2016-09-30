@@ -160,7 +160,6 @@ function callApiErr(t, path, data, errField, errMsg) {
 function validateCapacityResults(t, results) {
     t.ok(results);
     t.ok(typeof (results.capacities) === 'object');
-    t.deepEqual(results.errors, {});
 
     var serverUuid   = Object.keys(results.capacities)[0];
     var serverCap    = results.capacities[serverUuid];
