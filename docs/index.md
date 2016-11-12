@@ -1153,9 +1153,6 @@ Initiate the server setup process for a newly started server.
 | nics             | Object | Nic parameters to update                 |
 | postsetup_script | String | Script to run after setup has completed  |
 | hostname         | String | Hostname to set for the specified server |
-| disk_layout      | String | Disk layout type (man disklayout)        |
-| disk_spares      | Number | Number of disk spares (man disklayout)   |
-| disk_cache       | String | Disk cache ('true'|'false')              |
 
 
 ### Responses
