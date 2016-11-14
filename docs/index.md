@@ -1153,6 +1153,9 @@ Initiate the server setup process for a newly started server.
 | nics             | Object | Nic parameters to update                 |
 | postsetup_script | String | Script to run after setup has completed  |
 | hostname         | String | Hostname to set for the specified server |
+| disk_layout      | String | Disk layout type. If not specified, the disk layout will be determined by the `disklayout` default. See [disklayout(1m)](https://smartos.org/man/1m/disklayout). Optional |
+| disk_spares      | Number | Number of disk spares. Optional          |
+| disk_cache       | String | Disk cache ('true' or 'false'). Optional |
 
 
 ### Responses
