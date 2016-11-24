@@ -92,10 +92,6 @@ test-coal-quick:
 test-coal-task:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/api/*.js | grep task)"'
 
-.PHONY: test-coal-zfs
-test-coal-zfs:
-	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/*.js | grep zfs)"'
-
 .PHONY: test-coal-model
 test-coal-model:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/model/*.js)"'
