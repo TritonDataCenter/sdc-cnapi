@@ -18,7 +18,6 @@ var fs = require('fs');
 var http = require('http');
 var util = require('util');
 var path = require('path');
-var uuid = require('node-uuid');
 var sprintf = require('sprintf').sprintf;
 
 var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
