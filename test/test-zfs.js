@@ -20,14 +20,14 @@ var async = require('async'),
     fs = require('fs'),
     http = require('http'),
     path = require('path'),
-    uuid = require('node-uuid');
+    uuid = require('libuuid');
 
 var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
 var client;
 
 var GZ;
 
-var dataset = 'zones/' + uuid.v4();
+var dataset = 'zones/' + uuid.create();
 var snapshotName = 'snappy';
 
 function setup(callback) {

@@ -6,7 +6,7 @@
 #
 
 #
-# Copyright (c) 2014, Joyent, Inc.
+# Copyright (c) 2016, Joyent, Inc.
 #
 
 set -x xtrace
@@ -21,6 +21,8 @@ zlogin $UUID svcadm disable cnapi
 zlogin $UUID /opt/smartdc/cnapi/{build/node/bin/node,node_modules/.bin/delbucket} -h $CONFIG_moray_admin_ips cnapi_servers &
 zlogin $UUID /opt/smartdc/cnapi/{build/node/bin/node,node_modules/.bin/delbucket} -h $CONFIG_moray_admin_ips cnapi_waitlist_tickets &
 zlogin $UUID /opt/smartdc/cnapi/{build/node/bin/node,node_modules/.bin/delbucket} -h $CONFIG_moray_admin_ips cnapi_waitlist_queues &
+zlogin $UUID /opt/smartdc/cnapi/{build/node/bin/node,node_modules/.bin/delbucket} -h $CONFIG_moray_admin_ips cnapi_status &
+zlogin $UUID /opt/smartdc/cnapi/{build/node/bin/node,node_modules/.bin/delbucket} -h $CONFIG_moray_admin_ips cnapi_tasks &
 
 wait
 zlogin $UUID svcadm enable cnapi

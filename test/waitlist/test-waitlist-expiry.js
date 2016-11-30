@@ -20,7 +20,7 @@ var cp = require('child_process');
 var fs = require('fs');
 var http = require('http');
 var path = require('path');
-var uuid = require('node-uuid');
+var uuid = require('libuuid');
 var sprintf = require('sprintf').sprintf;
 
 var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
@@ -28,9 +28,6 @@ var client;
 
 var wlurl;
 var serveruuid;
-
-var dataset = 'zones/' + uuid.v4();
-var snapshotName = 'snappy';
 
 function setup(callback) {
     client = restify.createJsonClient({
