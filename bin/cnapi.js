@@ -19,7 +19,6 @@ var createMetricsManager = require('triton-metrics').createMetricsManager;
 var restify = require('restify');
 
 var App = require('../lib/app');
-var bunyan = require('bunyan');
 var common = require('../lib/common');
 
 var configFilename = path.join(__dirname, '..', 'config', 'config.json');
