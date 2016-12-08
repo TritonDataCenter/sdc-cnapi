@@ -20,6 +20,7 @@
     "once": "1.4.0",
     "qs": "6.5.2",
     "restify": "4.3.0",
+    "restify-clients": "git+https://github.com/joshwilsdon/restify-clients.git#rfd-35-cls",
     "restify-validator": "0.3.1",
     "sdc-clients": "git+https://github.com/joyent/node-sdc-clients.git#rfd-35-cls",
     "semver": "5.6.0",
