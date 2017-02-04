@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2017, Joyent, Inc.
  */
 
 var async = require('async');
@@ -203,6 +203,7 @@ function newApp(callback) {
                 logLevel: 'info',
                 datacenter: config.datacenter_name,
                 cnapi: config.cnapi,
+                dapi: config.dapi,
                 amqp: {
                     host: 'localhost'
                 }
