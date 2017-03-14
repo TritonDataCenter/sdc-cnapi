@@ -13,7 +13,7 @@
 # Rsync the master in this working copy to the install on the given HN.
 #
 
-#set -o xtrace
+set -o xtrace
 set -o errexit
 
 TOP=$(cd $(dirname $0)/../; pwd)
@@ -46,7 +46,8 @@ rsync -av ${TOP}/ \
     --exclude /boot/ \
     --exclude /smf/ \
     --exclude /tools/ \
-    --exclude /tmp/
+    --exclude /tmp/ \
+#    --exclude /node_modules/ \
 
 state=$(ssh ${NODE} svcs -z ${ZONE} -H -o state $ROLE)
 

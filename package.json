@@ -6,7 +6,7 @@
   "private": true,
   "dependencies": {
     "amqp": "0.2.6",
-    "assert-plus": "1.0.0",
+    "assert-plus": "^1.0.0",
     "async": "1.5.2",
     "bunyan": "1.8.5",
     "dapi": "git+https://github.com/joyent/sdc-designation.git#af2b13ddc5dbe10a4511936ea46e6655bf6d4aab",
@@ -17,8 +17,9 @@
     "libuuid": "0.2.1",
     "moray": "3.5.0",
     "nodeunit": "0.11.0",
+    "moray": "2.0.1",
     "once": "1.4.0",
-    "restify": "4.3.0",
+    "restify": "^4.3.0",
     "restify-validator": "0.3.1",
     "sdc-clients": "10.0.3",
     "sprintf": "0.1.5",
@@ -26,6 +27,7 @@
     "triton-metrics": "0.1.1",
     "vasync": "1.6.4",
     "verror": "1.9.0",
+    "watershed": "^0.3.3",
     "wf-client": "0.2.1",
     "wf-shared": "git+https://github.com/joyent/sdc-wf-shared.git#9aed2e8"
   },
