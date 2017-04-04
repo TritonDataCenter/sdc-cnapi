@@ -9,7 +9,7 @@
     "assert-plus": "1.0.0",
     "async": "1.5.2",
     "bunyan": "1.8.5",
-    "dapi": "git+https://github.com/joyent/sdc-designation.git#2fbeb8d3ba939ab952c52f389c910a46f44b3094",
+    "dapi": "git+https://github.com/joyent/sdc-designation.git#f66ba1897f0eafcc3439d0af39555a3bdaebce4c",
     "deep-equal": "1.0.1",
     "dox": "0.4.1",
     "effluent-logger": "git+https://github.com/joshwilsdon/effluent-logger.git#d662f161a07f94045ad2afb45442931511c40e51",
