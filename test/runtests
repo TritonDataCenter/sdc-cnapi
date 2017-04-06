@@ -53,7 +53,7 @@ function fatal
     exit 1
 }
 
-opt_reporter=junit
+opt_reporter=tap
 
 function usage
 {
