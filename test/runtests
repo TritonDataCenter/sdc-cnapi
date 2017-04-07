@@ -123,31 +123,4 @@ if [[ -n "$opt_test_pattern" ]]; then
     echo "# Running filtered set of test files: $test_files"
 fi
 PATH=${TOP}/build/node/bin node ./node_modules/.bin/nodeunit --reporter ${opt_reporter} \
-    $test_files --output $OUTPUT_DIR
-
-
-
-#---- summary
-
-echo ""
-echo "# test results:"
-
-end_time=$(date +%s)
-elapsed=$((${end_time} - ${start_time}))
-
-#tests=$(grep "^# tests [0-9]" $OUTPUT_DIR/*.xml | cut -d ' ' -f3 | xargs | tr ' ' '+' | bc)
-#passed=$(grep "^# pass  [0-9]" $OUTPUT_DIR/*.xml | tr -s ' ' | cut -d ' ' -f3 | xargs | tr ' ' '+' | bc)
-#[[ -z ${tests} ]] && tests=0
-#[[ -z ${passed} ]] && passed=0
-#fail=$((${tests} - ${passed}))
-
-echo "# Completed in ${elapsed} seconds."
-#echo -e "# \033[32mPASS: ${passed} / ${tests}\033[39m"
-#if [[ ${fail} -gt 0 ]]; then
-#    echo -e "# \033[31mFAIL: ${fail} / ${tests}\033[39m"
-#fi
-echo ""
-
-if [[ ${tests} != ${passed} ]]; then
-    exit 1
-fi
+    $test_files | tee $OUTPUT_DIR/${NAME}.tap
