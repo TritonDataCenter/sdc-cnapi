@@ -32,7 +32,8 @@ var allocData = {
         min_platform: {'7.0': '20130122T122401Z'},
         cpu_cap: 100
     },
-    nic_tags: ['external', 'admin']
+    nic_tag_requirements: [ [ 'external' ], [ 'admin' ] ],
+    nic_tags: [ 'external', 'admin' ]
 };
 
 
@@ -50,6 +51,11 @@ function setup(callback) {
     }
 
     client.get('/servers?headnode=true', function (err, req, res, servers) {
+        if (err) {
+            callback(err);
+            return;
+        }
+
         headnodeUuid = servers[0].uuid;
         callback();
     });
@@ -103,6 +109,24 @@ function testMissingImg(t) {
 }
 
 
+function testMalformedNicTagRequirements1(t) {
+    var data = deepCopy(allocData);
+    data.nic_tag_requirements = [ 'external', 'admin' ];
+
+    var msg = 'property "0": string value found, but a array is required';
+    callApiErr(t, '/allocate', data, 'nic_tag_requirements', msg);
+}
+
+
+function testMalformedNicTagRequirements2(t) {
+    var data = deepCopy(allocData);
+    data.nic_tag_requirements = [ [ 'external' ], [ 5 ] ];
+
+    var msg = 'property "1[0]": number value found, but a string is required';
+    callApiErr(t, '/allocate', data, 'nic_tag_requirements', msg);
+}
+
+
 // Unfortunately we cannot make too many assumptions about the setup this is
 // tested on, so the tests are fairly generic.
 function testCapacity(t) {
@@ -139,7 +163,9 @@ function testCapacityBadServerUuids(t) {
 function callApiErr(t, path, data, errField, errMsg) {
     client.post(path, data, function (err, req, res, body) {
         t.ok(err);
-        t.equal(err.statusCode, 500);
+        if (err) {
+            t.equal(err.statusCode, 500);
+        }
 
         var expected = {
             code: 'InvalidParameters',
@@ -204,6 +230,10 @@ module.exports = {
     setUp: setup,
     'allocate server': testAllocator,
     'allocate with malformed VM': testMalformedVM,
+    'allocate with malformed tag requirements (array contains strings)':
+        testMalformedNicTagRequirements1,
+    'allocate with malformed tag requirements (inner array contains number)':
+        testMalformedNicTagRequirements2,
     'allocate with malformed server UUIDs': testMalformedServerUuids,
     'allocate with missing nic_tags': testMissingTags,
     'allocate with missing package': testMissingPkg,
