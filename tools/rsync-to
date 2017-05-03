@@ -20,10 +20,17 @@ TOP=$(cd $(dirname $0)/../; pwd)
 NODE=$1
 ROLE=cnapi
 
+# in case we have multiple cnapi and we want to update a specific one
+INSTANCE=$2
+
+if [[ -z "$INSTANCE" ]]; then
+    INSTANCE=0
+fi
+
 if [[ -z "$ZONE" ]]; then
     ZONE=$(ssh $NODE "/opt/smartdc/bin/sdc-vmapi /vms" 2>/dev/null \
         | json -H -c "this.tags && this.tags.smartdc_role === '$ROLE'" \
-            -c 'this.state === "running"' 0.uuid)
+            -c 'this.state === "running"' $INSTANCE.uuid)
 fi
 echo "ZONE: $ZONE"
 
