@@ -5,16 +5,17 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2017, Joyent, Inc.
  */
 
 /*
  * test-servers.js: Tests for servers endpoint.
  */
 
-var async   = require('async');
-var http    = require('http');
+var async = require('async');
+var http = require('http');
 var restify = require('restify');
+var sprintf = require('sprintf');
 var util = require('util');
 
 
@@ -206,8 +207,10 @@ function testUpdateServer(t) {
                     return;
                 }
 
-                t.equal(body.reservation_ratio, 0.50);
-                t.equal(body.next_reboot, '2016-04-22T12:50:40.512Z');
+                t.equal(body.reservation_ratio, 0.50,
+                    'ensure reservation ratio is 0.50');
+                t.equal(body.next_reboot, '2016-04-22T12:50:40.512Z',
+                    'ensure next_reboot timestamp is correct');
 
                 next();
             });
@@ -227,12 +230,12 @@ function testUpdateServer(t) {
                     return;
                 }
 
-                t.equal(body.next_reboot, '');
+                t.equal(body.next_reboot, '',
+                    'ensure "next_reboot" attribute is cleared');
 
                 next();
             });
         }
-
     ], function (err) {
         var changes = {
             reservation_ratio: oldRatio,
@@ -253,17 +256,20 @@ var UUID_RE = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 var VALID_SERVER_OVERPROVISION_RESOURCES = ['cpu', 'ram', 'disk', 'io', 'net'];
 
 function validateServer(t, server, options) {
-    t.equal(typeof (server.setup), 'boolean');
+    serverAttrTypeEqual(t, server, 'setup', 'boolean');
+
     if (!server.setup) {
         return;
     }
 
-    t.ok(UUID_RE.test(server.uuid));
-    t.equal(typeof (server.reserved), 'boolean');
-    t.equal(typeof (server.reservation_ratio), 'number');
+    t.ok(UUID_RE.test(server.uuid), 'ensure server.uuid was a UUID');
+    serverAttrTypeEqual(t, server, 'reserved', 'boolean');
+    serverAttrTypeEqual(t, server, 'reservation_ratio', 'number');
 
     if (server.next_reboot) {
-        t.equal(server.next_reboot, new Date(server.next_reboot).toISOString());
+        t.equal(server.next_reboot,
+                new Date(server.next_reboot).toISOString(),
+                'server.next_reboot parses as an ISO date');
     }
 
     var diskAttr = [
@@ -273,7 +279,7 @@ function validateServer(t, server, options) {
 
     if (options.disk) {
         diskAttr.forEach(function (attr) {
-            t.equal(typeof (server[attr]), 'number');
+            serverAttrTypeEqual(t, server, attr, 'number');
         });
     } else {
         diskAttr.forEach(function (attr) {
@@ -284,7 +290,7 @@ function validateServer(t, server, options) {
     var memoryAttr = ['memory_available_bytes', 'memory_total_bytes'];
     if (options.memory) {
         memoryAttr.forEach(function (attr) {
-            t.equal(typeof (server[attr]), 'number');
+            serverAttrTypeEqual(t, server, attr, 'number');
         });
     } else {
         memoryAttr.forEach(function (attr) {
@@ -295,13 +301,17 @@ function validateServer(t, server, options) {
 
     if (server.traits) {
         var traits = server.traits;
-        t.ok(typeof (traits) === 'object' && !Array.isArray(traits));
+        t.ok(typeof (traits) === 'object' && !Array.isArray(traits),
+            sprintf('ensure traits object for server "%s" is not an array',
+            server.uuid));
     }
 
     if (server.overprovision_ratios) {
         var ratios = server.overprovision_ratios;
 
-        t.ok(typeof (ratios) === 'object' && !Array.isArray(ratios));
+        t.ok(typeof (ratios) === 'object' && !Array.isArray(ratios),
+            sprintf('ensure ratios object for server "%s" is not an array',
+            server.uuid));
 
         var ratioResources = Object.keys(ratios);
 
@@ -309,15 +319,21 @@ function validateServer(t, server, options) {
             var resource = ratioResources[i];
             var ratio = ratios[resource];
 
-            t.ok(VALID_SERVER_OVERPROVISION_RESOURCES.indexOf(resource) !== -1);
-            t.equal(typeof (ratio), 'number');
+            t.ok(VALID_SERVER_OVERPROVISION_RESOURCES.indexOf(resource) !== -1,
+                sprintf('ensure server overprovision resource "%s" is valid',
+                    resource));
+            t.equal(typeof (ratio), 'number', 'ratio is a number');
         }
     }
 
     var sysinfo = server.sysinfo;
     if (options.sysinfo) {
-        t.ok(typeof (sysinfo) === 'object' && !Array.isArray(sysinfo));
-        t.equal(typeof (server.sysinfo['CPU Total Cores']), 'number');
+        t.ok(typeof (sysinfo) === 'object' && !Array.isArray(sysinfo),
+            'sysinfo object is not an array');
+        t.equal(typeof (server.sysinfo['CPU Total Cores']), 'number',
+            sprintf('server "%s" sysinfo "CPU Total Cores" is a number',
+                server.uuid));
+
     } else {
         t.ifError(sysinfo);
     }
@@ -325,7 +341,7 @@ function validateServer(t, server, options) {
     var capAttr = ['unreserved_cpu', 'unreserved_ram', 'unreserved_disk'];
     if (options.capacity) {
         capAttr.forEach(function (attr) {
-            t.equal(typeof (server[attr]), 'number');
+            serverAttrTypeEqual(t, server, attr, 'number');
         });
     } else {
         capAttr.forEach(function (attr) {
@@ -335,7 +351,8 @@ function validateServer(t, server, options) {
 
     var vms = server.vms;
     if (options.vms) {
-        t.ok(typeof (vms) === 'object' && !Array.isArray(vms));
+        t.ok(typeof (vms) === 'object' && !Array.isArray(vms),
+            'server vms object is not an array');
 
         var vmUuids = Object.keys(vms);
 
@@ -343,23 +360,34 @@ function validateServer(t, server, options) {
             var vmUuid = vmUuids[i];
             var vm = vms[vmUuid];
 
-            t.ok(UUID_RE.test(vm.owner_uuid));
+            t.ok(UUID_RE.test(vm.owner_uuid), 'ensure vm.owner_uuid is a UUID');
 
             var numAttr = ['max_physical_memory', 'quota', 'cpu_cap'];
             numAttr.forEach(function (attr) {
                 if (typeof (vm[attr]) !== 'undefined') {
-                    t.equal(typeof (vm[attr]), 'number');
+                    vmAttrTypeEqual(t, vm, attr, 'number');
                 }
             });
 
-            t.equal(typeof (vm.last_modified), 'string');
-            t.equal(typeof (vm.state), 'string');
+            vmAttrTypeEqual(t, vm, 'last_modified', 'string');
+            vmAttrTypeEqual(t, vm, 'state', 'string');
         }
     } else {
         t.ifError(vms);
     }
 }
 
+function vmAttrTypeEqual(t, vm, attr, exptype) {
+    t.equal(typeof (vm[attr]), exptype,
+        sprintf('ensure type of vm "%s" attribute "%s" is "%s"',
+            vm.uuid, attr, exptype));
+}
+
+function serverAttrTypeEqual(t, server, attr, exptype) {
+    t.equal(typeof (server[attr]), exptype,
+        sprintf('ensure type of server "%s" attribute "%s" is "%s"',
+            server.uuid, attr, exptype));
+}
 
 module.exports = {
     setUp: setup,
