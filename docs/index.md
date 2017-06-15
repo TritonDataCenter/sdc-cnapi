@@ -70,7 +70,8 @@ found in sapi_manifests/cnapi/template.
 | **cnapi.url**             | String | -       | The CNAPI API URL (e.g. of this instance)                           |
 | **imgapi.url**            | String | -       | The IMGAPI API URL.                                                 |
 | **dapi.changeDefaults**   | Object | -       | This provides some means to override VM allocation behaviour.       |
-| **dapi.changeDefaults.server_spread**        | String | min-ram      | How VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random)   |
+| **dapi.changeDefaults.server_spread**        | String | -            | **DEPRECATED** How VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random)   |
+| **dapi.changeDefaults.filter_docker_min_platform** | String | -      | If present, minimum platform version useful for Docker instances.        |
 | **dapi.changeDefaults.filter_headnode**      | String | true         | Whether VMs cannot allocate on the headnode.                             |
 | **dapi.changeDefaults.filter_min_resources** | String | true         | Whether CPU/RAM/disk limits are ignored when allocating.                 |
 | **dapi.changeDefaults.filter_large_servers** | String | true         | Whether large servers are reserved for larger allocations.               |
@@ -78,6 +79,12 @@ found in sapi_manifests/cnapi/template.
 | **dapi.changeDefaults.overprovision_ratio_ram**  | String | 1.0      | How much RAM will be overprovisioned per CN by default.                  |
 | **dapi.changeDefaults.overprovision_ratio_disk** | String | 1.0      | How much disk will be overprovisioned per CN by default.                 |
 | **dapi.changeDefaults.disable_override_overprovisioning** | String | false | Whether to turn off the hard setting of defaults for provisioning across CNs and packages. |
+| **dapi.changeDefaults.weight_current_platform**  | String     | 1.0  | Bias selection towards CNs with newer platforms.                         |
+| **dapi.changeDefaults.weight_next_reboot**       | String     | 0.5  | Bias selection away from CNs with nearer scheduled reboots.              |
+| **dapi.changeDefaults.weight_num_owner_zones**   | String     | 0.0  | Bias selection away from CNs with more VMs belonging to the current owner. |
+| **dapi.changeDefaults.weight_uniform_random**    | String     | 0.5  | Bias selection towards random CNs.                                       |
+| **dapi.changeDefaults.weight_unreserved_disk**   | String     | 1.0  | Bias selection towards CNs with more unreserved disk.                    |
+| **dapi.changeDefaults.weight_unreserved_ram**    | String     | 2.0  | Bias selection towards CNs with more unreserved disk.                    |
 | **dapi.allocationDescription**               | Array  | see template | The pipeline used by the allocator to decide where a VM goes across CNs. |
 
 dapi.changeDefaults is a bit of an oddball, due to limitations in the hogan.js
@@ -98,31 +105,41 @@ specialized circumstances in production.
 
 | Key                            | Type    | Default | Description                                                                  |
 | ------------------------------ | ------- | ------- | ---------------------------------------------------------------------------- |
-| **ALLOC_SERVER_SPREAD**        | String  | min-ram | How the allocator spreads VMs across CNs.                                    |
+| **ALLOC_SERVER_SPREAD**        | String  | -       | **DEPRECATED** How the allocator spreads VMs across CNs.                     |
 | **ALLOC_FILTER_HEADNODE**      | Boolean | true    | Whether the headnode should be removed from consideration during allocation. |
 | **ALLOC_FILTER_MIN_DISK**      | Boolean | false   | Whether CNs with insufficient spare disk should be removed.                  |
 | **ALLOC_FILTER_MIN_RESOURCES** | Boolean | true    | Whether CNs with insufficient spare CPU/RAM/disk should be removed.          |
 | **ALLOC_FILTER_LARGE_SERVERS** | Boolean | true    | Whether large servers should be reserved primarily for large allocations.    |
 | **ALLOC_FILTER_VM_COUNT**      | Integer | 224     | CNs with equal or more VMs than this will be removed from consideration.     |
+| **ALLOC_FILTER_DOCKER_MIN_PLATFORM**        | String  | -     | If present, minimum platform version useful for Docker instances. |
 | **ALLOC_DISABLE_OVERRIDE_OVERPROVISIONING** | Boolean | false | If true, allow packages and CNs to dictate overprovision ratios.  |
 | **ALLOC_OVERRIDE_OVERPROVISION_CPU**        | Float   | 4.0   | The ratio of CPU overprovisioning that will be hard set.          |
 | **ALLOC_OVERRIDE_OVERPROVISION_RAM**        | Float   | 1.0   | The ratio of RAM overprovisioning that will be hard set.          |
 | **ALLOC_OVERRIDE_OVERPROVISION_DISK**       | Float   | 1.0   | The ratio of disk overprovisioning that will be hard set.         |
-
+| **ALLOC_WEIGHT_CURRENT_PLATFORM**  | Float | 1.0   | Bias selection towards CNs with newer platforms.                             |
+| **ALLOC_WEIGHT_NEXT_REBOOT**       | Float | 0.5   | Bias selection away from CNs with nearer scheduled reboots.                  |
+| **ALLOC_WEIGHT_NUM_OWNER_ZONES**   | Float | 0.0   | Bias selection away from CNs with more VMs belonging to the current owner.   |
+| **ALLOC_WEIGHT_UNIFORM_RANDOM**    | Float | 0.5   | Bias selection towards random CNs.                                           |
+| **ALLOC_WEIGHT_UNRESERVED_DISK**   | Float | 1.0   | Bias selection towards CNs with more unreserved disk.                        |
+| **ALLOC_WEIGHT_UNRESERVED_RAM**    | Float | 2.0   | Bias selection towards CNs with more unreserved memory.                      |
 
 If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
 if the default value was specified. Be careful when changing from the default
 values in production.
 
-ALLOC_SERVER_SPREAD is of particular interest to certain specialised production
-installs. It can have one of four values: `min-ram`, `max-ram`, `min-owner`,
-and `random`.  `min-ram` selects CNs which have the least amount of sufficient
-space for a new VM; this is desirable to keep emptier servers free for larger
-allocations.  `max-ram` selects CNs which have the *most* amount of free
-space; this can be desirable for private SDCs to give VMs the currently least
-busy servers. `min-owner` makes the allocator much more aggressive about
-balancing all VMs belonging to one user across all CNs. And `random` assigns
-randomly across CNs.
+ALLOC_SERVER_SPREAD is deprecated in favour of ALLOC_WEIGHT_\*.  It can have one
+of four values: `min-ram`, `max-ram`, `min-owner`, and `random`.  `min-ram`
+selects CNs which have the least amount of sufficient space for a new VM.
+`max-ram` selects CNs which have the *most* amount of free space.  `min-owner`
+makes the allocator much more aggressive about balancing all VMs belonging to
+one user across all CNs. And `random` assigns randomly across CNs.
+
+
+ALLOC_WEIGHT_\* attributes can have negative values, not just positive. Negative
+values have the opposite effect of negative values; e.g. a postive
+ALLOC_WEIGHT_NUM_OWNER_ZONES biases selection towards CNs with fewer VMs
+belonging to the owner of the current allocation, while a negative value would
+bias towards CNs with more such VMs.
 
 A note of warning about ALLOC_FILTER_MIN_DISK: if this is set to true, but
 ALLOC_FILTER_MIN_RESOURCES is set to false, then disk checks will be ignored.
@@ -161,15 +178,24 @@ Use it as so:
 
 # Heartbeats
 
-Each compute node is populated with services which allow the headnode to
-monitor usage and interact with the compute nodes in general. One of these is
-the "heartbeater" agent, its responsibility is to periodically emit server and
-zone information to AMQP. CNAPI is connects to AMQP and listens for these
-heartbeat messages from all servers. It uses the periodic action of these
-heartbeats to determine whether a compute node is up.
+Each server is populated with services which allow the headnode to monitor
+usage and interact with the compute nodes in general. One of these is the
+`cn-agent` agent, its responsibility is to execute tasks on the server in
+addition to periodically posting server usage and information to the headnode.
+CNAPI in turn uses these heartbeat events to determine whether a compute node
+is running.
 
-If a compute node is not setup (and therefore has no agents besides ur), CNAPI
+If a compute node is not setup (and therefore has no agents besides Ur), CNAPI
 uses the frequency of the sysinfo messages sent by Ur.
+
+Server status, stored in the `status` property on `/server` entries, is
+calculated based on the time of the last received heartbeat (corresponding to
+the `last_heartbeat` property) and can hold the values "running" or "unknown".
+These heartbeat requests originate on the `cn-agent` running on each setup
+compute node. Every time a CNAPI instance receives a heartbeat message from a
+compute node, it refreshes a timeout corresponding to 2x the heartbeat period.
+If a heartbeat is not received again before this timeout expires, the server is
+marked as having `status` "uknown".
 
 
 # Resetting to Factory Defaults
@@ -433,7 +459,6 @@ A CNAPI server record looks like the following
       "setup": true,
       "setting_up": false,
       "last_boot": "2014-04-22T07:39:50.000Z",
-      "next_reboot: "2016-03-10T10:22:35.000Z",
       "created": "2014-04-22T07:37:30.000Z",
       "vms": {
          --- compute node vm objects ---
@@ -487,7 +512,6 @@ A CNAPI server record looks like the following
 | **memory_available_bytes**           |                  |
 | **memory_provisionable_bytes**       |                  |
 | **memory_total_bytes**               |                  |
-| **next_reboot**                      | *ISODate String* | When the server is next scheduled for reboot (currently manually)          |
 | **overprovision_ratio**              |                  |
 | **overprovision_ratios**             |                  |
 | **rack_identifier**                  |                  |
@@ -1082,6 +1106,7 @@ Set the value of a Server's attribute.
 | default_console      | String  | Console type                                                                                                                     |
 | rack_identifier      | String  | The id of the server's rack                                                                                                      |
 | comments             | String  | Any comments about the server                                                                                                    |
+| next_reboot          | String  | ISO timestamp when next reboot is scheduled for                                                                                  |
 | nics                 | Array   | List of NICs to update (see `Updating NICs` section)                                                                             |
 | reserved             | Boolean | Server is available for provisioning                                                                                             |
 | reservoir            | Boolean | Server should be considered last for provisioning                                                                                |
@@ -1108,12 +1133,11 @@ Reboot the server.
 
 ### Inputs
 
+| Param        | Type   | Description |
+| ------------ | ------ | ----------- |
+| origin       | String |             |
+| creator_uuid | String |             |
 
-| Param        | Type    | Description                                                                  |
-| ------------ | ------- | ---------------------------------------------------------------------------- |
-| drain        | Boolean | Wait for server's cn-agent to be drained before sending the reboot command   |
-| origin       | String  |                                                                              |
-| creator_uuid | String  |                                                                              |
 
 ### Responses
 
@@ -1153,9 +1177,9 @@ Initiate the server setup process for a newly started server.
 | nics             | Object | Nic parameters to update                 |
 | postsetup_script | String | Script to run after setup has completed  |
 | hostname         | String | Hostname to set for the specified server |
-| disk_layout      | String | Disk layout type. If not specified, the disk layout will be determined by the `disklayout` default. See [disklayout(1m)](https://smartos.org/man/1m/disklayout). Optional |
-| disk_spares      | Number | Number of disk spares. Optional          |
-| disk_cache       | String | Disk cache ('true' or 'false'). Optional |
+| disk_spares      | String | See `man disklayout` spares              |
+| disk_cache       | String | See `man disklayout` cache               |
+| disk_layout      | String | See `man disklayout` type                |
 
 
 ### Responses
@@ -1218,8 +1242,47 @@ None.
 
 | Code | Type  | Description                 |
 | ---- | ----- | --------------------------- |
-| 200  | None  | Tasks returned successfully |
+| 200  | Ok    | Tasks returned successfully |
 | 500  | Error | Could not process request   |
+
+
+## ServerPauseCnAgent (GET /servers/:server_uuid/cn-agent/pause)
+
+Makes cn-agent stop accepting new tasks
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description               |
+| ---- | ----- | ------------------------- |
+| 204  | No    | Content on success        |
+| 500  | Error | Could not process request |
+
+
+## ServerResumeCnAgent (GET /servers/:server_uuid/cn-agent/resume)
+
+Makes cn-agent accept new tasks
+
+Note this is the default behavior and this end-point is useful
+only after a previous call to ServerPauseCnAgent
+
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description               |
+| ---- | ----- | ------------------------- |
+| 204  | No    | Content on success        |
+| 500  | Error | Could not process request |
 
 
 ## ServerEnsureImage (GET /servers/:server_uuid/ensure-image)
@@ -1262,47 +1325,10 @@ install and server will download and install package.
 
 ### Responses
 
-| Code | Type  | Description                      |
-| ---- | ----- | -------------------------------- |
-| 200  | None  | Successfully initiated the setup |
-| 500  | Error | Could not process request        |
-
-
-## ServerCnAgentPause (GET /servers/:server_uuid/cn-agent/pause)
-
-Makes cn-agent stop accepting new tasks.
-
-
-### Inputs
-
-None.
-
-
-### Responses
-
-| Code | Type  | Description                 |
-| ---- | ----- | --------------------------- |
-| 204  | None  | Request returned ok         |
-| 500  | Error | Could not process request   |
-
-
-## ServerCnAgentResume (GET /servers/:server_uuid/cn-agent/resume)
-
-Makes cn-agent accept new tasks again. Note that this is the default
-behavior and therefore it has no sense to call this method unless
-the task agent has been paused before.
-
-### Inputs
-
-None.
-
-
-### Responses
-
-| Code | Type  | Description                 |
-| ---- | ----- | --------------------------- |
-| 204  | None  | Request returned ok         |
-| 500  | Error | Could not process request   |
+| Code | Type  | Description                         |
+| ---- | ----- | ----------------------------------- |
+| 200  | Ok    | Install task initiated successfully |
+| 500  | Error | Could not process request           |
 
 
 
@@ -1771,12 +1797,19 @@ None.
 
 Returns all waitlist tickets currently active on a server. Returns the uuid of
 the newly created ticket as well as an array of all the tickets in the ticket's
-scope queue.
+scope queue. By default servers are returned in the chronological order of their
+creation (`created_at` timestamp). By default the responses are limited to 1000
+results. Use the `limit` and `offset` to page through results.
 
 
 ### Inputs
 
-None.
+| Param      | Type   | Description                              |
+| ---------- | ------ | ---------------------------------------- |
+| limit      | Number | Return at most this many results         |
+| offset     | Number | Return results starting at this position |
+| attribhute | String | Attribute to sort on                     |
+| order      | String | Sort in 'DESC' or 'ASC' order            |
 
 
 ### Responses
