@@ -64,7 +64,7 @@ function deleteAllTickets(callback) {
 function testExpireSingleTicket(test) {
     var expireTimeSeconds = 3;
     var ticketPayload = {
-        scope: 'test',
+        scope: 'test-expire-single-ticket',
         id: '123',
         expires_at: (
             new Date((new Date().valueOf()) +
@@ -136,7 +136,7 @@ function testExpireSingleTicketStartNext(test) {
     var expireTimeSeconds2 = 24;
 
     var ticketPayload = {
-        scope: 'test',
+        scope: 'test-expire-single-ticket',
         id: '123',
         expires_at: (
             new Date((new Date().valueOf()) +
@@ -144,7 +144,7 @@ function testExpireSingleTicketStartNext(test) {
     };
 
     var ticketPayload2 = {
-        scope: 'test',
+        scope: 'test-expire-single-ticket',
         id: '123',
         expires_at: (
             new Date((new Date().valueOf()) +

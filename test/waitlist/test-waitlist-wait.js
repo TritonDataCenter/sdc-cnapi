@@ -60,7 +60,7 @@ function deleteAllTickets(callback) {
 
 function testWaitForActiveTicket(test) {
     var ticketPayload = {
-        scope: 'test1',
+        scope: 'test-waitlist-wait-test-wait-for-active-ticket',
         id: '111',
         expires_at: (new Date((new Date().valueOf()) + 120*1000)).toISOString()
     };
@@ -122,7 +122,7 @@ function testWaitOnTicket(test) {
 
     for (i = 0; i < count; i++) {
         payloads.push({
-            scope: 'test1',
+            scope: 'test-waitlist-wait-test-wait-on-ticket',
             id: '111',
             expires_at:
                 (new Date((new Date().valueOf()) + 120*1000)).toISOString()

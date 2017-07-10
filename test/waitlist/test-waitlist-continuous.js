@@ -87,7 +87,7 @@ function testContinuosCreateWaitRelease(test) {
 
     function create(cb) {
         var ticketPayload = {
-            scope: 'test1',
+            scope: 'test-continuous-create-wait-release',
             id: '111',
             expires_at:
                 (new Date((new Date().valueOf()) + 60*1000)).toISOString()

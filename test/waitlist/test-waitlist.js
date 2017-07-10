@@ -11,6 +11,7 @@
 var Logger = require('bunyan');
 var restify = require('restify');
 
+var assert = require('assert-plus');
 var async = require('async');
 var cp = require('child_process');
 var fs = require('fs');
@@ -85,7 +86,7 @@ function testCreateTicket(test) {
     test.expect(59);
 
     var ticketPayload = {
-        scope: 'test',
+        scope: 'test-create-ticket',
         id: '123',
         expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString(),
         action: 'action0',
@@ -93,7 +94,7 @@ function testCreateTicket(test) {
     };
 
     var ticketPayload2 = {
-        scope: 'test',
+        scope: 'test-create-ticket',
         id: '234',
         expires_at: (new Date((new Date().valueOf()) + 60*1000)).toISOString(),
         action: 'action1',
@@ -218,7 +219,7 @@ function testCreateWaitReleaseTicket(test) {
     var expireTimeSeconds = 3;
     var expireTimeSeconds2 = 4;
     var ticketPayload = {
-        scope: 'test',
+        scope: 'test-create-wait-release-ticket',
         id: '123',
         expires_at: (
             new Date((new Date().valueOf()) +
@@ -226,7 +227,7 @@ function testCreateWaitReleaseTicket(test) {
     };
 
     var ticketPayload2 = {
-        scope: 'test',
+        scope: 'test-create-wait-release-ticket',
         id: '123',
         expires_at: (
             new Date((new Date().valueOf()) +
@@ -379,6 +380,7 @@ function testLimitOffsetValidation(test) {
         // Create number of tickets given by `count`
         function (wfcb) {
             createTickets({
+                ticketsScope: 'limit-offset-validation',
                 test: test,
                 count: count
             }, function (err, tickets) {
@@ -449,6 +451,7 @@ function testFetchTicketsWithPaging(test) {
         // Create number of tickets given by `count`
         function (wfcb) {
             createTickets({
+                ticketsScope: 'fetch-tickets-with-paging',
                 test: test,
                 count: count
             }, function (err, tickets) {
@@ -553,6 +556,7 @@ function testDeleteOver1000Tickets(test) {
     async.waterfall([
         function (wfcb) {
             createTickets({
+                ticketsScope: 'delete-over-1000-tickets',
                 test: test,
                 count: count
             }, function (err, tickets) {
@@ -569,7 +573,8 @@ function testDeleteOver1000Tickets(test) {
             client.get(geturl, getcb);
             function getcb(err, req, res, results) {
                 test.ok(Array.isArray(results), 'result is an array');
-                test.notEqual(results.length, 0, 'result array not empty');
+                test.notEqual(results.length, 0,
+                    'result array not empty, nb tickets is: ' + results.length);
                 wfcb();
             }
 
@@ -589,14 +594,17 @@ function testDeleteOver1000Tickets(test) {
             function getcb(err, req, res, results) {
                 test.ok(Array.isArray(results), 'result is an array');
                 test.equal(results.length, 0,
-                           'result length is 0 (was ' +
-                               results.length + ')');
+                            'result length is 0 (was ' +
+                                results.length + ', content: ' +
+                                util.inspect(results) + ')');
                 wfcb();
             }
 
         }
     ], function (err) {
+        console.log((new Date().toISOString() + 'calling test.done()'));
         test.done();
+        console.log((new Date().toISOString() + 'called test.done()'));
     });
 }
 
@@ -608,6 +616,11 @@ function testDeleteOver1000Tickets(test) {
  */
 
 function createTickets(opts, callback) {
+    assert.object(opts, 'opts');
+    assert.number(opts.count, 'opts.count');
+    assert.string(opts.ticketsScope, 'opts.ticketsScope');
+    assert.object(opts.test, 'opts.test');
+
     var ticketUuids = {};
 
     var count = opts.count;
@@ -623,7 +636,11 @@ function createTickets(opts, callback) {
             var payloads = [];
             for (i = 0; i < count; i++) {
                 payloads.push({
-                    scope: 'test1',
+                    scope: opts.ticketsScope,
+                    /*
+                     * This ID needs to be constant so tickets get queued and
+                     * don't become active.
+                     */
                     id: '111',
                     expires_at:
                         (new Date((new Date().valueOf()) +
