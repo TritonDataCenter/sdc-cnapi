@@ -362,9 +362,16 @@ function validateServer(t, server, options) {
 
             t.ok(UUID_RE.test(vm.owner_uuid), 'ensure vm.owner_uuid is a UUID');
 
-            var numAttr = ['max_physical_memory', 'quota', 'cpu_cap'];
+            var numAttr = ['max_physical_memory', 'quota'];
             numAttr.forEach(function (attr) {
                 if (typeof (vm[attr]) !== 'undefined') {
+                    vmAttrTypeEqual(t, vm, attr, 'number');
+                }
+            });
+
+            var optionalNumAttr = ['cpu_cap'];
+            optionalNumAttr.forEach(function (attr) {
+                if (vm[attr] !== undefined && vm[attr] !== null) {
                     vmAttrTypeEqual(t, vm, attr, 'number');
                 }
             });
