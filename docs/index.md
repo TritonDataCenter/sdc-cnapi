@@ -693,7 +693,6 @@ for allocation must be both setup and unreserved. If a server you expected
 does not turn up in steps output, its because the server didn't meet those
 two criteria.
 
-
 ### Inputs
 
 | Param    | Type   | Description                                                         |
@@ -723,7 +722,6 @@ This call isn't cheap, so it's preferable to make fewer calls, and restrict
 the results to only the servers you're interested in by passing in the
 desired servers' UUIDs.
 
-
 ### Inputs
 
 | Param   | Type  | Description                                                         |
@@ -746,7 +744,6 @@ desired servers' UUIDs.
 
 Returns the default boot parameters.
 
-
 ### Inputs
 
 None.
@@ -766,7 +763,6 @@ Set the default boot parameters.
 
 Completely override the existing boot parameter values with the given
 payload. Any values not present in the payload will effectively be deleted.
-
 
 ### Inputs
 
@@ -795,7 +791,6 @@ Modify the default boot parameters.
 If a value is present in the default boot parameters, but no new value is
 passed in, the currently effective value will remain unchanged.
 
-
 ### Inputs
 
 | Param        | Type   | Description                           |
@@ -821,7 +816,6 @@ Returns the boot parameters for a particular server.
 Returns the platform to be booted on the next reboot in addition to what
 kernel parameters will be used to boot the server.
 
-
 ### Inputs
 
 None.
@@ -842,7 +836,6 @@ Set the boot parameters of a server.
 Completely overrides the platform and boot parameters of a server. If a
 value is not set in the new object but is in the old one, it will be
 effectively deleted when the new object replaces the old.
-
 
 ### Inputs
 
@@ -870,7 +863,6 @@ Update only the given boot configuration values.
 
 Does not overwrite any values which are not given.
 
-
 ### Inputs
 
 | Param        | Type   | Description                           |
@@ -895,7 +887,6 @@ Does not overwrite any values which are not given.
 
 Returns the details of the given task.
 
-
 ### Inputs
 
 None.
@@ -912,7 +903,6 @@ None.
 ## TaskWait (GET /tasks/:task_id/wait)
 
 Waits for a given task to return or an expiry to be reached.
-
 
 ### Inputs
 
@@ -934,7 +924,6 @@ None.
 
 Query the server for the Image's details.
 
-
 ### Inputs
 
 | Param | Type   | Description                               |
@@ -954,7 +943,6 @@ Query the server for the Image's details.
 ## Ping (GET /ping)
 
 Return CNAPI's service status details.
-
 
 ### Inputs
 
@@ -987,7 +975,6 @@ As per the [Updating Nics](#updating-nics) section above, the **nics**
 parameter must be an array of objects. Those objects must have both the
 **mac** and **nic_tags_provided** properties.
 
-
 ### Inputs
 
 | Param  | Type   | Description                                  |
@@ -1008,7 +995,6 @@ parameter must be an array of objects. Those objects must have both the
 
 Returns avaiable platform images in datacenter.
 
-
 ### Inputs
 
 None.
@@ -1027,7 +1013,6 @@ None.
 ## CommandExecute (POST /servers/:server_uuid/execute)
 
 Synchronously execute a command on the target server.
-
 
 ### Inputs
 
@@ -1051,7 +1036,6 @@ Synchronously execute a command on the target server.
 ## ServerList (GET /servers)
 
 Returns Servers present in datacenter.
-
 
 ### Inputs
 
@@ -1079,7 +1063,6 @@ Returns Servers present in datacenter.
 
 Look up a single Server by UUID.
 
-
 ### Inputs
 
 None.
@@ -1095,7 +1078,6 @@ None.
 ## ServerUpdate (POST /servers/:server_uuid)
 
 Set the value of a Server's attribute.
-
 
 ### Inputs
 
@@ -1130,7 +1112,6 @@ Set the value of a Server's attribute.
 
 Reboot the server.
 
-
 ### Inputs
 
 | Param        | Type   | Description |
@@ -1151,7 +1132,6 @@ Reboot the server.
 
 Reset the server back to a factory state.
 
-
 ### Inputs
 
 None.
@@ -1169,17 +1149,16 @@ None.
 
 Initiate the server setup process for a newly started server.
 
-
 ### Inputs
 
-| Param            | Type   | Description                              |
-| ---------------- | ------ | ---------------------------------------- |
-| nics             | Object | Nic parameters to update                 |
-| postsetup_script | String | Script to run after setup has completed  |
-| hostname         | String | Hostname to set for the specified server |
-| disk_spares      | String | See `man disklayout` spares              |
-| disk_cache       | String | See `man disklayout` cache               |
-| disk_layout      | String | See `man disklayout` type                |
+| Param            | Type   | Description                                                  |
+| ---------------- | ------ | ------------------------------------------------------------ |
+| nics             | Object | Nic parameters to update                                     |
+| postsetup_script | String | Script to run after setup has completed                      |
+| hostname         | String | Hostname to set for the specified server                     |
+| disk_spares      | String | See `man disklayout` spares                                  |
+| disk_cache       | String | See `man disklayout` cache                                   |
+| disk_layout      | String | See `man disklayout` type      (single, mirror, raidz1, ...) |
 
 
 ### Responses
@@ -1193,7 +1172,6 @@ Initiate the server setup process for a newly started server.
 ## ServerSysinfoRefresh (POST /servers/:server_uuid/sysinfo-refresh)
 
 Fetch a given server's sysinfo values and store them in the server object.
-
 
 ### Inputs
 
@@ -1213,7 +1191,6 @@ None.
 Remove all references to given server. Does not change anything on the
 actual server.
 
-
 ### Inputs
 
 None.
@@ -1232,7 +1209,6 @@ None.
 Return details of most recent cn-agent tasks run on the compute node since
 cn-agent was started.
 
-
 ### Inputs
 
 None.
@@ -1249,7 +1225,6 @@ None.
 ## ServerPauseCnAgent (GET /servers/:server_uuid/cn-agent/pause)
 
 Makes cn-agent stop accepting new tasks
-
 
 ### Inputs
 
@@ -1271,7 +1246,6 @@ Makes cn-agent accept new tasks
 Note this is the default behavior and this end-point is useful
 only after a previous call to ServerPauseCnAgent
 
-
 ### Inputs
 
 None.
@@ -1290,7 +1264,6 @@ None.
 Assert an image is present on a compute node and ready for use in
 provisioning. If this is not the case, fetch and install the image onto the
 compute node zpool.
-
 
 ### Inputs
 
@@ -1312,7 +1285,6 @@ compute node zpool.
 
 Instruct server to install given agent. Pass in image uuid of package to
 install and server will download and install package.
-
 
 ### Inputs
 
@@ -1340,7 +1312,6 @@ install and server will download and install package.
 
 Query the server for a list of VMs.
 
-
 ### Inputs
 
 None.
@@ -1357,7 +1328,6 @@ None.
 ## VmLoad (GET /servers/:server_uuid/vms/:uuid)
 
 Query the server for the VM's details.
-
 
 ### Inputs
 
@@ -1379,7 +1349,6 @@ Query the server for the VM's details.
 
 Query the server for the VM's `vmadm info` output.
 
-
 ### Inputs
 
 None.
@@ -1397,7 +1366,6 @@ None.
 ## VmInfo (GET /servers/:server_uuid/vms/:uuid/vnc)
 
 Query the server for the VM's VNC host and port.
-
 
 ### Inputs
 
@@ -1417,7 +1385,6 @@ None.
 
 Modify the system parameters of the VM identified by `:uuid` on server with
 UUID `:server_uuid`.
-
 
 ### Inputs
 
@@ -1439,7 +1406,6 @@ UUID `:server_uuid`.
 
 Bulk modify VM nics
 
-
 ### Inputs
 
 | Param | Type   | Description                               |
@@ -1460,7 +1426,6 @@ Bulk modify VM nics
 
 Boot up a vm which is in the 'stopped' state.
 
-
 ### Inputs
 
 | Param | Type   | Description                               |
@@ -1480,7 +1445,6 @@ Boot up a vm which is in the 'stopped' state.
 ## VmStop (POST /servers/:server\_uuid/vms/:uuid/stop)
 
 Shut down a VM which is in the 'running' state.
-
 
 ### Inputs
 
@@ -1503,7 +1467,6 @@ Shut down a VM which is in the 'running' state.
 
 Send a signal to a given VM.
 
-
 ### Inputs
 
 | Param  | Type   | Description                                    |
@@ -1524,7 +1487,6 @@ Send a signal to a given VM.
 ## VmReboot (POST /servers/:server\_uuid/vms/:uuid/reboot)
 
 Reboot a VM which is in the 'running' state.
-
 
 ### Inputs
 
@@ -1547,7 +1509,6 @@ Reboot a VM which is in the 'running' state.
 
 Create a VM on the specified server.
 
-
 ### Inputs
 
 | Param | Type   | Description                                      |
@@ -1567,7 +1528,6 @@ Create a VM on the specified server.
 ## VmReprovision (POST /servers/:server_uuid/vms/:uuid/reprovision)
 
 Reprovision a given VM.
-
 
 ### Inputs
 
@@ -1590,7 +1550,6 @@ Reprovision a given VM.
 
 Delete the specified VM.
 
-
 ### Inputs
 
 None.
@@ -1609,7 +1568,6 @@ None.
 
 Send a docker_exec task to the given server/vm. This starts a server on the
 given server which will spawn a process with the given docker payload.
-
 
 ### Inputs
 
@@ -1635,7 +1593,6 @@ given server which will spawn a process with the given docker payload.
 Send a docker_copy task to the given server/vm. This starts a temporary
 service on the given server which will stream the the requested file.
 
-
 ### Inputs
 
 | Param   | Type   | Description                                      |
@@ -1659,7 +1616,6 @@ service on the given server which will stream the the requested file.
 
 Send a docker_stats task to the given server/vm. This starts a temporary
 service on the given server which will stream back the container stats.
-
 
 ### Inputs
 
@@ -1686,7 +1642,6 @@ Send a docker_build task to the given server/vm. This starts a temporary
 service on the given server which will allow streaming of the build context
 to the server and then runs the docker build steps.
 
-
 ### Inputs
 
 None.
@@ -1708,17 +1663,16 @@ None.
 
 Create a VM image.
 
-
 ### Inputs
 
-| Param                | Type    | Description                                      |
-| -------------------- | ------- | ------------------------------------------------ |
-| jobid                | String  | Create a new virtual machine on the given server |
-| compression          | String  | Compression to use for creating image            |
-| imgapi_url           | String  | Location of imgapi                               |
-| incremental          | Boolean | Make this an incremental image? Optional.        |
-| prepare_image_script | String  | A script run in a reboot of the VM               |
-| manifest             | Object  | Image manifest object. Require at least "uuid",  |
+| Param                | Type    | Description                                                                                                                                                             |
+| -------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| jobid                | String  | Create a new virtual machine on the given server                                                                                                                        |
+| compression          | String  | Compression to use for creating image                                                                                                                                   |
+| imgapi_url           | String  | Location of imgapi                                                                                                                                                      |
+| incremental          | Boolean | Make this an incremental image? Optional.      Default is false.                                                                                                        |
+| prepare_image_script | String  | A script run in a reboot of the VM      to prepare it for imaging.                                                                                                      |
+| manifest             | Object  | Image manifest object. Require at least "uuid",      "owner", "name" and "version" keys. See "imgadm create"      documentation for other required and optional fields. |
 
 
 ### Responses
@@ -1736,7 +1690,6 @@ Create a VM image.
 ## VmSnapshotCreate (PUT /servers/:server_uuid/vms/:uuid/snapshots)
 
 Task a snapshot of a VM.
-
 
 ### Inputs
 
@@ -1756,7 +1709,6 @@ None.
 
 Roll back to a previous snapshot of a VM.
 
-
 ### Inputs
 
 None.
@@ -1774,7 +1726,6 @@ None.
 ## VmSnapshotDestroy (DELETE /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name)
 
 Delete a VM's snapshot.
-
 
 ### Inputs
 
@@ -1801,7 +1752,6 @@ scope queue. By default servers are returned in the chronological order of their
 creation (`created_at` timestamp). By default the responses are limited to 1000
 results. Use the `limit` and `offset` to page through results.
 
-
 ### Inputs
 
 | Param      | Type   | Description                              |
@@ -1823,7 +1773,6 @@ results. Use the `limit` and `offset` to page through results.
 ## ServerWaitlistTicketCreate (POST /servers/:server_uuid/tickets)
 
 Create a new waitlist ticket.
-
 
 ### Inputs
 
@@ -1848,7 +1797,6 @@ Create a new waitlist ticket.
 
 Retrieve a waitlist ticket.
 
-
 ### Inputs
 
 None.
@@ -1866,7 +1814,6 @@ None.
 
 Delete a waitlist ticket.
 
-
 ### Inputs
 
 None.
@@ -1883,7 +1830,6 @@ None.
 ## ServerWaitlistTicketsDeleteAll (DELETE /servers/:server_uuid/tickets)
 
 Delete all of a server's waitlist tickets.
-
 
 ### Inputs
 
@@ -1904,7 +1850,6 @@ Delete all of a server's waitlist tickets.
 
 Wait until a waitlist ticket either expires or becomes active.
 
-
 ### Inputs
 
 None.
@@ -1921,7 +1866,6 @@ None.
 ## ServerWaitlistTicketsRelease (GET /tickets/:ticket_uuid/release)
 
 Release a currently active or queued waitlist ticket.
-
 
 ### Inputs
 
@@ -1943,7 +1887,6 @@ None.
 
 List ZFS datasets on a server.
 
-
 ### Inputs
 
 None.
@@ -1960,7 +1903,6 @@ None.
 
 Create a ZFS dataset on a server.
 
-
 ### Inputs
 
 None.
@@ -1976,7 +1918,6 @@ None.
 ## SnapshotCreate (POST /servers/:server_uuid/datasets/:dataset/snapshot)
 
 Create a ZFS snapshot of a dataset on a server.
-
 
 ### Inputs
 
@@ -1996,7 +1937,6 @@ Create a ZFS snapshot of a dataset on a server.
 
 Revert a ZFS dataset to back to a previous state captured by a snapshot.
 
-
 ### Inputs
 
 | Param | Type   | Description                            |
@@ -2015,7 +1955,6 @@ Revert a ZFS dataset to back to a previous state captured by a snapshot.
 
 List all snapshots on a dataset
 
-
 ### Inputs
 
 None.
@@ -2031,7 +1970,6 @@ None.
 ## DatasetPropertiesGetAll (GET /servers/:server_uuid/dataset-properties)
 
 Get ZFS properties across all datasets on a server.
-
 
 ### Inputs
 
@@ -2054,7 +1992,6 @@ Get ZFS properties across all datasets on a server.
 Get ZFS properties for a dataset.  The specific properties to return can be
 filtered with ?prop1=foo&prop2=bar, etc.
 
-
 ### Inputs
 
 | Param   | Type   | Description                                 |
@@ -2075,7 +2012,6 @@ filtered with ?prop1=foo&prop2=bar, etc.
 
 Set one or more properties for a ZFS dataset.
 
-
 ### Inputs
 
 | Param      | Type   | Description                              |
@@ -2094,7 +2030,6 @@ Set one or more properties for a ZFS dataset.
 
 Destroy a ZFS dataset on a server.
 
-
 ### Inputs
 
 None.
@@ -2110,7 +2045,6 @@ None.
 ## ZpoolList (GET /servers/:server_uuid/zpools)
 
 List the ZFS pools on a server.
-
 
 ### Inputs
 

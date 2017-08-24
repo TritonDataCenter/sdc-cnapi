@@ -142,7 +142,7 @@ function handleTag(block, chunk, idx) {
             block.params.push({
                 name: tag.name,
                 type: tag.types[0],
-                description: tag.description
+                description: tag.description.replace(/\n/g, ' ')
             });
             break;
         case 'response':
