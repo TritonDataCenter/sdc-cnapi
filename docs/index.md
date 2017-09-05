@@ -1039,17 +1039,17 @@ Returns Servers present in datacenter.
 
 ### Inputs
 
-| Param     | Type    | Description                                                               |
-| --------- | ------- | ------------------------------------------------------------------------- |
-| uuids     | String  | Comma seperated list of UUIDs to look up                                  |
-| setup     | Boolean | Return only setup servers                                                 |
-| headnode  | Boolean | Return only headnodes                                                     |
-| reserved  | Boolean | Return only reserved servers                                              |
-| reservoir | Boolean | Return only reservoir servers                                             |
-| hostname  | String  | Return machine with given hostname                                        |
-| extras    | String  | Comma seperated values: agents, vms, memory, disk, sysinfo, capacity, all |
-| limit     | Number  | Maximum number of results to show                                         |
-| offset    | Number  | Offset the subset of results returned                                     |
+| Param     | Type    | Description                                                                                                               |
+| --------- | ------- | ------------------------------------------------------------------------------------------------------------------------- |
+| uuids     | String  | Comma seperated list of UUIDs to look up                                                                                  |
+| setup     | Boolean | Return only setup servers                                                                                                 |
+| headnode  | Boolean | Return only headnodes                                                                                                     |
+| reserved  | Boolean | Return only reserved servers                                                                                              |
+| reservoir | Boolean | Return only reservoir servers                                                                                             |
+| hostname  | String  | Return machine with given hostname                                                                                        |
+| extras    | String  | Comma seperated values: agents, vms, memory, disk, sysinfo, capacity, all                                                 |
+| limit     | Integer | Maximum number of results to return. It must be between 1-1000, inclusive. Defaults to 1000 (the maxmimum allowed value). |
+| offset    | Integer | Offset the subset of results returned                                                                                     |
 
 
 ### Responses
