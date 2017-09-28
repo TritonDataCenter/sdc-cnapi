@@ -80,6 +80,7 @@
 			        "hard-filter-min-free-disk",
 			        "hard-filter-vlans",
 			        "hard-filter-platform-versions",
+			        "hard-filter-feature-min-platform",
 			        "hard-filter-traits",
 			        "hard-filter-headnode",
 			        "override-overprovisioning",
