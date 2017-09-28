@@ -42,7 +42,6 @@ rsync -av ${TOP}/ \
     --exclude /config/config.json \
     --exclude /deps/ \
     --exclude /docs/ \
-    --exclude /node_modules/ \
     --exclude /scripts/ \
     --exclude /boot/ \
     --exclude /smf/ \
