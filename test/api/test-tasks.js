@@ -92,6 +92,54 @@ function testCreateTask(test) {
 }
 
 
+/*
+ * Test that we can create a ticket and immediately wait on it. The intent is
+ * to exercise and reproduce the conditions described in CNAPI-722. However,
+ * due to the timing required to hit, the bug is difficult to reproduce but it
+ * is never the less useful to ensure that this continues to work into the
+ * future.
+ */
+
+function testCreateTaskWaitImmediately(test) {
+    test.expect(7);
+
+    var id;
+
+    async.waterfall([
+        function (next) {
+            client.post(servurl + '/nop', {}, onpost);
+
+            function onpost(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.ok(obj.id);
+                id = obj.id;
+                next();
+            }
+        }, function (next) {
+            client.get(sprintf('/tasks/%s/wait', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.equals(obj.status, 'complete');
+                next();
+            }
+        }, function (next) {
+            client.get(sprintf('/tasks/%s', id), onget);
+
+            function onget(err, req, res, obj) {
+                test.ifError(err, 'no error');
+                test.equals(obj.status, 'complete');
+                next();
+            }
+        }
+    ],
+    function (err) {
+        test.ifError(err, 'no error');
+        test.done();
+    });
+}
+
+
 function testWaitFinishedTask(test) {
     test.expect(7);
 
@@ -437,6 +485,7 @@ module.exports = {
     setUp: setup,
     tearDown: teardown,
     'create and wait on task': testCreateTask,
+    'create and wait on task': testCreateTaskWaitImmediately,
     'create and wait on task already finished': testWaitFinishedTask,
     'create and wait on task already finished (with error)':
         testWaitFinishedTaskError,
