@@ -2,6 +2,7 @@
 	"logLevel": "info",
 	"datacenter_name": "{{{datacenter_name}}}",
 	"adminIp": "{{auto.ADMIN_IP}}",
+	"dns_domain": "{{{dns_domain}}}",
 	"adminUuid": "{{{ufds_admin_uuid}}}",
 	"instanceUuid": "{{auto.ZONENAME}}",
 	"serviceName": "{{SERVICE_NAME}}",
