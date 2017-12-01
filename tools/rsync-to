@@ -28,7 +28,7 @@ if [[ -z "$INSTANCE" ]]; then
 fi
 
 if [[ -z "$ZONE" ]]; then
-    ZONE=$(ssh $NODE "/opt/smartdc/bin/sdc-vmapi /vms" 2>/dev/null \
+    ZONE=$(ssh $NODE "/opt/smartdc/bin/sdc-vmapi /vms?sort=create_timestamp" 2>/dev/null \
         | json -H -c "this.tags && this.tags.smartdc_role === '$ROLE'" \
             -c 'this.state === "running"' $INSTANCE.uuid)
 fi
@@ -54,7 +54,7 @@ rsync -av ${TOP}/ \
     --exclude /smf/ \
     --exclude /tools/ \
     --exclude /tmp/ \
-#    --exclude /node_modules/ \
+    --exclude /node_modules/ \
 
 state=$(ssh ${NODE} svcs -z ${ZONE} -H -o state $ROLE)
 

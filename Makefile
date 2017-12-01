@@ -84,6 +84,10 @@ test: $(NODEUNIT)
 test-coal:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && ./test/runtests -r verbose $(TEST_ARGS)"'
 
+.PHONY: test-coal-ha
+test-coal:
+	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && ./test/runtests-ha -r verbose $(TEST_ARGS)"'
+
 .PHONY: test-coal-quick
 test-coal-quick:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose test/api $(shell ls test/*.js | grep -v zfs) test/model"'
