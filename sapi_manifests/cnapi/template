@@ -3,7 +3,7 @@
 	"datacenter_name": "{{{datacenter_name}}}",
 	"adminUuid": "{{{ufds_admin_uuid}}}",
 {{#no_rabbit}}
-        "useCnAgent": true,
+	"useCnAgent": true,
 {{/no_rabbit}}
 	"amqp": {
 		"host": "{{{RABBITMQ_SERVICE}}}"
@@ -12,8 +12,10 @@
 	"fluentd_host": "{{{experimental_fluentd_host}}}",
 {{/experimental_fluentd_host}}
 	"moray": {
-		"host": "{{{MORAY_SERVICE}}}",
-		"port": 2020
+		"srvDomain": "{{{MORAY_SERVICE}}}",
+		"cueballOptions": {
+			"resolvers": [ "{{{BINDER_SERVICE}}}" ]
+		}
 	},
 	"api": {
 		"username": "{{{cnapi_http_admin_user}}}",
