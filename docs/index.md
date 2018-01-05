@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Allocation API, Boot Parameters API, Compute Node Agent Tasks API, Miscellaneous API, Remote Execution API, Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API
+apisections: Allocation API, Boot Parameters API, Compute Node Agent Tasks API, Miscellaneous API, Remote Execution API, Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API (deprecated)
 markdown2extras: tables, code-friendly
 ---
 <!--
@@ -10,7 +10,7 @@ markdown2extras: tables, code-friendly
 -->
 
 <!--
-    Copyright (c) 2016, Joyent, Inc.
+    Copyright (c) 2018, Joyent, Inc.
 -->
 
 <!--
@@ -1881,9 +1881,12 @@ None.
 
 
 
-# ZFS API
+# ZFS API (deprecated)
 
-## DatasetsList (GET GET /servers/:server_uuid/datasets)
+## DatasetsList (GET /servers/:server_uuid/datasets)
+
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
 
 List ZFS datasets on a server.
 
@@ -1901,6 +1904,9 @@ None.
 
 ## DatasetCreate (POST /servers/:server_uuid/datasets)
 
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
+
 Create a ZFS dataset on a server.
 
 ### Inputs
@@ -1916,6 +1922,9 @@ None.
 
 
 ## SnapshotCreate (POST /servers/:server_uuid/datasets/:dataset/snapshot)
+
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
 
 Create a ZFS snapshot of a dataset on a server.
 
@@ -1935,6 +1944,9 @@ Create a ZFS snapshot of a dataset on a server.
 
 ## SnapshotRollback (POST /servers/:server_uuid/datasets/:dataset/rollback)
 
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
+
 Revert a ZFS dataset to back to a previous state captured by a snapshot.
 
 ### Inputs
@@ -1953,6 +1965,9 @@ Revert a ZFS dataset to back to a previous state captured by a snapshot.
 
 ## SnapshotList (GET /servers/:server_uuid/datasets/:dataset/snapshots)
 
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
+
 List all snapshots on a dataset
 
 ### Inputs
@@ -1968,6 +1983,9 @@ None.
 
 
 ## DatasetPropertiesGetAll (GET /servers/:server_uuid/dataset-properties)
+
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
 
 Get ZFS properties across all datasets on a server.
 
@@ -1988,6 +2006,9 @@ Get ZFS properties across all datasets on a server.
 
 
 ## DatasetPropertiesGet (GET /servers/:server_uuid/datasets/:dataset/properties)
+
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
 
 Get ZFS properties for a dataset.  The specific properties to return can be
 filtered with ?prop1=foo&prop2=bar, etc.
@@ -2010,6 +2031,9 @@ filtered with ?prop1=foo&prop2=bar, etc.
 
 ## DatasetPropertiesSet (POST /servers/:server_uuid/datasets/:dataset/properties)
 
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
+
 Set one or more properties for a ZFS dataset.
 
 ### Inputs
@@ -2028,6 +2052,9 @@ Set one or more properties for a ZFS dataset.
 
 ## DatasetDestroy (DELETE /servers/:server_uuid/datasets/:dataset)
 
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
+
 Destroy a ZFS dataset on a server.
 
 ### Inputs
@@ -2043,6 +2070,9 @@ None.
 
 
 ## ZpoolList (GET /servers/:server_uuid/zpools)
+
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. Do not use.*
 
 List the ZFS pools on a server.
 
