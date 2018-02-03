@@ -5,18 +5,21 @@
  */
 
 /*
- * Copyright (c) 2017, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 /*
  * test-servers.js: Tests for servers endpoint.
  */
 
-var async = require('async');
 var http = require('http');
+var util = require('util');
+
+var async = require('async');
+var libuuid = require('libuuid');
+var jsprim = require('jsprim');
 var restify = require('restify');
 var sprintf = require('sprintf');
-var util = require('util');
 
 
 var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
@@ -251,6 +254,298 @@ function testUpdateServer(t) {
     });
 }
 
+//
+// This test will:
+//
+//  * POST a new server's sysinfo into /servers/<uuid>/sysinfo
+//  * ensure the server object was created
+//  * POST an updated version of the same sysinfo with a new 'Boot Time'
+//  * ensure that the boot time was updated in the server object
+//  * DELETE the server
+//
+function testServerSysinfo(t) {
+    // Taken from a Joyent Lab system, modified only to set UUID randomly and
+    // to transpose characters in the hostname and serial number in case this
+    // is actually run in that lab DC.
+    var sysinfo = {
+        'Live Image': '20180128T233316Z',
+        'System Type': 'SunOS',
+        'Boot Time': '1517295064',
+        'Datacenter Name': 'nightly-1',
+        'SDC Version': '7.0',
+        'Manufacturer': 'Dell Inc.',
+        'Product': 'PowerEdge R710',
+        'Serial Number': '4QENZE2',
+        'SKU Number': '',
+        'HW Version': '',
+        'HW Family': '',
+        'Setup': 'true',
+        'VM Capable': true,
+        'CPU Type': 'Intel(R) Xeon(R) CPU E5530 @ 2.40GHz',
+        'CPU Virtualization': 'vmx',
+        'CPU Physical Cores': 2,
+        'UUID': libuuid.create(),
+        'Hostname': '4QENZE2',
+        'CPU Total Cores': 16,
+        'MiB of Memory': '49139',
+        'Zpool': 'zones',
+        'Zpool Disks': 'c1t0d0',
+        'Zpool Profile': 'striped',
+        'Zpool Creation': 1517292626,
+        'Zpool Size in GiB': 1612,
+        'Disks': {
+          'c1t0d0': {
+            'Size in GB': 1798
+          }
+        },
+        'Boot Parameters': {
+          'module_name_0': 'networking.json',
+          'hostname': '4QENZE2',
+          'rabbitmq': 'guest:guest:172.25.1.20:5672',
+          'rabbitmq_dns': 'guest:guest:rabbitmq.nightly-1.joyent.us:5672',
+          'admin_nic': '00:1b:21:9b:62:00',
+          'external_nic': '00:1b:21:9b:62:01',
+          'sdc_underlay_nic': '00:1b:21:9b:62:01',
+          'console': 'ttyb',
+          'boot_args': '',
+          'bootargs': ''
+        },
+        'SDC Agents': [
+          {
+            'name': 'cabase',
+            'version': '1.0.3vmaster-20170713T010344Z-g360442e'
+          },
+          {
+            'name': 'hagfish-watcher',
+            'version': '1.0.0-master-20170712T235425Z-g020d169'
+          },
+          {
+            'name': 'marlin',
+            'version': '0.0.3'
+          },
+          {
+            'name': 'cainstsvc',
+            'version': '0.0.3vmaster-20170713T010344Z-g360442e'
+          },
+          {
+            'name': 'smartlogin',
+            'version': '0.2.1-master-20160527T190021Z-gd6f0708'
+          },
+          {
+            'name': 'amon-agent',
+            'version': '1.0.1'
+          },
+          {
+            'name': 'amon-relay',
+            'version': '1.0.1'
+          },
+          {
+            'name': 'net-agent',
+            'version': '1.4.0'
+          },
+          {
+            'name': 'firewaller',
+            'version': '1.4.0'
+          },
+          {
+            'name': 'vm-agent',
+            'version': '1.7.0'
+          },
+          {
+            'name': 'agents_core',
+            'version': '2.1.0'
+          },
+          {
+            'name': 'cmon-agent',
+            'version': '1.5.0'
+          },
+          {
+            'name': 'cn-agent',
+            'version': '2.0.2'
+          },
+          {
+            'name': 'config-agent',
+            'version': '1.5.0'
+          }
+        ],
+        'Network Interfaces': {
+          'bnx2': {
+            'MAC Address': '78:2b:cb:1f:2b:21',
+            'ip4addr': '',
+            'Link Status': 'down',
+            'NIC Names': []
+          },
+          'bnx0': {
+            'MAC Address': '78:2b:cb:1f:2b:1d',
+            'ip4addr': '',
+            'Link Status': 'down',
+            'NIC Names': []
+          },
+          'bnx1': {
+            'MAC Address': '78:2b:cb:1f:2b:1f',
+            'ip4addr': '',
+            'Link Status': 'down',
+            'NIC Names': []
+          },
+          'bnx3': {
+            'MAC Address': '78:2b:cb:1f:2b:23',
+            'ip4addr': '',
+            'Link Status': 'down',
+            'NIC Names': []
+          },
+          'igb0': {
+            'MAC Address': '00:1b:21:94:e3:40',
+            'ip4addr': '',
+            'Link Status': 'down',
+            'NIC Names': []
+          },
+          'ixgbe0': {
+            'MAC Address': '00:1b:21:9b:62:00',
+            'ip4addr': '172.25.1.39',
+            'Link Status': 'up',
+            'NIC Names': [
+              'admin'
+            ]
+          },
+          'igb1': {
+            'MAC Address': '00:1b:21:94:e3:41',
+            'ip4addr': '',
+            'Link Status': 'down',
+            'NIC Names': []
+          },
+          'ixgbe1': {
+            'MAC Address': '00:1b:21:9b:62:01',
+            'ip4addr': '',
+            'Link Status': 'up',
+            'NIC Names': [
+              'external',
+              'sdc_underlay'
+            ]
+          }
+        },
+        'Virtual Network Interfaces': {
+          'sdc_underlay0': {
+            'MAC Address': '90:b8:d0:67:5e:dc',
+            'ip4addr': '172.31.1.6',
+            'Link Status': 'up',
+            'Host Interface': 'ixgbe1',
+            'Overlay Nic Tags': [
+              'sdc_overlay'
+            ],
+            'VLAN': '2701'
+          }
+        },
+        'Link Aggregations': {}
+    };
+    var updateSysinfo;
+    var uuid = sysinfo.UUID;
+
+    async.waterfall([
+        function _preCreateCheck(next) {
+            client.get('/servers/' + uuid, function _onGet(err, req, res) {
+                t.equal(err.restCode, 'ResourceNotFound',
+                    'expected ResourceNotFound before posting sysinfo');
+                t.equal(res.statusCode, '404',
+                    'expected 404 before posting sysinfo');
+
+                if (err && err.restCode !== 'ResourceNotFound') {
+                    next(err);
+                    return;
+                }
+
+                next();
+            });
+        }, function _createServer(next) {
+            client.post('/servers/' + uuid + '/sysinfo', {
+                sysinfo: sysinfo
+            }, function _onPosted(err, req, res) {
+                t.ok(!err, 'expected no error posting sysinfo for ' + uuid);
+                next(err);
+            });
+        }, function _postCreateCheck(next) {
+            client.get('/servers/' + uuid, function _got(err, req, res, body) {
+                var isoTime;
+
+                t.ok(!err, 'expected no error getting after first POST');
+                t.equal(res.statusCode, '200',
+                    'expected 200 on GET after posting initial sysinfo');
+
+                if (err) {
+                    // Fake out body so that the tests below fail but we still
+                    // have the correct number.
+                    body = {
+                        sysinfo: {}
+                    };
+                }
+
+                isoTime = (new Date(Number(sysinfo['Boot Time']) * 1000))
+                    .toISOString();
+
+                // check a couple fields, to ensure that data looks like it
+                // was copied from sysinfo to the server object.
+                t.equal(body.uuid, uuid,
+                    'expected server uuid to match sysinfo');
+                t.equal(body.sysinfo.UUID, uuid,
+                    'expected server.sysinfo.UUID to match sysinfo');
+                t.equal(body.last_boot, isoTime,
+                    'expected server last_boot to match ' +
+                    'sysinfo["Boot Time"]');
+                t.equal(body.current_platform, sysinfo['Live Image'],
+                    'expected server current_platform to match ' +
+                    'sysinfo["Live Image"]');
+
+                next(err);
+            });
+        }, function _postNewBootTime(next) {
+            updateSysinfo = jsprim.deepCopy(sysinfo);
+            updateSysinfo['Boot Time'] =
+                ((new Date()).getTime() / 1000).toString();
+
+            client.post('/servers/' + uuid + '/sysinfo', {
+                sysinfo: updateSysinfo
+            }, function _onPosted(err, req, res) {
+                t.ok(!err, 'expected no error posting sysinfo update for ' +
+                    uuid);
+                next(err);
+            });
+        }, function _postUpdateCheck(next) {
+            var isoTime = (new Date(Number(updateSysinfo['Boot Time']) * 1000))
+                .toISOString();
+
+            client.get('/servers/' + uuid, function _got(err, req, res, body) {
+                t.ok(!err, 'expected no error getting after update POST');
+                t.equal(res.statusCode, '200',
+                    'expected 200 on GET after posting updated sysinfo');
+
+                if (err) {
+                    // Fake out body so that the tests below fail but we still
+                    // have the correct number.
+                    body = {
+                        sysinfo: {}
+                    };
+                }
+
+                // Ensure that the last_boot and 'Boot Time' were updated.
+                t.equal(body.last_boot, isoTime,
+                    'expected server last_boot to match ' +
+                    'updateSysinfo["Boot Time"]');
+                t.equal(body.sysinfo['Boot Time'],
+                    updateSysinfo['Boot Time'],
+                    'expected server.sysinfo["Boot Time"] to match ' +
+                    'updateSysinfo["Boot Time"]');
+
+                next(err);
+            });
+        }
+    ], function (err) {
+        t.ok(!err, 'expected no errors when testing /sysinfo endpoint');
+        client.del('/servers/' + uuid, function _onDelete(delErr) {
+            t.ok(!delErr, 'expected no error deleting server');
+            t.done();
+        });
+    });
+}
+
 
 var UUID_RE = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 var VALID_SERVER_OVERPROVISION_RESOURCES = ['cpu', 'ram', 'disk', 'io', 'net'];
@@ -398,6 +693,7 @@ function serverAttrTypeEqual(t, server, attr, exptype) {
 
 module.exports = {
     setUp: setup,
+    'create/modify server sysinfo': testServerSysinfo,
     'list servers': testListServers,
     'list servers with vms': testListServersWithVms,
     'list servers with memory': testListServersWithMemory,

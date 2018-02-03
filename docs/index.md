@@ -1169,6 +1169,31 @@ Initiate the server setup process for a newly started server.
 | 500  | None   | Error while processing request                        |
 
 
+## ServerSysinfoRegister (POST /servers/:server_uuid/sysinfo)
+
+Register a given server's sysinfo values and store them in the server object.
+Does the same thing as CNAPI receiving a sysinfo message via Ur. This means
+that if you post sysinfo for a non-existent server, a server record will be
+created.
+
+IMPORTANT: This endpoint is only intended to be used by cn-agent. Any other
+use will not be supported and may break in the future.
+
+### Inputs
+
+| Param   | Type   | Description     |
+| ------- | ------ | --------------- |
+| sysinfo | Object | Sysinfo Object. |
+
+
+### Responses
+
+| Code | Type | Description                    |
+| ---- | ---- | ------------------------------ |
+| 200  | None | Sysinfo registration initiated |
+| 500  | None | Error while processing request |
+
+
 ## ServerSysinfoRefresh (POST /servers/:server_uuid/sysinfo-refresh)
 
 Fetch a given server's sysinfo values and store them in the server object.
