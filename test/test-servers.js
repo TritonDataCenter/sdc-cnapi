@@ -266,7 +266,8 @@ function testUpdateServer(t) {
 function testServerSysinfo(t) {
     // Taken from a Joyent Lab system, modified only to set UUID randomly and
     // to transpose characters in the hostname and serial number in case this
-    // is actually run in that lab DC.
+    // is actually run in that lab DC. The MAC OUIs have all been changed to
+    // DEC's (00:10:FE) to prevent conflict.
     var sysinfo = {
         'Live Image': '20180128T233316Z',
         'System Type': 'SunOS',
@@ -303,9 +304,9 @@ function testServerSysinfo(t) {
           'hostname': '4QENZE2',
           'rabbitmq': 'guest:guest:172.25.1.20:5672',
           'rabbitmq_dns': 'guest:guest:rabbitmq.nightly-1.joyent.us:5672',
-          'admin_nic': '00:1b:21:9b:62:00',
-          'external_nic': '00:1b:21:9b:62:01',
-          'sdc_underlay_nic': '00:1b:21:9b:62:01',
+          'admin_nic': '00:10:fe:9b:62:00',
+          'external_nic': '00:10:fe:9b:62:01',
+          'sdc_underlay_nic': '00:10:fe:9b:62:01',
           'console': 'ttyb',
           'boot_args': '',
           'bootargs': ''
@@ -370,37 +371,37 @@ function testServerSysinfo(t) {
         ],
         'Network Interfaces': {
           'bnx2': {
-            'MAC Address': '78:2b:cb:1f:2b:21',
+            'MAC Address': '00:10:fe:1f:2b:21',
             'ip4addr': '',
             'Link Status': 'down',
             'NIC Names': []
           },
           'bnx0': {
-            'MAC Address': '78:2b:cb:1f:2b:1d',
+            'MAC Address': '00:10:fe:1f:2b:1d',
             'ip4addr': '',
             'Link Status': 'down',
             'NIC Names': []
           },
           'bnx1': {
-            'MAC Address': '78:2b:cb:1f:2b:1f',
+            'MAC Address': '00:10:fe:1f:2b:1f',
             'ip4addr': '',
             'Link Status': 'down',
             'NIC Names': []
           },
           'bnx3': {
-            'MAC Address': '78:2b:cb:1f:2b:23',
+            'MAC Address': '00:10:fe:1f:2b:23',
             'ip4addr': '',
             'Link Status': 'down',
             'NIC Names': []
           },
           'igb0': {
-            'MAC Address': '00:1b:21:94:e3:40',
+            'MAC Address': '00:10:fe:94:e3:40',
             'ip4addr': '',
             'Link Status': 'down',
             'NIC Names': []
           },
           'ixgbe0': {
-            'MAC Address': '00:1b:21:9b:62:00',
+            'MAC Address': '00:10:fe:9b:62:00',
             'ip4addr': '172.25.1.39',
             'Link Status': 'up',
             'NIC Names': [
@@ -408,13 +409,13 @@ function testServerSysinfo(t) {
             ]
           },
           'igb1': {
-            'MAC Address': '00:1b:21:94:e3:41',
+            'MAC Address': '00:10:fe:94:e3:41',
             'ip4addr': '',
             'Link Status': 'down',
             'NIC Names': []
           },
           'ixgbe1': {
-            'MAC Address': '00:1b:21:9b:62:01',
+            'MAC Address': '00:10:fe:9b:62:01',
             'ip4addr': '',
             'Link Status': 'up',
             'NIC Names': [
@@ -425,7 +426,7 @@ function testServerSysinfo(t) {
         },
         'Virtual Network Interfaces': {
           'sdc_underlay0': {
-            'MAC Address': '90:b8:d0:67:5e:dc',
+            'MAC Address': '00:10:fe:67:5e:dc',
             'ip4addr': '172.31.1.6',
             'Link Status': 'up',
             'Host Interface': 'ixgbe1',
