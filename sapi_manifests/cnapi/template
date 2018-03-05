@@ -91,6 +91,7 @@
 			        "calculate-ticketed-vms",
 			        "hard-filter-capness",
 			        "hard-filter-vm-count",
+			        "hard-filter-hvm",
 			        "calculate-server-unreserved",
 			        "hard-filter-min-ram",
 			        "hard-filter-min-cpu",

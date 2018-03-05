@@ -5,14 +5,13 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 /*
  * test-allocator.js: Tests for server-selection endpoint.
  */
 
-var http    = require('http');
 var restify = require('restify');
 
 
@@ -23,9 +22,10 @@ var client;
 
 var allocData = {
     vm: {
-        vm_uuid: '7beee9e1-3488-4696-8a93-6403372bc150',
+        brand: 'joyent',
+        owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb',
         ram: 128,
-        owner_uuid: 'e1f0e74c-9f11-4d80-b6d1-74dcf1f5aafb'
+        vm_uuid: '7beee9e1-3488-4696-8a93-6403372bc150'
     },
     image: {},
     package: {
