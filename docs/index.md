@@ -175,6 +175,10 @@ Use it as so:
                     -X POST \
                     -d '{ "datacenter_name": "foo" }'
 
+# Metrics
+
+CNAPI exposes metrics via [node-triton-metrics](https://github.com/joyent/node-triton-metrics) on `http://<ADMIN_IP>:8881/metrics.`
+
 
 # Heartbeats
 

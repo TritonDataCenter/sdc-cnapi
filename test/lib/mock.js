@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2017, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 var async = require('async');
@@ -14,6 +14,25 @@ var path = require('path');
 var App = require('../../lib/app');
 
 var configFilename = path.join(__dirname, '..', '..', 'config', 'test.json');
+var mockedMetricsManager = {
+    collectRestifyMetrics: function _collectRestifyMetrics() {}
+};
+
+var MockLogger = {
+    child: function _child() {
+        return MockLogger;
+    },
+    debug: function _debug() {
+    },
+    error: function _error() {
+    },
+    info: function _info() {
+    },
+    trace: function _trace() {
+    },
+    warn: function _warn() {
+    }
+};
 
 
 /**
@@ -207,6 +226,9 @@ function newApp(callback) {
                 amqp: {
                     host: 'localhost'
                 }
+            }, {
+                log: MockLogger,
+                metricsManager: mockedMetricsManager
             });
             app.setMoray(moray);
             app.setWorkflow(wf);

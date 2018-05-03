@@ -1,7 +1,11 @@
 {
 	"logLevel": "info",
 	"datacenter_name": "{{{datacenter_name}}}",
+	"adminIp": "{{auto.ADMIN_IP}}",
 	"adminUuid": "{{{ufds_admin_uuid}}}",
+	"instanceUuid": "{{auto.ZONENAME}}",
+	"serviceName": "{{SERVICE_NAME}}",
+	"serverUuid": "{{auto.SERVER_UUID}}",
 {{#no_rabbit}}
 	"useCnAgent": true,
 {{/no_rabbit}}
