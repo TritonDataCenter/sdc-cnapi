@@ -182,6 +182,8 @@ CNAPI exposes metrics via [node-triton-metrics](https://github.com/joyent/node-t
 
 # Heartbeats
 
+XXX TODO: rewrite this
+
 Each server is populated with services which allow the headnode to monitor
 usage and interact with the compute nodes in general. One of these is the
 `cn-agent` agent, its responsibility is to execute tasks on the server in
@@ -511,7 +513,7 @@ A CNAPI server record looks like the following
 | **hostname**                         | *String*         | Hostname of server if any                                                  |
 | **kernel_flags**                     |                  |
 | **last_boot**                        | *ISODate String* | Time of last boot
-| **last_heartbeat**                   |                  | Timestamp indicating last-received heartbeat from compute node
+| **last_heartbeat**                   |                  | Timestamp indicating last-received heartbeat from compute node *DEPRECATED**
 | **memory_arc_bytes**                 |                  |
 | **memory_available_bytes**           |                  |
 | **memory_provisionable_bytes**       |                  |
