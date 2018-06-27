@@ -220,7 +220,7 @@ objects into moray.
 A counter indicating how many times there were Etag failures putting
 cnapi\_servers objects into moray because the data changed between get and put.
 
-## reconciler_server_failures_total
+## reconciler_server_put_failures_total
 
 A counter indicating the total number of putObject calls to cnapi\_servers
 have failed.
