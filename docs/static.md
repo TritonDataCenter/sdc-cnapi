@@ -145,26 +145,100 @@ Use it as so:
                     -d '{ "datacenter_name": "foo" }'
 
 
+# Metrics
+
+CNAPI exposes metrics via [node-triton-metrics](https://github.com/joyent/node-triton-metrics) on `http://<ADMIN_IP>:8881/metrics.`
+
 # Heartbeats
 
-Each server is populated with services which allow the headnode to monitor
-usage and interact with the compute nodes in general. One of these is the
-`cn-agent` agent, its responsibility is to execute tasks on the server in
-addition to periodically posting server usage and information to the headnode.
-CNAPI in turn uses these heartbeat events to determine whether a compute node
-is running.
+After setup, each server is populated with agents which allow the Triton
+services to monitor and perform actions on thes servers. One of these agents is
+`cn-agent`, its responsibility is to execute tasks on the server and to
+periodically post server usage and information to CNAPI. CNAPI in turn uses
+these heartbeat events to determine whether a server is running.
 
-If a compute node is not setup (and therefore has no agents besides Ur), CNAPI
-uses the frequency of the sysinfo messages sent by Ur.
+Every time CNAPI receives a heartbeat via POST to
+`/servers/:uuid/events/heartbeat`, CNAPI updates its in-memory store which maps
+server\_uuid to last\_heartbeat, setting the value to the current time.
 
-Server status, stored in the `status` property on `/server` entries, is
-calculated based on the time of the last received heartbeat (corresponding to
-the `last_heartbeat` property) and can hold the values "running" or "unknown".
-These heartbeat requests originate on the `cn-agent` running on each setup
-compute node. Every time a CNAPI instance receives a heartbeat message from a
-compute node, it refreshes a timeout corresponding to 2x the heartbeat period.
-If a heartbeat is not received again before this timeout expires, the server is
-marked as having `status` "uknown".
+Every `HEARTBEAT_RECONCILIATION_PERIOD_SECONDS` (currently 5) seconds, CNAPI
+will check the heartbeats stored in its in-memory store and for each server:
+
+ * If the `last_heartbeat` is not stale (more on this below), it does nothing
+   for this server.
+
+ * If CNAPI has not written data for this server before, it tries to add/update
+   an entry to the `cnapi_status` bucket in moray. If successful, it will also
+   try to update the server's `status` property to `running`.
+
+ * If the `last_heartbeat` is stale, it tries to update the `cnapi_status`
+   bucket in moray with the last last\_heartbeat value this CNAPI has seen.
+   If the `cnapi_status` entry is updated, the server's `status` it also
+   attempts to set the `status` property to `unknown` for this server.
+
+To determine whether a heartbeat is "stale", CNAPI compares the last\_heartbeat
+against the current time. If the last heartbeat is more than
+`HEARTBEAT_LIFETIME_SECONDS` seconds old, the heartbeat is considered stale.
+The process that runs periodically to check heartbeats is called the reconciler.
+
+Any time CNAPI writes to the `cnapi_status` bucket, it also includes the
+`cnapi_instance` property identifying the CNAPI instance in which the value was
+observed. This way, if there are multiple CNAPI's, it is possible to determine
+which CNAPI has last received heartbeats for a given CN.
+
+There are a few artedi metrics that are exposed related to heartbeating. These
+will be available when polling the /metrics endpoint with prometheus. The
+available metrics are:
+
+## heartbeating_servers_count
+
+A gauge indicating how many servers have recently (within the heartbeat
+lifetime) been heartbeating to this server.
+
+## reconciler_new_heartbeaters_total
+
+A counter that indicates how many times this CNAPI has seen a heartbeat from a
+new server, or a server that it had forgotten (e.g. because it went stale).
+
+## reconciler_stale_heartbeaters_total
+
+A counter that indicates the number of times CNAPI noticed that a server had not
+heartbeated recently and the last_heartbeat was considered stale.
+
+## reconciler_usurped_heartbeaters_total
+
+A counter that indicates the of times CNAPI went to update cnapi\_status but
+found that another server had updated it more recently.
+
+## reconciler_server_put_total
+
+A counter indicating the number of times CNAPI attempted to put cnapi\_servers
+objects into moray.
+
+## reconciler_server_put_etag_failures_total
+
+A counter indicating how many times there were Etag failures putting
+cnapi\_servers objects into moray because the data changed between get and put.
+
+## reconciler_server_put_failures_total
+
+A counter indicating the total number of putObject calls to cnapi\_servers
+have failed.
+
+## reconciler_status_put_total
+
+A counter indicating the number of times CNAPI attempted to put cnapi\_status
+objects into moray.
+
+## reconciler_status_put_etag_failures_total
+
+A counter indicating how many times there were Etag failures putting
+cnapi\_status objects into moray because the data changed between get and put.
+
+## reconciler_status_failures_total
+
+A counter indicating the total number of putObject calls to cnapi\_status
+have failed.
 
 
 # Resetting to Factory Defaults
@@ -476,7 +550,7 @@ A CNAPI server record looks like the following
 | **hostname**                         | *String*         | Hostname of server if any                                                  |
 | **kernel_flags**                     |                  |
 | **last_boot**                        | *ISODate String* | Time of last boot
-| **last_heartbeat**                   |                  | Timestamp indicating last-received heartbeat from compute node
+| **last_heartbeat**                   |                  | Timestamp indicating last-received heartbeat from compute node *DEPRECATED*
 | **memory_arc_bytes**                 |                  |
 | **memory_available_bytes**           |                  |
 | **memory_provisionable_bytes**       |                  |
