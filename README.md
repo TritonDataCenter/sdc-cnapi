@@ -44,3 +44,9 @@ The CNAPI_IP environment variable specifies the URL at which to point the test
 suite.  For example, this would test CNAPI installed on bh1-kvm6:
 
     CNAPI_IP=10.2.206.13 make test
+
+To test on a deployed CNAPI where the admin network is not directly accessible
+from your workspace, first ensure your changes are applied (either via `sdcadm`
+or the `tools/rsync-to` script) and then run:
+
+    COAL=root@<headnode external IP> make test-coal
