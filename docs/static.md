@@ -152,7 +152,7 @@ CNAPI exposes metrics via [node-triton-metrics](https://github.com/joyent/node-t
 # Heartbeats
 
 After setup, each server is populated with agents which allow the Triton
-services to monitor and perform actions on thes servers. One of these agents is
+services to monitor and perform actions on these servers. One of these agents is
 `cn-agent`, its responsibility is to execute tasks on the server and to
 periodically post server usage and information to CNAPI. CNAPI in turn uses
 these heartbeat events to determine whether a server is running.
@@ -167,9 +167,9 @@ will check the heartbeats stored in its in-memory store and for each server:
  * If the `last_heartbeat` is not stale (more on this below), it does nothing
    for this server.
 
- * If CNAPI has not written data for this server before, it tries to add/update
-   an entry to the `cnapi_status` bucket in moray. If successful, it will also
-   try to update the server's `status` property to `running`.
+ * If CNAPI has not previously written data for this server, it tries to
+   add/update an entry to the `cnapi_status` bucket in moray. If successful, it
+   will also try to update the server's `status` property to `running`.
 
  * If the `last_heartbeat` is stale, it tries to update the `cnapi_status`
    bucket in moray with the last last\_heartbeat value this CNAPI has seen.
@@ -193,7 +193,7 @@ available metrics are:
 ## heartbeating_servers_count
 
 A gauge indicating how many servers have recently (within the heartbeat
-lifetime) been heartbeating to this server.
+lifetime) heartbeated to this server.
 
 ## reconciler_new_heartbeaters_total
 
