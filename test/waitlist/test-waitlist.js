@@ -132,6 +132,7 @@ function testCreateTicket(test) {
             }
 
             function onForEachEnd(err) {
+                console.dir(queues);
                 test.equal(queues[0].length, 1);
                 test.equal(queues[1].length, 2);
                 test.equal(queues[0].length, 1);
@@ -214,31 +215,32 @@ function testCreateTicket(test) {
     });
 }
 
+function testCreateWaitDeleteTicket(test) {
+    var scope = 'test-create-wait-delete-ticket';
+    var id = '123';
 
-function testCreateWaitReleaseTicket(test) {
-    var expireTimeSeconds = 3;
-    var expireTimeSeconds2 = 4;
+    var expires_at = '3000';
+
     var ticketPayload = {
-        scope: 'test-create-wait-release-ticket',
-        id: '123',
-        expires_at: (
-            new Date((new Date().valueOf()) +
-                      expireTimeSeconds * 1000)).toISOString()
+        scope: scope,
+        id: id,
+        expires_at: expires_at,
+        extra: { foo: 1 }
     };
 
     var ticketPayload2 = {
-        scope: 'test-create-wait-release-ticket',
-        id: '123',
-        expires_at: (
-            new Date((new Date().valueOf()) +
-                      expireTimeSeconds2 * 1000)).toISOString()
+        scope: 'test-create-wait-delete-ticket',
+        id: id,
+        expires_at: expires_at,
+        extra: { foo: 2 }
     };
 
     var ticket;
     var ticket2;
 
     async.waterfall([
-        function (wfcb) {
+        // create first ticket
+        function (next) {
             client.post(wlurl, ticketPayload, function (err, req, res, t) {
                 test.deepEqual(err, null);
                 test.equal(
@@ -247,10 +249,11 @@ function testCreateWaitReleaseTicket(test) {
                 test.ok(t, 'got an ticket');
                 test.ok(t.uuid, 'got a ticket uuid');
 
-                wfcb();
+                next(err);
             });
         },
-        function (wfcb) {
+        // create second ticket
+        function (next) {
             client.post(wlurl, ticketPayload2, function (err, req, res, t) {
                 test.deepEqual(err, null);
                 test.equal(
@@ -259,55 +262,61 @@ function testCreateWaitReleaseTicket(test) {
                 test.ok(t, 'got an ticket');
                 test.ok(t.uuid, 'got a ticket uuid');
 
-                wfcb();
+                next(err);
             });
         },
-        function (wfcb) {
-            setTimeout(function () {
-                wfcb();
-            }, 1000);
-        },
-        function (wfcb) {
+        // ensure queue looks ok
+        function (next) {
             client.get(wlurl, function (err, req, res, waitlist) {
-                test.equal(err, null, 'valid response from GET /servers');
+                test.deepEqual(err, null);
                 test.ok(res, 'got a response');
                 test.equal(res.statusCode, 200, 'GET waitlist returned 200');
                 test.ok(waitlist.length);
 
-                ticket = waitlist[1];
-                ticket2 = waitlist[2];
+                ticket = waitlist[0];
+                ticket2 = waitlist[1];
 
+                console.dir(waitlist);
+
+                test.deepEqual(ticket.extra, ticketPayload.extra,
+                    'ticket1 extra should match');
+                test.deepEqual(ticket2.extra, ticketPayload2.extra,
+                    'ticket2 extra should match');
                 test.deepEqual(ticket.status, 'active');
                 test.deepEqual(ticket2.status, 'queued');
 
                 test.ok(ticket);
 
-                wfcb();
+                next();
             });
         },
-        function (wfcb) {
+        function (next) {
+            /*
+             * In parallel:
+             *     - wait for the second ticket to be active
+             *     - delete the first ticket
+             *
+             *  Then check the second ticket becomes active.
+             */
+
+            var waitUrl = sprintf('/tickets/%s/wait', ticket2.uuid);
+            var delUrl = sprintf('/tickets/%s', ticket.uuid);
+
+            process.nextTick(function () {
+                console.log('waiting');
+                client.get(waitUrl, function (err, req, res) {
+                    test.deepEqual(err, null);
+                    next(err);
+                });
+            });
+
+
             setTimeout(function () {
-                wfcb();
-            }, expireTimeSeconds2 * 1000);
-        },
-        function (wfcb) {
-            client.get(wlurl, function (err, req, res, waitlist) {
-                test.equal(err, null, 'valid response from GET /servers');
-                test.ok(res, 'got a response');
-                test.equal(res.statusCode, 200, 'GET waitlist returned 200');
-                test.ok(waitlist.length);
-
-                ticket = waitlist[1];
-                ticket2 = waitlist[2];
-                test.ok(ticket);
-
-                wfcb();
-            });
-        },
-        function (wfcb) {
-            test.deepEqual(ticket.status, 'expired');
-//             test.deepEqual(ticket2.status, 'active');
-            wfcb();
+                console.log('deleting');
+                client.del(delUrl, function (err, req, res) {
+                    test.deepEqual(err, null);
+                });
+            }, 2000);
         }
     ],
     function (error) {
@@ -316,41 +325,116 @@ function testCreateWaitReleaseTicket(test) {
     });
 }
 
-function testUpdateTicket(test) {
-    test.expect(4);
 
-//     var date;
-    var ticketurl = sprintf('%s/%s', wlurl, ticketuuid);
+function testCreateWaitReleaseTicket(test) {
+    var scope = 'test-create-wait-release-ticket';
+    var id = '123';
+
+    var expires_at = '3000';
+
+    var ticketPayload = {
+        scope: scope,
+        id: id,
+        expires_at: expires_at,
+        extra: { foo: 1 }
+    };
+
+    var ticketPayload2 = {
+        scope: 'test-create-wait-release-ticket',
+        id: id,
+        expires_at: expires_at,
+        extra: { foo: 2 }
+    };
+
+    var ticket;
+    var ticket2;
 
     async.waterfall([
-        function (wfcb) {
-            client.get(ticketurl, function (err, req, res, ticket) {
-                test.equal(err, null, 'valid response from GET /servers');
+        // create first ticket
+        function (next) {
+            client.post(wlurl, ticketPayload, function (err, req, res, t) {
+                test.deepEqual(err, null);
+                test.equal(
+                    res.statusCode, 202, 'POST waitlist ticket returned 202');
                 test.ok(res, 'got a response');
-                test.equal(res.statusCode, 200, 'GET waitlist returned 200');
-                test.ok(ticket);
-                wfcb();
+                test.ok(t, 'got an ticket');
+                test.ok(t.uuid, 'got a ticket uuid');
+
+                next(err);
             });
         },
-        function (wfcb) {
-//             client.post(ticketurl, function (err, req, res, ticket) {
-//                 test.equal(err, null, 'valid response from GET /servers');
-//                 test.ok(res, 'got a response');
-//                 test.equal(res.statusCode, 200, 'GET waitlist returned 200');
-//                 test.ok(waitlist);
-//                 date = wa
-//                 test.done();
-//             });
-            wfcb();
+        // create second ticket
+        function (next) {
+            client.post(wlurl, ticketPayload2, function (err, req, res, t) {
+                test.deepEqual(err, null);
+                test.equal(
+                    res.statusCode, 202, 'POST waitlist ticket returned 202');
+                test.ok(res, 'got a response');
+                test.ok(t, 'got an ticket');
+                test.ok(t.uuid, 'got a ticket uuid');
+
+                next(err);
+            });
         },
-        function (wfcb) {
-            wfcb();
+        // ensure queue looks ok
+        function (next) {
+            client.get(wlurl, function (err, req, res, waitlist) {
+                test.deepEqual(err, null);
+                test.ok(res, 'got a response');
+                test.equal(res.statusCode, 200, 'GET waitlist returned 200');
+                test.ok(waitlist.length);
+
+                ticket = waitlist[0];
+                ticket2 = waitlist[1];
+
+                console.dir(waitlist);
+
+                test.deepEqual(ticket.extra, ticketPayload.extra,
+                    'ticket1 extra should match');
+                test.deepEqual(ticket2.extra, ticketPayload2.extra,
+                    'ticket2 extra should match');
+                test.deepEqual(ticket.status, 'active');
+                test.deepEqual(ticket2.status, 'queued');
+
+                test.ok(ticket);
+
+                next();
+            });
+        },
+        function (next) {
+            /*
+             * In parallel:
+             *     - wait for the second ticket to be active
+             *     - release the first ticket
+             *
+             *  Then check the second ticket becomes active.
+             */
+
+            var waitUrl = sprintf('/tickets/%s/wait', ticket2.uuid);
+            var relUrl = sprintf('/tickets/%s/release', ticket.uuid);
+
+            process.nextTick(function () {
+                console.log('waiting');
+                client.get(waitUrl, function (err, req, res) {
+                    test.deepEqual(err, null);
+                    next(err);
+                });
+            });
+
+            setTimeout(function () {
+                console.log('releasing');
+                client.put(relUrl, function (err, req, res) {
+                    test.deepEqual(err, null);
+                });
+            }, 2000);
         }
     ],
     function (error) {
+        test.equal(error, null);
         test.done();
     });
 }
+
 
 
 /**
@@ -688,5 +772,7 @@ module.exports = {
     'limit, offset parameter validation': testLimitOffsetValidation,
     'list from server with paging': testFetchTicketsWithPaging,
     'delete from server with over 1000 results':
-        testDeleteOver1000Tickets
+        testDeleteOver1000Tickets,
+    'create, wait, release ticket': testCreateWaitReleaseTicket,
+    'create, wait, delete ticket': testCreateWaitDeleteTicket
 };

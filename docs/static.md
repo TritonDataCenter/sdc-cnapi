@@ -502,29 +502,32 @@ A CNAPI server record looks like the following
 | **uuid**                             | *String*         | The server's unique identifier                                             |
 | **vms**                              | *Object*         | A object representing all the vms on server                                |
 
+
 # Waitlist
 
-When executing jobs on a server, such vm provision, start, stop, reboot, and
-zfs dataset import it is possible that concurrent jobs may interfere with each
-other.
+Certain actions on datacenter resources require serialization of execution to
+prevent undesireable or undefined results. Such actions include – but are not
+limited to – DAPI allocation, VM lifecycle requests (creation, start, stop,
+reboot, destroy), and dataset import. Waitlist should be used on any workflow
+job where it is possible that concurrent jobs may interfere with each other if
+actions on the compute node are not deconflicted by a system such as this.
 
-To prevent this, a mechanism is required that will queue jobs based on the
-type of resource they're acting on. Jobs should be grouped by "scope" and
-serialized such that a server can will only execute be executing one job per
-scope group at a time. In this way it would be possible to enforce that only
-one job be active on a vm on a server, but would still allow jobs to be run
-against another vm. Any jobs that come in after one is active will be queued
-and dispatch as the previous job finishes.
+Jobs should be grouped by the combination of [server_uuid, scope, id] and
+serialized such that a server will only be executing one job per combination at
+a time. In this way it would be possible to enforce that only one job be active
+on a particular vm on a server, but would still allow jobs to be run against
+another vm. Any jobs that come in after one is active will be queued and
+dispatched as preceding jobs finish.
 
 This system allows for concurrent jobs where the scoping has been set such
 that two jobs will not interfere with each other. For instance, two reboot
 jobs for two different vms may be run at the same time, however, two reboots
 for the same vm will happen in sequential order.
 
-Use of the waitlist is a deliberate process. It is up to the one initiating a job
-to create a ticket and wait for it to become active. As such, it is possible
-to not use the waitlist at all. However, one then runs the risk of concurrent
-jobs trampling each other.
+Use of waitlist does not happen implicitly in workflow jobs. It is up to the
+workflow job to create a ticket and wait for it to become active. As such, it
+is possible to not use the waitlist at all. However, one then runs the risk of
+concurrent jobs trampling each other.
 
 Waitlist tickets are serialized and dispatched one by one according to their
 `server_uuid`, `scope` and `id` parameters.
@@ -537,12 +540,13 @@ performed on a resource identified by `id` of the type given by `scope`.
 The basic process is as follows: a job starts and it first acquires a ticket
 from CNAPI for that particular server and passes in a `scope` and an `id`.
 
-Because waitlist tickets are serviced in order, once a ticket has been created
-the next step is to wait for it to become active. This will happen if there
-are no tickets for that scope/id combination, or if waited upon and all
-preceding tickets are resolved. To find out whether a ticket has become
-'active' (ie indicating the job may proceed and do its work), the job may poll
-the ticket values, or use the blocking `wait` endpoint for that ticket.
+Because waitlist tickets are serviced in creation order, once a ticket has been
+created the next step is to wait for it to become active. Tickets become active
+once all extant tickets for that server/scope/id are finished or expired.
+
+To find out whether a ticket has become 'active' (i.e. indicating the job may
+proceed and do its work), the job may poll the ticket values, or use the
+blocking `wait` endpoint for that ticket.
 
 Once the work has been completed, it is up to the job to "release" the ticket,
 so that subsequent tickets for that scope/id combination can be serviced.
@@ -617,6 +621,9 @@ the results list if tickets are deleted.
 
 
 ### Release a ticket
+
+Releasing a ticket allows subsequent tickets (if any) queued on that
+server/scope/id to become active.
 
     -bash-4.1# sdc-cnapi /tickets/bb5038c2-7498-4e07-b919-df072c76d2dc/release -X PUT
     HTTP/1.1 204 No Content
