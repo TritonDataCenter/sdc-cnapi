@@ -54,8 +54,7 @@ common.loadConfig(configFilename, function (error, config) {
     });
 
     metricsManager.createRestifyMetrics();
-    metricsManager.createGCMetrics();
-    metricsManager.createNodeMetrics();
+    metricsManager.createNodejsMetrics();
     metricsManager.listen(function metricsServerStarted() {
         app = new App(config, {
             log: cnapiLog,
