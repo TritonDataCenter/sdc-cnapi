@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2014, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 var async = require('async');
@@ -67,12 +67,16 @@ function testListServersAll(test) {
                 {
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                     ram: '12345',
-                    sysinfo: { setup: true }
+                    sysinfo: { setup: true },
+                    last_heartbeat: null,
+                    status: 'unknown'
                 },
                 {
                     uuid: '6e8eb888-f8e0-11e1-b1a8-5f74056f9365',
                     ram: '56789',
-                    sysinfo: { setup: true }
+                    sysinfo: { setup: true },
+                    last_heartbeat: null,
+                    status: 'unknown'
                 }
             ];
 
@@ -127,12 +131,16 @@ function testListServersByUuids(test) {
                 {
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                     ram: '12345',
-                    sysinfo: { setup: true }
+                    sysinfo: { setup: true },
+                    last_heartbeat: null,
+                    status: 'unknown'
                 },
                 {
                     uuid: 'b31695ce-f8e6-11e1-b252-fb742866284b',
                     ram: '56789',
-                    sysinfo: { setup: true }
+                    sysinfo: { setup: true },
+                    last_heartbeat: null,
+                    status: 'unknown'
                 }
             ];
 
@@ -204,12 +212,16 @@ function testListServersSetup(test) {
                 {
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                     ram: '12345',
-                    sysinfo: { setup: true }
+                    sysinfo: { setup: true },
+                    last_heartbeat: null,
+                    status: 'unknown'
                 },
                 {
                     uuid: '6e8eb888-f8e0-11e1-b1a8-5f74056f9365',
                     ram: '56789',
-                    sysinfo: { setup: true }
+                    sysinfo: { setup: true },
+                    last_heartbeat: null,
+                    status: 'unknown'
                 }
             ];
 

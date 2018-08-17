@@ -15,7 +15,11 @@ var App = require('../../lib/app');
 
 var configFilename = path.join(__dirname, '..', '..', 'config', 'test.json');
 var mockedMetricsManager = {
-    collectRestifyMetrics: function _collectRestifyMetrics() {}
+    collectRestifyMetrics: function _collectRestifyMetrics() {},
+    collector: {
+        gauge: function _createGauge(opts) { return {}; }
+    },
+    addPreCollectFunc: function _addPreCollectFunc() {}
 };
 
 var MockLogger = {
