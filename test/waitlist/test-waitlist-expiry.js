@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2015, Joyent, Inc.
+ * Copyright (c) 2018, Joyent, Inc.
  */
 
 /*
@@ -230,10 +230,96 @@ function testExpireSingleTicketStartNext(test) {
     });
 }
 
+
+/*
+ * Test a situation in which we have an active ticket and a subsequent ticket,
+ * which is queued, expires. We should be able to wait on the queued ticket and
+ * have our callback called when the ticket expires.
+ */
+
+function testExpireQueuedTicket(test) {
+    test.expect(16);
+    var expireTimeSeconds0 = 600;
+    var expireTimeSeconds1 = 2;
+    var ticket1;
+
+    // This ticket will be active first.
+    var ticketPayload0 = {
+        scope: 'test-expire-queued',
+        id: '123',
+        expires_at: (
+            new Date((new Date().valueOf()) +
+                      expireTimeSeconds0 * 1000)).toISOString()
+    };
+
+    // This ticket will expire while queued.
+    var ticketPayload1 = {
+        scope: 'test-expire-queued',
+        id: '123',
+        expires_at: (
+            new Date((new Date().valueOf()) +
+                      expireTimeSeconds1 * 1000)).toISOString()
+    };
+
+    async.waterfall([
+        function (next) {
+            client.post(wlurl, ticketPayload0, function (err, req, res, t) {
+                test.deepEqual(err, null);
+                test.equal(res.statusCode, 202,
+                           'POST waitlist ticket returned 202');
+                test.ok(res, 'got a response');
+                test.ok(t, 'got an ticket');
+                test.ok(t.uuid, 'got a ticket uuid');
+
+                next();
+            });
+        },
+        function (next) {
+            client.post(wlurl, ticketPayload1, function (err, req, res, t) {
+                ticket1 = t;
+                test.deepEqual(err, null);
+                test.equal(res.statusCode, 202,
+                           'POST waitlist ticket returned 202');
+                test.ok(res, 'got a response');
+                test.ok(t, 'got an ticket');
+                ticket1 = t;
+                test.ok(t.uuid, 'got a ticket uuid');
+
+                next();
+            });
+        },
+        function (next) {
+            var waiturl = sprintf('/tickets/%s/wait', ticket1.uuid);
+            var timeout = setTimeout(function () {
+                var errMsg = 'cnapi got stuck';
+                test.ok(false, errMsg);
+                next(new Error(errMsg));
+            }, 5000);
+
+            client.get(waiturl, getcb);
+            function getcb(err, req, res, v) {
+                clearTimeout(timeout);
+                test.ok(err, 'expected an error');
+                test.equal(err.message, 'ticket has expired');
+                test.equal(err.restCode, 'InternalError');
+                test.equal(err.statusCode, 500);
+                test.ok(true);
+                next();
+            }
+        }
+    ],
+    function (error) {
+        test.equal(error, null);
+        test.done();
+    });
+}
+
 module.exports = {
     setUp: setup,
     tearDown: teardown,
     'expire single ticket': testExpireSingleTicket,
     'create two tickets expire first, start next':
-        testExpireSingleTicketStartNext
+        testExpireSingleTicketStartNext,
+    'create two tickets, second one expires':
+        testExpireQueuedTicket
 };
