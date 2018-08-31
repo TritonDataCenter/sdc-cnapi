@@ -254,6 +254,96 @@ function testUpdateServer(t) {
     });
 }
 
+/*
+ * Test that we do not succumb to TRITON-740 while parsing
+ * overprovision_ratios.
+ */
+function testUpdateServerOverprovisionRatios(t) {
+    var uuid;
+    var origRatios;
+
+    async.waterfall([
+        function (next) {
+            client.get('/servers?headnode=true&extras=all',
+                       function (err, req, res, body) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+
+                uuid = body[0].uuid;
+                origRatios = body[0].overprovision_ratios;
+
+                next();
+            });
+        },
+        // Explicitly override the default value
+        function (next) {
+            var changes = {
+                overprovision_ratios: { ram: 2 }
+            };
+
+            client.post('/servers/' + uuid, changes,
+                        function (err, req, res, body) {
+                next(err);
+            });
+        },
+        function (next) {
+            client.get('/servers/' + uuid, function (err, req, res, body) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+
+                // DAPI overrides these values
+                t.equal(body.overprovision_ratios.ram, 1,
+                    'overprovision_ratios.ram 1');
+                next();
+            });
+        },
+
+        function (next) {
+            client.get('/servers?headnode=true&extras=all',
+            function (err, req, res, body) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                next();
+            });
+        },
+
+        // Reset overprovision_ratio back to its original value.
+        function (next) {
+            var changes = {
+                overprovision_ratios: origRatios
+            };
+
+            client.post('/servers/' + uuid, changes,
+            function (err, req, res, body) {
+                next(err);
+            });
+        },
+
+        // Confirm values were reset.
+        function (next) {
+            client.get('/servers/' + uuid, function (err, req, res, body) {
+                if (err) {
+                    next(err);
+                    return;
+                }
+                t.deepEqual(body.overprovision_ratios, origRatios,
+                    'ratios should match');
+
+                next();
+            });
+        }
+    ], function (err) {
+        t.ifError(err);
+        t.done();
+    });
+}
+
 //
 // This test will:
 //
@@ -704,5 +794,6 @@ module.exports = {
     'list servers with all 2': testListServersWithAll2,
     'list servers using unknown parameter': testListServersUnknownParam,
     'get server': testGetServer,
-    'update server': testUpdateServer
+    'update server': testUpdateServer,
+    'update server overprovision ratios': testUpdateServerOverprovisionRatios
 };
