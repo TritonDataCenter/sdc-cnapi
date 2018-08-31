@@ -1,7 +1,7 @@
 {
   "name": "cnapi",
   "description": "SmartDataCenter Compute Node API",
-  "version": "1.11.5",
+  "version": "1.12.0",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
@@ -28,7 +28,7 @@
     "vasync": "1.6.4",
     "verror": "1.9.0",
     "wf-client": "0.2.1",
-    "wf-shared": "git+https://github.com/joyent/sdc-wf-shared.git#9aed2e8"
+    "wf-shared": "git+https://github.com/joyent/sdc-wf-shared.git#f1f3453"
   },
   "devDependencies": {
     "ejs": "^2.4.1",
