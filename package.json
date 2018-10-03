@@ -1,7 +1,7 @@
 {
   "name": "cnapi",
   "description": "SmartDataCenter Compute Node API",
-  "version": "1.12.2",
+  "version": "1.13.0",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
@@ -9,7 +9,7 @@
     "assert-plus": "1.0.0",
     "async": "1.5.2",
     "bunyan": "1.8.5",
-    "dapi": "git+https://github.com/joyent/sdc-designation.git#45a8d7c367300d3003838a4e0241915cf89fe3f9",
+    "dapi": "git+https://github.com/joyent/sdc-designation.git#grr-TRITON-822",
     "deep-equal": "1.0.1",
     "dox": "0.9.0",
     "effluent-logger": "git+https://github.com/joshwilsdon/effluent-logger.git#d662f161a07f94045ad2afb45442931511c40e51",
