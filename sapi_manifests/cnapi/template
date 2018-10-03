@@ -81,6 +81,7 @@
 			"pipe", "hard-filter-setup",
 			        "hard-filter-running",
 			        "hard-filter-invalid-servers",
+			        "hard-filter-force-failure",
 			        "hard-filter-volumes-from",
 			        "hard-filter-reserved",
 			        "hard-filter-min-free-disk",
