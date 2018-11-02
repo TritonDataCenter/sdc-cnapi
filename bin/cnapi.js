@@ -62,7 +62,7 @@ common.loadConfig(configFilename, function (error, config) {
                         return true;
                     }),
                 labels: {
-                    buckets_version: 'cnapi.1'
+                    buckets_version: 'cnapi.2'
                 }
             }
         },
