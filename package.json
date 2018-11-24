@@ -1,7 +1,7 @@
 {
   "name": "cnapi",
   "description": "SmartDataCenter Compute Node API",
-  "version": "1.17.1",
+  "version": "1.18.0",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
