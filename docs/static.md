@@ -91,6 +91,7 @@ specialized circumstances in production.
 | **ALLOC_WEIGHT_UNIFORM_RANDOM**    | Float | 0.5   | Bias selection towards random CNs.                                           |
 | **ALLOC_WEIGHT_UNRESERVED_DISK**   | Float | 1.0   | Bias selection towards CNs with more unreserved disk.                        |
 | **ALLOC_WEIGHT_UNRESERVED_RAM**    | Float | 2.0   | Bias selection towards CNs with more unreserved memory.                      |
+| **FEATURE_USE_CNAGENT_COMMAND_EXECUTE** | Boolean | false | Experimental: Use cn-agent's command_execute function instead of Ur when available. |
 
 If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
 if the default value was specified. Be careful when changing from the default
@@ -127,6 +128,13 @@ and packages have had sane overprovision values set, after careful consideration
 of how the DC will be split up for the differing ratios. If in doubt, don't
 change the default.
 
+FEATURE_USE_CNAGENT_COMMAND_EXECUTE should only be set true if you want CNAPI to
+send CommandExecute requests to a CN via cn-agent's `command_execute` task when
+that is available (I.e. cn-agent is new enough). If this is false (the default)
+or if a CN does not have a new enough cn-agent to support `command_execute`, the
+CommandExecute will fall back to using Ur transparently. Enabling this is
+currently considered experimental as its backward compatibility has not been
+tested with the full spectrum of possible production scripts.
 
 ### Example
 
@@ -281,7 +289,12 @@ See the reference for the API for available VM endpoitns.
 
 
 
-# Remote Execution
+# Remote Execution (deprecated)
+
+*IMPORTANT: This functionality is deprecated and will be removed in a future
+release. It exists only for backward compatibility and should not be used for
+any new development. If you wish to execute commands on a CN, this should be
+done through a new cn-agent task, or a new agent.*
 
 CNAPI exposes a mechanism to allow remote execution of commands.
 

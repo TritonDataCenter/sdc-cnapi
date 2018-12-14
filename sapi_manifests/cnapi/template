@@ -6,9 +6,9 @@
 	"instanceUuid": "{{auto.ZONENAME}}",
 	"serviceName": "{{SERVICE_NAME}}",
 	"serverUuid": "{{auto.SERVER_UUID}}",
-{{#no_rabbit}}
-	"useCnAgent": true,
-{{/no_rabbit}}
+{{#FEATURE_USE_CNAGENT_COMMAND_EXECUTE}}
+	"useCnAgentCommandExecute": true,
+{{/FEATURE_USE_CNAGENT_COMMAND_EXECUTE}}
 	"amqp": {
 		"host": "{{{RABBITMQ_SERVICE}}}"
 	},
