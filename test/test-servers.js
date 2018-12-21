@@ -171,6 +171,17 @@ function testGetServer(t) {
 }
 
 
+function testGetDefaultServer(t) {
+    client.get('/servers/default', function (err, req, res, body) {
+        t.ifError(err);
+        t.equal(res.statusCode, '200',
+            'expecting default server with status code 200');
+        t.equal(body.uuid, 'default', 'default server uuid is "default"');
+        t.done();
+    });
+}
+
+
 function testUpdateServer(t) {
     var uuid;
     var oldRatio;
@@ -794,6 +805,7 @@ module.exports = {
     'list servers with all 2': testListServersWithAll2,
     'list servers using unknown parameter': testListServersUnknownParam,
     'get server': testGetServer,
+    'get default server': testGetDefaultServer,
     'update server': testUpdateServer,
     'update server overprovision ratios': testUpdateServerOverprovisionRatios
 };
