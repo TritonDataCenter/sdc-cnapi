@@ -10,7 +10,7 @@ markdown2extras: tables, code-friendly
 -->
 
 <!--
-    Copyright (c) 2018, Joyent, Inc.
+    Copyright (c) 2019, Joyent, Inc.
 -->
 
 <!--
@@ -1285,6 +1285,7 @@ Initiate the server setup process for a newly started server.
 | postsetup_script | String | Script to run after setup has completed                      |
 | hostname         | String | Hostname to set for the specified server                     |
 | disk_spares      | String | See `man disklayout` spares                                  |
+| disk_width       | String | See `man disklayout` width                                   |
 | disk_cache       | String | See `man disklayout` cache                                   |
 | disk_layout      | String | See `man disklayout` type      (single, mirror, raidz1, ...) |
 
