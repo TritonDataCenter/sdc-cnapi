@@ -612,7 +612,6 @@ A CNAPI server record looks like the following
 | **status**                           | *String*         | Either 'running' or 'unknown' based on how recently CNAPI has heard from server |
 | **sysinfo**                          | *Object*         | The last given sysinfo payload for server                                  |
 | **traits**                           | *Object*         |                                                                            |
-| **transport**                        | *String*         | The method via which CNAPI is received updates from CN's. (http or amqp)   |
 | **transitional_status**              | *String*         | Takes precedense over `status` when a server is undergoing a status change |
 | **unreserved_cpu**                   |                  |
 | **unreserved_disk**                  |                  |
@@ -1087,7 +1086,7 @@ parameter must be an array of objects. Those objects must have both the
 
 ## PlatformList (GET /platforms)
 
-Returns avaiable platform images in datacenter.
+Returns available platform images in datacenter.
 
 ### Inputs
 
