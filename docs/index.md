@@ -10,7 +10,7 @@ markdown2extras: tables, code-friendly
 -->
 
 <!--
-    Copyright (c) 2018, Joyent, Inc.
+    Copyright (c) 2019, Joyent, Inc.
 -->
 
 <!--
@@ -1456,6 +1456,22 @@ install and server will download and install package.
 | 200  | Ok    | Install task initiated successfully |
 | 500  | Error | Could not process request           |
 
+
+## ServerRefreshAgents (POST /servers/:server_uuid/refresh-agents)
+
+Makes cn-agent refresh the values for the agents setup on the server and
+post them back to CNAPI
+
+### Inputs
+
+None.
+
+### Responses
+
+| Code | Type  | Description                         |
+| ---- | ----- | ----------------------------------- |
+| 200  | Ok    | Install task initiated successfully |
+| 500  | Error | Could not process request           |
 
 
 # Virtual Machine API
