@@ -6,7 +6,7 @@
 #
 
 #
-# Copyright (c) 2014, Joyent, Inc.
+# Copyright (c) 2019, Joyent, Inc.
 #
 
 #
@@ -21,9 +21,7 @@ NODE=$1
 ROLE=cnapi
 
 if [[ -z "$ZONE" ]]; then
-    ZONE=$(ssh $NODE "/opt/smartdc/bin/sdc-vmapi /vms" 2>/dev/null \
-        | json -H -c "this.tags && this.tags.smartdc_role === '$ROLE'" \
-            -c 'this.state === "running"' 0.uuid)
+    ZONE=$(ssh $NODE "/usr/sbin/vmadm lookup -1 tags.smartdc_role=$ROLE state=running")
 fi
 echo "ZONE: $ZONE"
 

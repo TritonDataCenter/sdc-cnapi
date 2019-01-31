@@ -1457,6 +1457,27 @@ install and server will download and install package.
 | 500  | Error | Could not process request           |
 
 
+## ServerUninstallAgents (POST /servers/:server_uuid/uninstall-agents)
+
+Uninstall the given agents on the server.
+(Requires cn-agent v2.8.0 or later.)
+
+### Inputs
+
+| Param  | Type  | Description                                                                                                                                       |
+| ------ | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| agents | Array | The names of the agents to uninstall. Passing      "cn-agent" as an agent to remove results in undefined (and likely      destructive) behaviour. |
+
+
+### Responses
+
+| Code | Type  | Description                                                                  |
+| ---- | ----- | ---------------------------------------------------------------------------- |
+| 200  | Ok    | Uninstall task created successfully                                          |
+| 412  | Error | PreconditionFailed if the target server has a cn-agent      that is too old. |
+| 500  | Error | Could not process request                                                    |
+
+
 
 # Virtual Machine API
 
