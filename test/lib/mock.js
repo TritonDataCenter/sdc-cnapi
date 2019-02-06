@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 var async = require('async');
@@ -93,8 +93,20 @@ MockMoray.prototype.getObject = function (bucket, key, callback) {
 };
 
 
-MockMoray.prototype.putObject = function (bucket, key, value, callback) {
-    this.history.push(['putObject', bucket, key, value]);
+MockMoray.prototype.putObject =
+function (bucket, key, value, opts, callback) {
+    if (!callback) {
+        callback = opts;
+        opts = undefined;
+    }
+
+    var histItem = ['putObject', bucket, key, value];
+
+    if (opts) {
+        histItem.push(opts);
+    }
+
+    this.history.push(histItem);
     callback.apply(null, [ null ]);
     return this;
 };

@@ -5,10 +5,11 @@
  */
 
 /*
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 var async = require('async');
+var vasync = require('vasync');
 var util = require('util');
 
 var common = require('../../lib/common');
@@ -402,7 +403,8 @@ function testModifyServer(test) {
                     'putObject',
                     'cnapi_servers',
                     uuid,
-                    change
+                    change,
+                    {}
                 ],
             'moray command history');
 
@@ -410,6 +412,69 @@ function testModifyServer(test) {
                 moray.client.history[0][3].setup,
                 false,
                 'boot platform should match');
+            test.done();
+        });
+    });
+}
+
+function testModifyServerWithEtag(test) {
+    test.expect(7);
+
+    var uuid = uuids[0];
+    var etag = 'etag-1234';
+
+    mock.newApp(function (error, app, components) {
+        test.equal(error, null, 'should not encounter an error');
+
+        var moray = components.moray;
+        moray.client.when('getObject', [], { _etag: etag });
+        moray.client.when('putObject', []);
+
+        ModelServer.init(app);
+
+        var server = new ModelServer(uuids[0]);
+        var change = {
+            uuid: uuid,
+            setup: false
+        };
+
+        vasync.pipeline({ funcs: [
+            function doGetServer(_, next) {
+                server.getRaw(function (err) {
+                    test.ifError(err);
+                    test.equal(server.etag, etag);
+                    next();
+                });
+            },
+            function doModifyServer(_, next) {
+                server.modify(change, function (modifyError) {
+                    test.ifError(modifyError);
+                    next();
+                });
+            },
+            function doCheck(_, next) {
+                test.deepEqual(
+                    moray.client.history[0],
+                    [
+                        'getObject',
+                        'cnapi_servers',
+                        uuid
+                    ],
+                    'moray command history');
+                test.deepEqual(
+                    moray.client.history[1],
+                    [
+                        'putObject',
+                        'cnapi_servers',
+                        uuid,
+                        change,
+                        { etag: etag }
+                    ],
+                    'moray command history');
+                next();
+            }
+        ] },
+        function (err) {
             test.done();
         });
     });
@@ -496,7 +561,8 @@ function testSetBootParameters(test) {
                                     '-k': true,
                                     '-m': 'milestone=none'
                                 }
-                            }
+                            },
+                            {}
                         ],
                         'moray command history');
                         callback();
@@ -643,7 +709,8 @@ function testUpdateBootParameters(test) {
                                 sysinfo: { 'setup': true },
                                 default_console: 'serial',
                                 serial: 'ttyb'
-                            }
+                            },
+                            {}
                         ],
                         'moray command history');
                         callback();
@@ -708,6 +775,7 @@ module.exports = nodeunit.testCase({
     'delete a server':                        testDeleteServer,
     'reboot server':                          testRebootServer,
     'modify server':                          testModifyServer,
+    'modify server with etag':                testModifyServerWithEtag,
     'set server boot parameters':             testSetBootParameters,
     'update server boot parameters':          testUpdateBootParameters
 });
