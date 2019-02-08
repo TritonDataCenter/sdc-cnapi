@@ -1,6 +1,6 @@
 ---
 title: CNAPI (Compute Node API) Design
-apisections: Allocation API, Boot Parameters API, Compute Node Agent Tasks API, Miscellaneous API, Remote Execution API, Remote Execution API (deprecated), Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API (deprecated)
+apisections: Allocation API, Boot Parameters API, Compute Node Agent Tasks API, Miscellaneous API, Remote Execution API (deprecated), Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API (deprecated)
 markdown2extras: tables, code-friendly
 ---
 <!--
@@ -1098,29 +1098,6 @@ None.
 | Code | Type  | Description          |
 | ---- | ----- | -------------------- |
 | 200  | Array | The returned servers |
-
-
-
-# Remote Execution API
-
-## CommandExecute (POST /servers/:server_uuid/execute)
-
-Synchronously execute a command on the target server.
-
-### Inputs
-
-| Param  | Type   | Description                                             |
-| ------ | ------ | ------------------------------------------------------- |
-| args   | Array  | Array containing arguments to be passed in to command   |
-| env    | Object | Object containing environment variables to be passed in |
-| script | String | Script to be executed. Must have a shebang line         |
-
-
-### Responses
-
-| Code | Type | Description    |
-| ---- | ---- | -------------- |
-| 404  | None | No such server |
 
 
 
