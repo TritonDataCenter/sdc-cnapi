@@ -5,7 +5,7 @@
 -->
 
 <!--
-    Copyright (c) 2014, Joyent, Inc.
+    Copyright (c) 2019, Joyent, Inc.
 -->
 
 # CNAPI High Availability
@@ -28,9 +28,9 @@ faults.
 
 
 When any CNAPI instance starts up, it will connect to the `ur.cnapi` queue. It
-will then bind to this queue the routing keys, `ur.startup.#` and
-`ur.sysinfo.#`. When a compute node comes online, it will broadcast a message
-to a `ur.startup.#`.  Unsetup compute nodes will periodically emit `ur.sysinfo` messages to alert any
+will then bind to this queue the routing key `ur.sysinfo.#`. When a compute node
+comes online, it will broadcast a message to a `ur.sysinfo.#`.  Unsetup compute
+nodes will periodically emit `ur.sysinfo` messages after that to alert any
 listening CNAPI instances that the server exists, even though it may not yet
 have agents installed.
 
