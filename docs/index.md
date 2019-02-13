@@ -1119,12 +1119,13 @@ executed non-zero a 500 error will be returned.
 
 ### Inputs
 
-| Param  | Type    | Description                                                                |
-| ------ | ------- | -------------------------------------------------------------------------- |
-| args   | Array   | Array containing arguments to be passed in to command                      |
-| env    | Object  | Object containing environment variables to be passed in                    |
-| script | String  | Script to be executed. Must have a shebang line                            |
-| json   | Boolean | Whether to return results as JSON instead of just stdout (default = false) |
+| Param   | Type    | Description                                                                                                                                                  |
+| ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| args    | Array   | Array containing arguments to be passed in to command                                                                                                        |
+| env     | Object  | Object containing environment variables to be passed in                                                                                                      |
+| script  | String  | Script to be executed. Must have a shebang line                                                                                                              |
+| json    | Boolean | Whether to return results as JSON instead of just stdout (default = false)                                                                                   |
+| timeout | Integer | Number of ms to wait for command completion before killing task and returning (only supported when using cn-agent, See: FEATURE_USE_CNAGENT_COMMAND_EXECUTE) |
 
 
 ### Responses
