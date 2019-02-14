@@ -418,7 +418,7 @@ function testModifyServer(test) {
 }
 
 function testModifyServerWithEtag(test) {
-    test.expect(7);
+    test.expect(6);
 
     var uuid = uuids[0];
     var etag = 'etag-1234';
