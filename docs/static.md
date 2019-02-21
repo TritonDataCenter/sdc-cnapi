@@ -568,7 +568,6 @@ A CNAPI server record looks like the following
 | **memory_available_bytes**           |                  |
 | **memory_provisionable_bytes**       |                  |
 | **memory_total_bytes**               |                  |
-| **overprovision_ratio**              |                  |
 | **overprovision_ratios**             |                  |
 | **rack_identifier**                  |                  |
 | **ram**                              | *Number*         | Amount of ram                                                              |
