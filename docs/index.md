@@ -72,6 +72,7 @@ found in sapi_manifests/cnapi/template.
 | **dapi.changeDefaults**   | Object | -       | This provides some means to override VM allocation behaviour.       |
 | **dapi.changeDefaults.server_spread**        | String | -            | **DEPRECATED** How VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random)   |
 | **dapi.changeDefaults.filter_docker_min_platform** | String | -      | If present, minimum platform version useful for Docker instances.        |
+| **dapi.changeDefaults.filter_flexible_disk_min_platform** | String | - | If present, minimum platform version useful for instances with flexible disk sizing. |
 | **dapi.changeDefaults.filter_headnode**      | String | true         | Whether VMs cannot allocate on the headnode.                             |
 | **dapi.changeDefaults.filter_min_resources** | String | true         | Whether CPU/RAM/disk limits are ignored when allocating.                 |
 | **dapi.changeDefaults.filter_large_servers** | String | true         | Whether large servers are reserved for larger allocations.               |
