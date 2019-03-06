@@ -9,7 +9,9 @@
  */
 
 var async = require('async');
+var VError = require('verror');
 var common = require('../../lib/common');
+var EventEmitter = require('events');
 var path = require('path');
 var App = require('../../lib/app');
 
@@ -50,7 +52,7 @@ function MockMoray() {
     this.callbackValues = {
         putObject: [],
         findObjects: [],
-        getObjects: [],
+        getObject: [],
         delObject: []
     };
     this.reqs = [];
@@ -87,7 +89,15 @@ MockMoray.prototype._lastReq = function () {
 
 MockMoray.prototype.getObject = function (bucket, key, callback) {
     this.history.push(['getObject', bucket, key]);
+
     var val = this.callbackValues.getObject.pop();
+    if (val === undefined || val.value === null) {
+        callback(new VError({
+            name: 'ObjectNotFoundError'
+        }, 'Object was not found.'));
+        return;
+    }
+
     callback.apply(null, [ null, val ]);
     return this;
 };
@@ -100,14 +110,22 @@ function (bucket, key, value, opts, callback) {
         opts = undefined;
     }
 
+    var arg = null;
     var histItem = ['putObject', bucket, key, value];
+    var val = this.callbackValues.putObject.pop();
 
     if (opts) {
         histItem.push(opts);
     }
 
     this.history.push(histItem);
-    callback.apply(null, [ null ]);
+
+    if (val !== undefined) {
+        // if there's a value, it should be an error
+        arg = val;
+    }
+
+    callback.apply(null, [ arg ]);
     return this;
 };
 
@@ -122,7 +140,7 @@ MockMoray.prototype.delObject = function (bucket, key, callback) {
 MockMoray.prototype.findObjects = function (bucket, filter, opts) {
     var self = this;
     this.history.push(['findObjects', bucket, filter, opts]);
-    var req = new process.EventEmitter();
+    var req = new EventEmitter();
     this.reqs.push(req);
     var results = self.results.shift();
     process.nextTick(function () {
@@ -239,6 +257,7 @@ function newApp(callback) {
                 datacenter: config.datacenter_name,
                 cnapi: config.cnapi,
                 dapi: config.dapi,
+                napi: config.napi,
                 amqp: {
                     host: 'localhost'
                 }
