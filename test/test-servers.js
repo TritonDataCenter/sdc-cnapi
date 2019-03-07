@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright (c) 2019, Joyent, Inc.
  */
 
 /*
@@ -788,6 +788,15 @@ function vmAttrTypeEqual(t, vm, attr, exptype) {
 }
 
 function serverAttrTypeEqual(t, server, attr, exptype) {
+    // The unreserved_* fields are only added to servers when a provision
+    // happens. So it is perfectly fine for these to be undefined.
+    if (attr.match(/^unreserved_/) && server[attr] === undefined) {
+        t.ok(true, sprintf(
+            'server "%s" attribute "%s" is undefined (and that is ok)',
+            server.uuid,
+            attr));
+        return;
+    }
     t.equal(typeof (server[attr]), exptype,
         sprintf('ensure type of server "%s" attribute "%s" is "%s"',
             server.uuid, attr, exptype));

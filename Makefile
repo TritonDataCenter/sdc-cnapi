@@ -128,7 +128,6 @@ release: all deps docs $(SMF_MANIFESTS)
 		$(ROOT)/sapi_manifests \
 		$(ROOT)/smf \
 		$(ROOT)/test \
-		$(ROOT)/share \
 		$(ROOT)/tools \
 		$(RELSTAGEDIR)/root/opt/smartdc/cnapi/
 	mkdir -p $(RELSTAGEDIR)/root/opt/smartdc/boot

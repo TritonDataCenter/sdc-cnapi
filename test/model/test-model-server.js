@@ -16,6 +16,7 @@ var common = require('../../lib/common');
 var mock = require('../lib/mock');
 var nodeunit = require('nodeunit');
 var sprintf = require('sprintf').sprintf;
+var VError = require('verror');
 
 var ModelServer = require('../../lib/models/server');
 
@@ -69,14 +70,12 @@ function testListServersAll(test) {
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                     ram: '12345',
                     sysinfo: { setup: true },
-                    last_heartbeat: null,
                     status: 'unknown'
                 },
                 {
                     uuid: '6e8eb888-f8e0-11e1-b1a8-5f74056f9365',
                     ram: '56789',
                     sysinfo: { setup: true },
-                    last_heartbeat: null,
                     status: 'unknown'
                 }
             ];
@@ -133,14 +132,12 @@ function testListServersByUuids(test) {
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                     ram: '12345',
                     sysinfo: { setup: true },
-                    last_heartbeat: null,
                     status: 'unknown'
                 },
                 {
                     uuid: 'b31695ce-f8e6-11e1-b252-fb742866284b',
                     ram: '56789',
                     sysinfo: { setup: true },
-                    last_heartbeat: null,
                     status: 'unknown'
                 }
             ];
@@ -214,14 +211,12 @@ function testListServersSetup(test) {
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                     ram: '12345',
                     sysinfo: { setup: true },
-                    last_heartbeat: null,
                     status: 'unknown'
                 },
                 {
                     uuid: '6e8eb888-f8e0-11e1-b1a8-5f74056f9365',
                     ram: '56789',
                     sysinfo: { setup: true },
-                    last_heartbeat: null,
                     status: 'unknown'
                 }
             ];
@@ -259,8 +254,9 @@ function testFetchServer(test) {
 
         var server = new ModelServer(uuids[0]);
 
-        server.getRaw(function (getError, s) {
+        server.getRaw({}, function (getError, s) {
             test.equal(getError, null, 'should not encounter an error');
+
             test.deepEqual(s, expSearchResults[0], 'results should match');
             test.deepEqual(
                 moray.client.history[0],
@@ -276,30 +272,36 @@ function testFetchServer(test) {
 }
 
 function testCreateServer(test) {
-    test.expect(3);
+    test.expect(5);
 
-    var serverToAdd = { uuid: uuids[0], ram: '12345' };
+    var sysinfoToAdd = {
+        UUID: uuids[0],
+        'MiB of Memory': '12345'
+    };
 
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
-        moray.client.when('putObject', []);
         ModelServer.init(app);
 
-        var server = new ModelServer(uuids[0]);
-        server.setRaw(serverToAdd);
-        server.store(serverToAdd, function (storeError) {
+        ModelServer.updateFromSysinfo(sysinfoToAdd, function (storeError) {
             test.equal(storeError, null, 'should not encounter an error');
-            test.deepEqual(
-                moray.client.history[0],
-                [
-                    'putObject',
-                    'cnapi_servers',
-                    uuids[0],
-                    serverToAdd
-                ],
-            'moray command history');
+            // First we getObject the object (which will be not found)
+            // then we getObject 'default' as part of creating the new server
+            // finally the 3rd command should be our putObject
+            test.deepEqual(moray.client.history[2].slice(0, 3), [
+                'putObject',
+                'cnapi_servers',
+                sysinfoToAdd.UUID
+            ], 'should see putObject in moray client history');
+            test.equal(moray.client.history[2][3].sysinfo.UUID,
+                sysinfoToAdd.UUID,
+                'putObject uuid should match');
+            test.equal(moray.client.history[2][3].ram,
+                sysinfoToAdd['MiB of Memory'],
+                'putObject ram should match');
+
             test.done();
         });
     });
@@ -346,8 +348,6 @@ function testRebootServer(test) {
 
         moray.client.when('getObject', [], { value: expSearchResults[0] });
 
-        moray.client.when('putObject', []);
-
         ModelServer.init(app);
 
         moray.client.when('findObjects');
@@ -377,104 +377,93 @@ function testRebootServer(test) {
 }
 
 function testModifyServer(test) {
-    test.expect(3);
-
-    var uuid = uuids[0];
+    test.expect(5);
 
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
-        moray.client.when('putObject', []);
-
-        ModelServer.init(app);
-
-        var server = new ModelServer(uuids[0]);
-
-        var change = {
-            uuid: uuid,
-            setup: false
+        var origObj = {
+            hostname: 'dummyCN',
+            setup: true
         };
 
-        server.modify(change, function (modifyError) {
-            test.deepEqual(
-                moray.client.history[0],
-                [
-                    'putObject',
-                    'cnapi_servers',
-                    uuid,
-                    change,
-                    {}
-                ],
-            'moray command history');
+        // initial object for CN
+        moray.client.when('getObject', [], {value: origObj});
+        ModelServer.init(app);
 
-            test.deepEqual(
-                moray.client.history[0][3].setup,
-                false,
-                'boot platform should match');
+        // When we do the getObject in upsert, we'll get 'setup: true', so this
+        // upsert should set it to false but leave the other fields alone.
+        ModelServer.upsert(uuids[0], {
+            setup: false
+        }, {
+            etagRetries: 0
+        }, function _onUpsert(err) {
+            var putObj;
+
+            test.equal(err, null, 'modify server upsert() should succeed');
+
+            putObj = moray.client.history[1][3];
+
+            test.equal(moray.client.history.length, 2,
+                'should be 2 requests in the moray history');
+            test.equal(putObj.hostname, origObj.hostname,
+                'hostname should not have changed');
+            test.equal(putObj.setup, false, 'setup should have changed');
+
             test.done();
         });
     });
 }
 
+//
+// This tests that doing an upsert with an Etag conflict will retry and succeed
+// on the next attempt.
 function testModifyServerWithEtag(test) {
-    test.expect(6);
-
-    var uuid = uuids[0];
-    var etag = 'etag-1234';
+    test.expect(5);
 
     mock.newApp(function (error, app, components) {
         test.equal(error, null, 'should not encounter an error');
 
         var moray = components.moray;
-        moray.client.when('getObject', [], { _etag: etag });
-        moray.client.when('putObject', []);
+        var origObj = {
+            hostname: 'dummyCN',
+            setup: true
+        };
+
+        // initial object for CN
+        moray.client.when('getObject', [], {value: origObj});
+        moray.client.when('putObject', [], new VError({
+            name: 'EtagConflictError'
+        }));
+        moray.client.when('getObject', [], {value: origObj});
 
         ModelServer.init(app);
 
-        var server = new ModelServer(uuids[0]);
-        var change = {
-            uuid: uuid,
+        ModelServer.upsert(uuids[0], {
             setup: false
-        };
+        }, {
+            etagRetries: 10
+        }, function _onUpsert(err) {
+            var putObj;
 
-        vasync.pipeline({ funcs: [
-            function doGetServer(_, next) {
-                server.getRaw(function (err) {
-                    test.ifError(err);
-                    test.equal(server.etag, etag);
-                    next();
-                });
-            },
-            function doModifyServer(_, next) {
-                server.modify(change, function (modifyError) {
-                    test.ifError(modifyError);
-                    next();
-                });
-            },
-            function doCheck(_, next) {
-                test.deepEqual(
-                    moray.client.history[0],
-                    [
-                        'getObject',
-                        'cnapi_servers',
-                        uuid
-                    ],
-                    'moray command history');
-                test.deepEqual(
-                    moray.client.history[1],
-                    [
-                        'putObject',
-                        'cnapi_servers',
-                        uuid,
-                        change,
-                        { etag: etag }
-                    ],
-                    'moray command history');
-                next();
-            }
-        ] },
-        function (err) {
+            test.equal(err, null, 'modify server upsert() should succeed');
+
+            putObj = moray.client.history[1][3];
+
+            // we should see 4 requests:
+            //
+            // getObject,
+            // putObject (which returns EtagConflict),
+            // getObject,
+            // putObject (which succeeds this time)
+            //
+            test.equal(moray.client.history.length, 4,
+                'should be 4 requests in the moray history');
+            test.equal(putObj.hostname, origObj.hostname,
+                'hostname should not have changed');
+            test.equal(putObj.setup, false, 'setup should have changed');
+
             test.done();
         });
     });
@@ -518,7 +507,6 @@ function testSetBootParameters(test) {
 
                 test.equal(error, null, 'should not encounter an error');
 
-                moray.client.when('putObject', []);
                 moray.client.when('getObject', [], { value: expSearchResults });
 
                 ModelServer.init(app);
@@ -622,7 +610,7 @@ function testSetBootParameters(test) {
 
 
 function testUpdateBootParameters(test) {
-    test.expect(5);
+    test.expect(6);
 
     var uuid = uuids[0];
 
@@ -669,9 +657,8 @@ function testUpdateBootParameters(test) {
 
                 test.equal(error, null, 'should not encounter an error');
 
-                moray.client.when('putObject', []);
                 moray.client.when('getObject', [], { value: expSearchResults });
-                moray.client.when('putObject', []);
+                moray.client.when('getObject', [], { value: expSearchResults });
 
                 server = new ModelServer(uuid);
                 callback();
@@ -691,8 +678,16 @@ function testUpdateBootParameters(test) {
                         null,
                         'There should be no error');
 
+                    //
+                    // getObject (updateBootParams calls getRaw)
+                    // getObject (from upsert in updateBootParams)
+                    // putObject (from upsert in updateBootParams)
+                    //
+                    test.equal(moray.client.history.length, 3,
+                        'should have 3 moray client commands');
+
                     test.deepEqual(
-                        moray.client.history[1],
+                        moray.client.history[2],
                         [
                             'putObject',
                             'cnapi_servers',
@@ -717,9 +712,6 @@ function testUpdateBootParameters(test) {
                 });
         },
         function (callback) {
-            moray.client.when('getObject', [], { value: expSearchResults });
-            delete server.value;
-
             expSearchResults = {
                 uuid: uuid,
                 boot_params: updatedBootParams,
@@ -732,6 +724,8 @@ function testUpdateBootParameters(test) {
                 kernel_flags: updatedKernelArgs,
                 serial: 'ttyb'
             };
+            moray.client.when('getObject', [], { value: expSearchResults });
+
             server.getBootParams(function (getError, params) {
                 test.equal(
                      getError,

@@ -1,7 +1,7 @@
 {
   "name": "cnapi",
   "description": "SmartDataCenter Compute Node API",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
@@ -10,7 +10,7 @@
     "async": "1.5.2",
     "bunyan": "1.8.5",
     "dapi": "git+https://github.com/joyent/sdc-designation.git#296a786be98c325c9f30eff4dce16ed04047c9b5",
-    "deep-equal": "1.0.1",
+    "deep-object-diff": "1.1.0",
     "dox": "0.9.0",
     "gc-stats": "1.2.0",
     "jsprim": "1.4.1",

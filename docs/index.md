@@ -601,7 +601,6 @@ A CNAPI server record looks like the following
 | **memory_available_bytes**           |                  |
 | **memory_provisionable_bytes**       |                  |
 | **memory_total_bytes**               |                  |
-| **overprovision_ratio**              |                  |
 | **overprovision_ratios**             |                  |
 | **rack_identifier**                  |                  |
 | **ram**                              | *Number*         | Amount of ram                                                              |
@@ -1303,7 +1302,12 @@ use will not be supported and may break in the future.
 | 500  | None | Error while processing request |
 
 
-## ServerSysinfoRefresh (POST /servers/:server_uuid/sysinfo-refresh)
+## ServerSysinfoRefresh (deprecated) (POST /servers/:server_uuid/sysinfo-refresh)
+
+*IMPORTANT: This endpoint is deprecated and will be removed in a future
+release. It exists only for backward compatibility and should not be used for
+any new development. As of version 2.9.0, cn-agent will keep the sysinfo
+up-to-date, so there's no need to call this.*
 
 Fetch a given server's sysinfo values and store them in the server object.
 
