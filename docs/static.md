@@ -41,6 +41,7 @@ found in sapi_manifests/cnapi/template.
 | **dapi.changeDefaults**   | Object | -       | This provides some means to override VM allocation behaviour.       |
 | **dapi.changeDefaults.server_spread**        | String | -            | **DEPRECATED** How VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random)   |
 | **dapi.changeDefaults.filter_docker_min_platform** | String | -      | If present, minimum platform version useful for Docker instances.        |
+| **dapi.changeDefaults.filter_flexible_disk_min_platform** | String | - | If present, minimum platform version useful for instances with flexible disk sizing. |
 | **dapi.changeDefaults.filter_headnode**      | String | true         | Whether VMs cannot allocate on the headnode.                             |
 | **dapi.changeDefaults.filter_min_resources** | String | true         | Whether CPU/RAM/disk limits are ignored when allocating.                 |
 | **dapi.changeDefaults.filter_large_servers** | String | true         | Whether large servers are reserved for larger allocations.               |
@@ -92,6 +93,7 @@ specialized circumstances in production.
 | **ALLOC_WEIGHT_UNRESERVED_DISK**   | Float | 1.0   | Bias selection towards CNs with more unreserved disk.                        |
 | **ALLOC_WEIGHT_UNRESERVED_RAM**    | Float | 2.0   | Bias selection towards CNs with more unreserved memory.                      |
 | **FEATURE_USE_CNAGENT_COMMAND_EXECUTE** | Boolean | false | Experimental: Use cn-agent's command_execute function instead of Ur when available. |
+| **FEATURE_ENABLE_VIRTUAL_SERVERS_FILTER** | Boolean | false | Whether to enable the virtual server filtering. When enabled, during DAPI allocation, all virtual servers (e.g. mockcloud servers) will be filtered out if the vm is a docker vm, or the vm has the `triton.placement.exclude_virtual_servers` tag set to true. This virtual server filtering is needed for Triton testing, but should not be enabled for production environments. |
 
 If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
 if the default value was specified. Be careful when changing from the default
@@ -580,7 +582,7 @@ A CNAPI server record looks like the following
 | **status**                           | *String*         | Either 'running' or 'unknown' based on how recently CNAPI has heard from server |
 | **sysinfo**                          | *Object*         | The last given sysinfo payload for server                                  |
 | **traits**                           | *Object*         |                                                                            |
-| **transitional_status**              | *String*         | Takes precedense over `status` when a server is undergoing a status change |
+| **transitional_status**              | *String*         | This field is an implementation detail and should not be used in any way by CNAPI clients. It is exposed only for debugging. It is optional and may be: a string (currently only 'rebooting'), an empty string, or undefined |
 | **unreserved_cpu**                   |                  |
 | **unreserved_disk**                  |                  |
 | **unreserved_ram**                   |                  |

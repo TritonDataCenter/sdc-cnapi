@@ -613,7 +613,7 @@ A CNAPI server record looks like the following
 | **status**                           | *String*         | Either 'running' or 'unknown' based on how recently CNAPI has heard from server |
 | **sysinfo**                          | *Object*         | The last given sysinfo payload for server                                  |
 | **traits**                           | *Object*         |                                                                            |
-| **transitional_status**              | *String*         | Takes precedense over `status` when a server is undergoing a status change |
+| **transitional_status**              | *String*         | This field is an implementation detail and should not be used in any way by CNAPI clients. It is exposed only for debugging. It is optional and may be: a string (currently only 'rebooting'), an empty string, or undefined |
 | **unreserved_cpu**                   |                  |
 | **unreserved_disk**                  |                  |
 | **unreserved_ram**                   |                  |
@@ -1188,24 +1188,24 @@ Set the value of a Server's attribute.
 
 ### Inputs
 
-| Param                | Type    | Description                                                                                                                      |
-| -------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| agents               | Array   | Array of agents present on this server                                                                                           |
-| boot_platform        | String  | The platform image to be used on next boot                                                                                       |
-| default_console      | String  | Console type                                                                                                                     |
-| rack_identifier      | String  | The id of the server's rack                                                                                                      |
-| comments             | String  | Any comments about the server                                                                                                    |
-| next_reboot          | String  | ISO timestamp when next reboot is scheduled for                                                                                  |
-| nics                 | Array   | List of NICs to update (see `Updating NICs` section)                                                                             |
-| reserved             | Boolean | Server is available for provisioning                                                                                             |
-| reservoir            | Boolean | Server should be considered last for provisioning                                                                                |
-| reservation_ratio    | Nmber   | The reservation ratio                                                                                                            |
-| overprovision_ratios | Object  | The overprovisioning ratios. Must be an object with Number value keys and keys must be one of 'cpu', 'ram', 'disk', 'io', 'net'. |
-| serial               | String  | Serial device                                                                                                                    |
-| setup                | Boolean | True if server has been set up                                                                                                   |
-| setting_up           | Boolean | True if server is in the process of setting up                                                                                   |
-| transitional_status  | String  | The fallback status if not 'running'. For example, if the server has to reboot, this value may be set to 'rebooting'.            |
-| traits               | Object  | Server traits                                                                                                                    |
+| Param                | Type    | Description                                                                                                                                                                                                    |
+| -------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| agents               | Array   | Array of agents present on this server                                                                                                                                                                         |
+| boot_platform        | String  | The platform image to be used on next boot                                                                                                                                                                     |
+| default_console      | String  | Console type                                                                                                                                                                                                   |
+| rack_identifier      | String  | The id of the server's rack                                                                                                                                                                                    |
+| comments             | String  | Any comments about the server                                                                                                                                                                                  |
+| next_reboot          | String  | ISO timestamp when next reboot is scheduled for                                                                                                                                                                |
+| nics                 | Array   | List of NICs to update (see `Updating NICs` section)                                                                                                                                                           |
+| reserved             | Boolean | Server is available for provisioning                                                                                                                                                                           |
+| reservoir            | Boolean | Server should be considered last for provisioning                                                                                                                                                              |
+| reservation_ratio    | Nmber   | The reservation ratio                                                                                                                                                                                          |
+| overprovision_ratios | Object  | The overprovisioning ratios. Must be an object with Number value keys and keys must be one of 'cpu', 'ram', 'disk', 'io', 'net'.                                                                               |
+| serial               | String  | Serial device                                                                                                                                                                                                  |
+| setup                | Boolean | True if server has been set up                                                                                                                                                                                 |
+| setting_up           | Boolean | True if server is in the process of setting up                                                                                                                                                                 |
+| transitional_status  | String  | A value to use to override status when the server has status 'unknown'. This is for internal use only and currently is only used by server-reboot to set the state to 'rebooting' while a server is rebooting. |
+| traits               | Object  | Server traits                                                                                                                                                                                                  |
 
 
 ### Responses
