@@ -34,7 +34,6 @@
     "host": "10.99.99.19"
   },
   "dapi": {
-      "useVmapi": true,
       "changeDefaults": {
           "server_spread": "",
           "filter_headnode": "false",
@@ -77,6 +76,7 @@
           "hard-filter-min-ram",
           "hard-filter-min-cpu",
           "hard-filter-min-disk",
+          "calculate-locality-hints",
           "hard-filter-locality-hints",
           "hard-filter-owners-servers",
           ["or", "hard-filter-reservoir",
