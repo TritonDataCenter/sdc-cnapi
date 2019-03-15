@@ -44,7 +44,7 @@ JSSTYLE_FLAGS	= -o indent=4,doxygen,unparenthesized-return=0
 SMF_MANIFESTS_IN = smf/manifests/cnapi.xml.in
 SMF_DTD		= $(REPO_ROOT)/tools/service_bundle.dtd.1
 
-NODE_PREBUILT_VERSION=v6.15.1
+NODE_PREBUILT_VERSION=v6.17.0
 NODE_PREBUILT_TAG=zone
 ifeq ($(shell uname -s),SunOS)
 	# Allow building on other than image sdc-minimal-multiarch-lts@15.4.1.
