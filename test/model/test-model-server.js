@@ -254,7 +254,7 @@ function testFetchServer(test) {
 
         var server = new ModelServer(uuids[0]);
 
-        server.getRaw({}, function (getError, s) {
+        server.getRaw(function (getError, s) {
             test.equal(getError, null, 'should not encounter an error');
 
             test.deepEqual(s, expSearchResults[0], 'results should match');
