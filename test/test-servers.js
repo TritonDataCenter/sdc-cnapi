@@ -20,6 +20,7 @@ var libuuid = require('libuuid');
 var jsprim = require('jsprim');
 var restify = require('restify');
 var sprintf = require('sprintf');
+var vasync = require('vasync');
 
 
 var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
@@ -649,6 +650,81 @@ function testServerSysinfo(t) {
 }
 
 
+//
+// CNS currently depends on a bug in CNAPI where:
+//
+//  GET /servers?extras=status
+//
+// "works" to add last_heartbeat. In fact *any* extras= value will result in
+// last_heartbeat being added to resulting objects thanks to this bug.
+//
+// Since fixing this bug would break CNS, we have this test to ensure that this
+// bug doesn't get fixed accidentally even though last_heartbeat is not really a
+// field meant for anything other than debugging.
+//
+// This test will:
+//
+//  * list all servers with extras=status and expect that at least one
+//    of them has a non-null last_heartbeat.
+//
+//  * ensure that the only values we get for last_heartbeat are a timestamp or
+//    null.
+//
+function testListServersLastHeartbeat(t) {
+    var url = '/servers?extras=status';
+
+    t.expect(5);
+
+    function validLastHeartbeatDate(candidate) {
+        if (candidate === (new Date(candidate)).toISOString()) {
+            return true;
+        }
+        return false;
+    }
+
+    function _checkLastHeartbeatValues(endpoint, servers) {
+        var idx;
+        var results = {
+            _invalid: 0,
+            _null: 0,
+            _timestamp: 0
+        };
+        var server;
+
+        // Loop through the servers and check that they have a valid
+        // last_heartbeat.
+        for (idx = 0; idx < servers.length; idx++) {
+            server = servers[idx];
+            if (server.last_heartbeat === null) {
+                results._null++;
+            } else if (validLastHeartbeatDate(server.last_heartbeat)) {
+                results._timestamp++;
+            } else {
+                results._invalid++;
+            }
+        }
+
+        t.ok(results._timestamp >= 1, endpoint + ' should ' +
+            'have at least one server with a last_heartbeat (had ' +
+            results._timestamp + ')');
+        t.equal(0, results._invalid, endpoint + ' should ' +
+            'have no invalid last_heartbeats');
+        t.ok(results._null >= 0, endpoint + ' might have some "null" ' +
+            'last_heartbeats (had ' + results._null +  ')');
+
+        return;
+    }
+
+    client.get(url, function (err, req, res, body) {
+        t.ok(!err, 'should successfully load ' + url +
+            (err ? ': ' + err.message : ''));
+        t.equal(res.statusCode, 200, url + ' should return 200');
+        _checkLastHeartbeatValues(url, body);
+        t.done();
+    });
+}
+
+
 var UUID_RE = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 var VALID_SERVER_OVERPROVISION_RESOURCES = ['cpu', 'ram', 'disk', 'io', 'net'];
 
@@ -806,6 +882,7 @@ module.exports = {
     setUp: setup,
     'create/modify server sysinfo': testServerSysinfo,
     'list servers': testListServers,
+    'list servers includes last_heartbeat': testListServersLastHeartbeat,
     'list servers with vms': testListServersWithVms,
     'list servers with memory': testListServersWithMemory,
     'list servers with disk': testListServersWithDisk,
