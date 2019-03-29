@@ -186,11 +186,12 @@ function testGetDefaultServer(t) {
 function testUpdateServer(t) {
     var uuid;
     var oldRatio;
+    var oldMemoryProvisionable;
     var oldNextReboot;
 
     async.waterfall([
         function (next) {
-            client.get('/servers?headnode=true',
+            client.get('/servers?headnode=true&extras=memory',
                        function (err, req, res, body) {
                 if (err) {
                     next(err);
@@ -200,6 +201,7 @@ function testUpdateServer(t) {
                 uuid = body[0].uuid;
                 oldRatio = body[0].reservation_ratio;
                 oldNextReboot = body[0].next_reboot;
+                oldMemoryProvisionable = body[0].memory_provisionable_bytes;
 
                 next();
             });
@@ -226,6 +228,10 @@ function testUpdateServer(t) {
                     'ensure reservation ratio is 0.50');
                 t.equal(body.next_reboot, '2016-04-22T12:50:40.512Z',
                     'ensure next_reboot timestamp is correct');
+                // memory_provisionable_bytes should also be recalculated here
+                t.notEqual(body.memory_provisionable_bytes,
+                    oldMemoryProvisionable, 'memory_provisionable_bytes ' +
+                    'should change with reservation_ratio');
 
                 next();
             });
