@@ -361,6 +361,8 @@ function testRebootServer(test) {
         var server = new ModelServer(uuids[0]);
 
         server.reboot(function (err) {
+            var params = workflow.getClient().history[0][2] || {};
+
             test.deepEqual(
                 workflow.getClient().history,
                 [
@@ -373,7 +375,10 @@ function testRebootServer(test) {
                             target: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
                             creator_uuid: undefined,
                             origin: undefined,
-                            drain: false
+                            drain: false,
+                            // We don't worry about this when comparing
+                            supportsServerRebootTask:
+                                params.supportsServerRebootTask
                         }
                     ]
                 ]);
