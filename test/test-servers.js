@@ -186,6 +186,7 @@ function testGetDefaultServer(t) {
 function testUpdateServer(t) {
     var uuid;
     var oldRatio;
+    var oldMemoryProvisionable;
     var oldNextReboot;
 
     async.waterfall([
