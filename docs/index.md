@@ -1193,13 +1193,14 @@ Set the value of a Server's attribute.
 | agents               | Array   | Array of agents present on this server                                                                                                                                                                         |
 | boot_platform        | String  | The platform image to be used on next boot                                                                                                                                                                     |
 | default_console      | String  | Console type                                                                                                                                                                                                   |
+| etagRetries          | Number  | number of times to retry update in case of ETag conflict                                                                                                                                                       |
 | rack_identifier      | String  | The id of the server's rack                                                                                                                                                                                    |
 | comments             | String  | Any comments about the server                                                                                                                                                                                  |
 | next_reboot          | String  | ISO timestamp when next reboot is scheduled for                                                                                                                                                                |
 | nics                 | Array   | List of NICs to update (see `Updating NICs` section)                                                                                                                                                           |
 | reserved             | Boolean | Server is available for provisioning                                                                                                                                                                           |
 | reservoir            | Boolean | Server should be considered last for provisioning                                                                                                                                                              |
-| reservation_ratio    | Nmber   | The reservation ratio                                                                                                                                                                                          |
+| reservation_ratio    | Number  | The reservation ratio                                                                                                                                                                                          |
 | overprovision_ratios | Object  | The overprovisioning ratios. Must be an object with Number value keys and keys must be one of 'cpu', 'ram', 'disk', 'io', 'net'.                                                                               |
 | serial               | String  | Serial device                                                                                                                                                                                                  |
 | setup                | Boolean | True if server has been set up                                                                                                                                                                                 |
@@ -1221,18 +1222,22 @@ Reboot the server.
 
 ### Inputs
 
-| Param        | Type   | Description |
-| ------------ | ------ | ----------- |
-| origin       | String |             |
-| creator_uuid | String |             |
+| Param        | Type    | Description                                                                                                   |
+| ------------ | ------- | ------------------------------------------------------------------------------------------------------------- |
+| origin       | String  |                                                                                                               |
+| creator_uuid | String  |                                                                                                               |
+| drain        | Boolean | Wait for server's cn-agent to be drained before sending the reboot command                                    |
+| nojob        | Boolean | If true, don't create a workflow job, but instead talk to the server_reboot task in cn-agent (default: false) |
 
 
 ### Responses
 
-| Code | Type   | Description                       |
-| ---- | ------ | --------------------------------- |
-| 204  | Object | Server reboot initiated           |
-| 500  | None   | Error attempting to set up server |
+| Code | Type   | Description                                                                             |
+| ---- | ------ | --------------------------------------------------------------------------------------- |
+| 202  | Object | Server reboot initiated (object with job_uuid is returned)                              |
+| 204  | None   | Server reboot initiated                                                                 |
+| 500  | None   | Error attempting to set up server                                                       |
+| 503  | None   | When nojob=true, this means the server does not support the server_reboot cn-agent task |
 
 
 ## ServerFactoryReset (PUT /servers/:server\_uuid/factory-reset)
