@@ -79,9 +79,7 @@
 			        "hard-filter-running",
 			        "hard-filter-invalid-servers",
 			        "hard-filter-force-failure",
-{{#FEATURE_ENABLE_VIRTUAL_SERVERS_FILTER}}
 			        "hard-filter-virtual-servers",
-{{/FEATURE_ENABLE_VIRTUAL_SERVERS_FILTER}}
 			        "hard-filter-volumes-from",
 			        "hard-filter-reserved",
 			        "hard-filter-min-free-disk",
