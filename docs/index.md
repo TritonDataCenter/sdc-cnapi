@@ -124,6 +124,7 @@ specialized circumstances in production.
 | **ALLOC_WEIGHT_UNRESERVED_DISK**   | Float | 1.0   | Bias selection towards CNs with more unreserved disk.                        |
 | **ALLOC_WEIGHT_UNRESERVED_RAM**    | Float | 2.0   | Bias selection towards CNs with more unreserved memory.                      |
 | **FEATURE_USE_CNAGENT_COMMAND_EXECUTE** | Boolean | false | Experimental: Use cn-agent's command_execute function instead of Ur when available. |
+| **SMT_ENABLED_DEFAULT**	| Boolean | true | The default simultaneous multi-threading mode for newly-installed CNs. |
 
 If any of the keys above aren't in the `sdc` `metadata` section, it's treated as
 if the default value was specified. Be careful when changing from the default

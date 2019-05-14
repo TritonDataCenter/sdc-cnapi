@@ -43,7 +43,8 @@
 		"url": "http://{{{assets_admin_ips}}}"
 	},
 	"cnapi": {
-		"url": "http://{{{auto.ADMIN_IP}}}"
+		"url": "http://{{{auto.ADMIN_IP}}}",
+                "smt_enabled_default": {{{SMT_ENABLED_DEFAULT}}}{{^SMT_ENABLED_DEFAULT}}true{{/SMT_ENABLED_DEFAULT}}
 	},
 	"imgapi": {
 		"url": "http://{{{IMGAPI_SERVICE}}}"
