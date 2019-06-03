@@ -15,7 +15,7 @@
     "gc-stats": "1.2.0",
     "jsprim": "1.4.1",
     "libuuid": "0.2.1",
-    "moray": "git+https://github.com/joyent/node-moray.git#v3.6.0",
+    "moray": "git+https://github.com/joyent/node-moray.git#rfd-35-cls",
     "nodeunit": "0.11.0",
     "once": "1.4.0",
     "qs": "6.5.2",
