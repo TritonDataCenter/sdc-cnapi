@@ -36,6 +36,7 @@
   "dapi": {
       "changeDefaults": {
           "server_spread": "",
+          "filter_capness": "true",
           "filter_headnode": "false",
           "filter_min_resources": "false",
           "filter_large_servers": "",

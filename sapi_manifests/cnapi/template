@@ -52,6 +52,7 @@
 	"dapi": {
 		"changeDefaults": {
 			"server_spread": "{{{ALLOC_SERVER_SPREAD}}}",
+			"filter_capness": "{{{ALLOC_FILTER_CAPNESS}}}",
 			"filter_headnode": "{{{ALLOC_FILTER_HEADNODE}}}",
 			"filter_min_resources": "{{{ALLOC_FILTER_MIN_RESOURCES}}}",
 			"filter_large_servers": "{{{ALLOC_FILTER_LARGE_SERVERS}}}",

@@ -10,7 +10,7 @@ markdown2extras: tables, code-friendly
 -->
 
 <!--
-    Copyright (c) 2019, Joyent, Inc.
+    Copyright 2019 Joyent, Inc.
 -->
 
 <!--
@@ -73,6 +73,7 @@ found in sapi_manifests/cnapi/template.
 | **dapi.changeDefaults.server_spread**        | String | -            | **DEPRECATED** How VMs are spread across CNs (one of: min-ram, max-ram, min-owner, and random)   |
 | **dapi.changeDefaults.filter_docker_min_platform** | String | -      | If present, minimum platform version useful for Docker instances.        |
 | **dapi.changeDefaults.filter_flexible_disk_min_platform** | String | - | If present, minimum platform version useful for instances with flexible disk sizing. |
+| **dapi.changeDefaults.filter_capness**      | String | true         | Whether to disallow mixing of instances that set cpu_caps with instances that do not set cpu_caps on the same compute node. |
 | **dapi.changeDefaults.filter_headnode**      | String | true         | Whether VMs cannot allocate on the headnode.                             |
 | **dapi.changeDefaults.filter_min_resources** | String | true         | Whether CPU/RAM/disk limits are ignored when allocating.                 |
 | **dapi.changeDefaults.filter_large_servers** | String | true         | Whether large servers are reserved for larger allocations.               |
@@ -107,6 +108,7 @@ specialized circumstances in production.
 | Key                            | Type    | Default | Description                                                                  |
 | ------------------------------ | ------- | ------- | ---------------------------------------------------------------------------- |
 | **ALLOC_SERVER_SPREAD**        | String  | -       | **DEPRECATED** How the allocator spreads VMs across CNs.                     |
+| **ALLOC_FILTER_CAPNESS**       | Boolean | true    | Whether to disallow mixing of instances that set cpu_caps with instances that do not set cpu_caps on the same compute node. |
 | **ALLOC_FILTER_HEADNODE**      | Boolean | true    | Whether the headnode should be removed from consideration during allocation. |
 | **ALLOC_FILTER_MIN_DISK**      | Boolean | false   | Whether CNs with insufficient spare disk should be removed.                  |
 | **ALLOC_FILTER_MIN_RESOURCES** | Boolean | true    | Whether CNs with insufficient spare CPU/RAM/disk should be removed.          |
