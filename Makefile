@@ -5,7 +5,7 @@
 #
 
 #
-# Copyright (c) 2019, Joyent, Inc.
+# Copyright 2019 Joyent, Inc.
 #
 
 #
@@ -80,8 +80,6 @@ BUILDIMAGE_NAME = $(NAME)
 BUILDIMAGE_DESC	= SDC CNAPI
 AGENTS		= amon config registrar
 
-CLEAN_FILES += describe
-
 #
 # Repo-specific targets
 #
@@ -115,11 +113,9 @@ release: all deps docs $(SMF_MANIFESTS)
 	@mkdir -p $(RELSTAGEDIR)/root/opt/smartdc/cnapi
 	@mkdir -p $(RELSTAGEDIR)/site
 	@touch $(RELSTAGEDIR)/site/.do-not-delete-me
-	(git symbolic-ref HEAD | awk -F/ '{print $$3}' && git describe) > $(ROOT)/describe
 	cp -r   $(ROOT)/build \
 		$(ROOT)/bin \
 		$(ROOT)/config \
-		$(ROOT)/describe \
 		$(ROOT)/lib \
 		$(ROOT)/Makefile \
 		$(ROOT)/node_modules \
