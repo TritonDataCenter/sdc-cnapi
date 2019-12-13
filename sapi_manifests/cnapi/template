@@ -79,6 +79,7 @@
 			        "hard-filter-invalid-servers",
 			        "hard-filter-force-failure",
 			        "hard-filter-virtual-servers",
+			        "hard-filter-zpool-encryption",
 			        "hard-filter-volumes-from",
 			        "hard-filter-reserved",
 			        "hard-filter-min-free-disk",
