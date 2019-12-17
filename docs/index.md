@@ -1274,7 +1274,7 @@ Initiate the server setup process for a newly started server.
 | disk_width        | String | See `man disklayout` width                                   |
 | disk_cache        | String | See `man disklayout` cache                                   |
 | disk_layout       | String | See `man disklayout` type      (single, mirror, raidz1, ...) |
-| encryption_enabled| String | See See `man mkzpool -e`                                     |
+| encryption_enabled| String | See `man mkzpool -e`                                         |
 
 
 ### Responses
