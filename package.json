@@ -10,7 +10,7 @@
     "async": "1.5.2",
     "backoff": "2.5.0",
     "bunyan": "1.8.5",
-    "dapi": "git+https://github.com/joyent/sdc-designation.git#a9ab5e8e3bb7ec014946d0f0b170eb6162c22da5",
+    "dapi": "git+https://github.com/joyent/sdc-designation.git#TRITON-2033",
     "deep-object-diff": "1.1.0",
     "gc-stats": "1.2.0",
     "jsprim": "1.4.1",
