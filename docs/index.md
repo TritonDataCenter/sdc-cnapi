@@ -895,6 +895,8 @@ passed in, the currently effective value will remain unchanged.
 | boot_modules | Array  | List of boot module objects           |
 | kernel_flags | Object | Kernel flags to update                |
 | platform     | String | Set platform as the bootable platform |
+| serial          | Object | Serial device to use (i.e. &quot;ttyb&quot;)           |
+| default_console | Object | Default console type (i.e. &quot;serial&quot;)         |
 
 
 ### Responses
