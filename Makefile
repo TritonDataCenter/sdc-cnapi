@@ -139,7 +139,7 @@ release: all deps tocs $(SMF_MANIFESTS)
 # changes those files in-place, so one should do this before commit.
 .PHONY: tocs
 tocs: | ./node_modules/.bin/doctoc
-	./node_modules/.bin/doctoc --notitle --maxlevel 3 docs/README.md
+	./node_modules/.bin/doctoc --notitle --maxlevel 2 docs/README.md
 
 
 .PHONY: publish
