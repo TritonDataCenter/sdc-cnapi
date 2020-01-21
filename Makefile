@@ -109,7 +109,7 @@ test-coal-model:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/model/*.js)"'
 
 .PHONY: release
-release: all deps docs $(SMF_MANIFESTS)
+release: all deps tocs $(SMF_MANIFESTS)
 	@echo "Building $(RELEASE_TARBALL)"
 	@mkdir -p $(RELSTAGEDIR)/root/opt/smartdc/cnapi
 	@mkdir -p $(RELSTAGEDIR)/site
@@ -132,8 +132,15 @@ release: all deps docs $(SMF_MANIFESTS)
 	(cd $(RELSTAGEDIR) && $(TAR) -I pigz -cf $(ROOT)/$(RELEASE_TARBALL) root site)
 	@rm -rf $(RELSTAGEDIR)
 
-regen_docs:
-	$(NODE) ./tools/gendocs.js docs/static.md lib/endpoints > docs/index.md
+./node_modules/.bin/doctoc:
+	npm install
+
+# Make a table of contents in Markdown docs that are setup to use it.  This
+# changes those files in-place, so one should do this before commit.
+.PHONY: tocs
+tocs: | ./node_modules/.bin/doctoc
+	./node_modules/.bin/doctoc --notitle --maxlevel 3 docs/README.md
+
 
 .PHONY: publish
 publish: release
