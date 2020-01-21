@@ -57,6 +57,7 @@
   - [ServerEnsureImage (GET /servers/:server_uuid/ensure-image)](#serverensureimage-get-serversserver_uuidensure-image)
   - [ServerInstallAgent (POST /servers/:server_uuid/install-agent)](#serverinstallagent-post-serversserver_uuidinstall-agent)
   - [ServerUninstallAgents (POST /servers/:server_uuid/uninstall-agents)](#serveruninstallagents-post-serversserver_uuiduninstall-agents)
+  - [ServerRecoveryConfig (POST /servers/:server_uuid/recovery-config)](#serverrecoveryconfig-post-serversserver_uuidrecovery-config)
 - [Virtual Machine API](#virtual-machine-api)
   - [VmList (GET /servers/:server_uuid/vms)](#vmlist-get-serversserver_uuidvms)
   - [VmLoad (GET /servers/:server_uuid/vms/:uuid)](#vmload-get-serversserver_uuidvmsuuid)
@@ -75,6 +76,7 @@
   - [VmDockerCopy (POST /servers/:server\_uuid/vms/:uuid/docker-copy)](#vmdockercopy-post-serversserver%5C_uuidvmsuuiddocker-copy)
   - [VmDockerStats (POST /servers/:server\_uuid/vms/:uuid/docker-stats)](#vmdockerstats-post-serversserver%5C_uuidvmsuuiddocker-stats)
   - [VmDockerBuild (POST /servers/:server\_uuid/vms/:uuid/docker-build)](#vmdockerbuild-post-serversserver%5C_uuidvmsuuiddocker-build)
+  - [VmMigrate (POST /servers/:server\_uuid/vms/:uuid/migrate)](#vmmigrate-post-serversserver%5C_uuidvmsuuidmigrate)
 - [Virtual Machine Images API](#virtual-machine-images-api)
   - [VmImagesCreate (POST /servers/:server_uuid/vms/:uuid/images)](#vmimagescreate-post-serversserver_uuidvmsuuidimages)
 - [Virtual Machine Snapshots API](#virtual-machine-snapshots-api)
@@ -1350,17 +1352,16 @@ Initiate the server setup process for a newly started server.
 
 ### Inputs
 
-| Param              | Type   | Description                                                  |
-| ------------------ | ------ | ------------------------------------------------------------ |
-| nics               | Object | Nic parameters to update                                     |
-| postsetup_script   | String | Script to run after setup has completed                      |
-| hostname           | String | Hostname to set for the specified server                     |
-| disk_spares        | String | See `man disklayout` spares                                  |
-| disk_width         | String | See `man disklayout` width                                   |
-| disk_cache         | String | See `man disklayout` cache                                   |
-| disk_layout        | String | See `man disklayout` type      (single, mirror, raidz1, ...) |
-| encryption_enabled | String | See `man mkzpool -e`                                         |
-
+| Param              | Type   | Description                                                                                              |
+| ------------------ | ------ | -------------------------------------------------------------------------------------------------------- |
+| nics               | Object | Nic parameters to update                                                                                 |
+| postsetup_script   | String | Script to run after setup has completed                                                                  |
+| hostname           | String | Hostname to set for the specified server                                                                 |
+| disk_spares        | String | See `man disklayout` spares                                                                              |
+| disk_width         | String | See `man disklayout` width                                                                               |
+| disk_cache         | String | See `man disklayout` cache                                                                               |
+| disk_layout        | String | See `man disklayout` type      (single, mirror, raidz1, ...)                                             |
+| encryption_enabled | String | Whether the server will setup an      encrypted zpool. (Boolean String type) See `man mkzpool -e` option |
 
 ### Responses
 
@@ -1554,6 +1555,31 @@ Uninstall the given agents on the server.
 | 412  | Error | PreconditionFailed if the target server has a cn-agent      that is too old. |
 | 500  | Error | Could not process request                                                    |
 
+## ServerRecoveryConfig (POST /servers/:server_uuid/recovery-config)
+
+Stage/Activate the given Recovery Configuration on the server,
+only if the server is using EDAR (Zpool Encrypted: true).
+
+Requires cn-agent v2.13.0 or later
+
+### Inputs
+
+| Param         | Type   | Description                                                                                                                                                                                                           |
+| ------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| recovery_uuid | String | UUID of the recovery configuration to      stage or activate.                                                                                                                                                         |
+| action        | String | name of the action to execute: "stage" or      "activate". Cannot "activate" a recovery configuration not already      reported by the Server's sysinfo as staged through the `Zpool Recovery`      sysinfo property. |
+| template      | String | pivy-box recovery configuration template to      be staged into the CN.                                                                                                                                               |
+| token         | String | the recovery token to stage with the recovery      configuration.                                                                                                                                                     |
+| pivtoken      | String | GUID of the PIVToken the recovery token is      associated with.                                                                                                                                                      |
+
+
+### Responses
+
+| Code | Type  | Description                 |
+| ---- | ----- | --------------------------- |
+| 200  | Ok    | Task initiated successfully |
+| 500  | Error | Could not process request   |
+
 
 
 # Virtual Machine API
@@ -1586,7 +1612,6 @@ Query the server for the VM's details.
 | Param       | Type    | Description                                   |
 | ----------- | ------- | --------------------------------------------- |
 | jobid       | String  | Post information to workflow with this id     |
-| include_dni | Boolean | Allow a VM with the do_not_inventory flag set |
 
 
 ### Responses
@@ -1908,6 +1933,22 @@ None.
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
 
+## VmMigrate (POST /servers/:server\_uuid/vms/:uuid/migrate)
+
+Start migrating the instance to a new server.
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
 
 
 # Virtual Machine Images API
