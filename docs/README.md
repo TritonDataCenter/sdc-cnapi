@@ -470,52 +470,52 @@ There are a few artedi metrics that are exposed related to heartbeating. These
 will be available when polling the /metrics endpoint with prometheus. The
 available metrics are:
 
-## heartbeating_servers_count
+#### heartbeating_servers_count
 
 A gauge indicating how many servers have recently (within the heartbeat
 lifetime) heartbeated to this server.
 
-## reconciler_new_heartbeaters_total
+#### reconciler_new_heartbeaters_total
 
 A counter that indicates how many times this CNAPI has seen a heartbeat from a
 new server, or a server that it had forgotten (e.g. because it went stale).
 
-## reconciler_stale_heartbeaters_total
+#### reconciler_stale_heartbeaters_total
 
 A counter that indicates the number of times CNAPI noticed that a server had not
 heartbeated recently and the last_heartbeat was considered stale.
 
-## reconciler_usurped_heartbeaters_total
+#### reconciler_usurped_heartbeaters_total
 
 A counter that indicates the of times CNAPI went to update cnapi\_status but
 found that another server had updated it more recently.
 
-## reconciler_server_put_total
+#### reconciler_server_put_total
 
 A counter indicating the number of times CNAPI attempted to put cnapi\_servers
 objects into moray.
 
-## reconciler_server_put_etag_failures_total
+#### reconciler_server_put_etag_failures_total
 
 A counter indicating how many times there were Etag failures putting
 cnapi\_servers objects into moray because the data changed between get and put.
 
-## reconciler_server_put_failures_total
+#### reconciler_server_put_failures_total
 
 A counter indicating the total number of putObject calls to cnapi\_servers
 have failed.
 
-## reconciler_status_put_total
+#### reconciler_status_put_total
 
 A counter indicating the number of times CNAPI attempted to put cnapi\_status
 objects into moray.
 
-## reconciler_status_put_etag_failures_total
+#### reconciler_status_put_etag_failures_total
 
 A counter indicating how many times there were Etag failures putting
 cnapi\_status objects into moray because the data changed between get and put.
 
-## reconciler_status_failures_total
+#### reconciler_status_failures_total
 
 A counter indicating the total number of putObject calls to cnapi\_status
 have failed.
