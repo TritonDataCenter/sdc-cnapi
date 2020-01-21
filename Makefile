@@ -106,7 +106,7 @@ test-coal-model:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && /opt/smartdc/cnapi/build/node/bin/node /opt/smartdc/cnapi/node_modules/.bin/nodeunit --reporter verbose $(shell ls test/model/*.js)"'
 
 .PHONY: release
-release: all deps tocs $(SMF_MANIFESTS)
+release: all deps docs $(SMF_MANIFESTS)
 	@echo "Building $(RELEASE_TARBALL)"
 	@mkdir -p $(RELSTAGEDIR)/root/opt/smartdc/cnapi
 	@mkdir -p $(RELSTAGEDIR)/site
@@ -138,6 +138,7 @@ release: all deps tocs $(SMF_MANIFESTS)
 tocs: | ./node_modules/.bin/doctoc
 	./node_modules/.bin/doctoc --notitle --maxlevel 2 docs/README.md
 
+docs:: tocs
 
 .PHONY: publish
 publish: release
