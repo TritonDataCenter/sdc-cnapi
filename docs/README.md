@@ -1,3 +1,5 @@
+# CNAPI - Triton Compute Node API
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -253,11 +255,6 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
----
-title: CNAPI (Compute Node API) Design
-apisections: Allocation API, Boot Parameters API, Compute Node Agent Tasks API, Miscellaneous API, Remote Execution API (deprecated), Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API (deprecated)
-markdown2extras: tables, code-friendly
----
 <!--
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
