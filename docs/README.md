@@ -1612,6 +1612,7 @@ Query the server for the VM's details.
 | Param       | Type    | Description                                   |
 | ----------- | ------- | --------------------------------------------- |
 | jobid       | String  | Post information to workflow with this id     |
+| include_dni | Boolean | Allow a VM with the do_not_inventory flag set |
 
 
 ### Responses
