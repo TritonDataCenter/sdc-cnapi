@@ -134,8 +134,7 @@ release: all deps docs $(SMF_MANIFESTS)
 
 # Make a table of contents in Markdown docs that are setup to use it.  This
 # changes those files in-place, so one should do this before commit.
-docs:: 
-	./node_modules/.bin/doctoc
+docs:: | ./node_modules/.bin/doctoc
 	./node_modules/.bin/doctoc --notitle --maxlevel 2 docs/README.md
 
 .PHONY: publish
