@@ -12,7 +12,6 @@
     "bunyan": "1.8.5",
     "dapi": "git+https://github.com/joyent/sdc-designation.git#a9ab5e8e3bb7ec014946d0f0b170eb6162c22da5",
     "deep-object-diff": "1.1.0",
-    "dox": "0.9.0",
     "gc-stats": "1.2.0",
     "jsprim": "1.4.1",
     "libuuid": "0.2.1",
