@@ -5,22 +5,19 @@
  */
 
 /*
- * Copyright (c) 2019, Joyent, Inc.
+ * Copyright 2020 Joyent, Inc.
  */
 
 /*
  * test-servers.js: Tests for servers endpoint.
  */
 
-var http = require('http');
-var util = require('util');
 
 var async = require('async');
 var libuuid = require('libuuid');
 var jsprim = require('jsprim');
 var restify = require('restify');
 var sprintf = require('sprintf');
-var vasync = require('vasync');
 
 
 var CNAPI_URL = 'http://' + (process.env.CNAPI_IP || '10.99.99.22');
@@ -643,6 +640,56 @@ function testServerSysinfo(t) {
                     'expected server.sysinfo["Boot Time"] to match ' +
                     'updateSysinfo["Boot Time"]');
 
+                next(err);
+            });
+        }, function _bootModulesInvalidFormat(next) {
+            client.put('/boot/' + uuid, {
+                boot_modules: [ {
+                    'foo': 'bar',
+                    'extra': 'key'
+                }]
+            }, function _onPut(err, req, res) {
+                t.ok(err, 'expected format error');
+                t.notEqual(err.message.indexOf('Unexpected format'),
+                    -1, 'Unexpected format');
+                next();
+            });
+        }, function _bootModulesInvalidEncoding(next) {
+            client.put('/boot/' + uuid, {
+                boot_modules: [ {
+                    path: 'etc/ppt_aliases',
+                    content:
+                        'ppt "/pci@0,0/pci8086,151@1/display@0"\n'
+                }]
+            }, function _onPut(err, req, res) {
+                t.ok(err, 'expected encoding error');
+                t.notEqual(err.message.indexOf('base64 encoded'),
+                    -1, 'Unexpected format');
+                next();
+            });
+        }, function _bootModulesInvalidSize(next) {
+            client.put('/boot/' + uuid, {
+                boot_modules: [ {
+                    path: 'etc/ppt_aliases',
+                    content:
+                        new Buffer(5 * 1024).toString('base64')
+                }]
+            }, function _onPut(err, req, res) {
+                t.ok(err, 'expected size error');
+                t.notEqual(err.message.indexOf('maximum allowed size'),
+                    -1, 'Unexpected format');
+                next();
+            });
+        }, function _bootModulesOk(next) {
+            client.put('/boot/' + uuid, {
+                boot_modules: [ {
+                    path: 'etc/ppt_aliases',
+                    content: Buffer.from(
+                        'ppt "/pci@0,0/pci8086,151@1/display@0"\n',
+                        'ascii').toString('base64')
+                }]
+            }, function _onPut(err, req, res) {
+                t.ok(!err, 'expected no error with correct boot modules');
                 next(err);
             });
         }
