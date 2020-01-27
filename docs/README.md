@@ -1,8 +1,110 @@
----
-title: CNAPI (Compute Node API) Design
-apisections: Allocation API, Boot Parameters API, Compute Node Agent Tasks API, Miscellaneous API, Remote Execution API (deprecated), Server API, Virtual Machine API, Virtual Machine Images API, Virtual Machine Snapshots API, Waitlist API, ZFS API (deprecated)
-markdown2extras: tables, code-friendly
----
+# CNAPI - Triton Compute Node API
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Overview](#overview)
+- [Responsibilities](#responsibilities)
+- [Compute Node Startup](#compute-node-startup)
+- [Configuration](#configuration)
+- [SAPI Configuration](#sapi-configuration)
+- [Interacting with CNAPI](#interacting-with-cnapi)
+- [Metrics](#metrics)
+- [Heartbeats](#heartbeats)
+- [Resetting to Factory Defaults](#resetting-to-factory-defaults)
+- [Virtual Machine Actions](#virtual-machine-actions)
+- [Remote Execution (deprecated)](#remote-execution-deprecated)
+- [Boot parameters](#boot-parameters)
+- [Setting up a new Server](#setting-up-a-new-server)
+- [Updating Nics](#updating-nics)
+  - [Examples](#examples)
+- [Server records](#server-records)
+  - [Server properties](#server-properties)
+- [Waitlist](#waitlist)
+  - [SelectServer (POST /allocate)](#selectserver-post-allocate)
+  - [ServerCapacity (POST /capacity)](#servercapacity-post-capacity)
+- [Boot Parameters API](#boot-parameters-api)
+  - [BootParamsGetDefault (GET /boot/default)](#bootparamsgetdefault-get-bootdefault)
+  - [BootParamsSetDefault (PUT /boot/default)](#bootparamssetdefault-put-bootdefault)
+  - [BootParamsUpdateDefault (POST /boot/default)](#bootparamsupdatedefault-post-bootdefault)
+  - [BootParamsGet (GET /boot/:server_uuid)](#bootparamsget-get-bootserver_uuid)
+  - [BootParamsSet (PUT /boot/:server_uuid)](#bootparamsset-put-bootserver_uuid)
+  - [BootParamsUpdate (POST /boot/:server_uuid)](#bootparamsupdate-post-bootserver_uuid)
+- [Compute Node Agent Tasks API](#compute-node-agent-tasks-api)
+  - [TaskGet (GET /tasks/:task_id)](#taskget-get-taskstask_id)
+  - [TaskWait (GET /tasks/:task_id/wait)](#taskwait-get-taskstask_idwait)
+- [Miscellaneous API](#miscellaneous-api)
+  - [ImageGet (GET /servers/:server_uuid/images/:uuid)](#imageget-get-serversserver_uuidimagesuuid)
+  - [Ping (GET /ping)](#ping-get-ping)
+  - [NicUpdate (PUT /servers/:server_uuid/nics)](#nicupdate-put-serversserver_uuidnics)
+  - [PlatformList (GET /platforms)](#platformlist-get-platforms)
+- [Remote Execution API (deprecated)](#remote-execution-api-deprecated)
+  - [CommandExecute (deprecated) (POST /servers/:server_uuid/execute)](#commandexecute-deprecated-post-serversserver_uuidexecute)
+- [Server API](#server-api)
+  - [ServerList (GET /servers)](#serverlist-get-servers)
+  - [ServerGet (GET /servers/:server\_uuid)](#serverget-get-serversserver%5C_uuid)
+  - [ServerUpdate (POST /servers/:server_uuid)](#serverupdate-post-serversserver_uuid)
+  - [ServerReboot (POST /servers/:server\_uuid/reboot)](#serverreboot-post-serversserver%5C_uuidreboot)
+  - [ServerFactoryReset (PUT /servers/:server\_uuid/factory-reset)](#serverfactoryreset-put-serversserver%5C_uuidfactory-reset)
+  - [ServerSetup (PUT /servers/:server_uuid/setup)](#serversetup-put-serversserver_uuidsetup)
+  - [ServerSysinfoRegister (POST /servers/:server_uuid/sysinfo)](#serversysinforegister-post-serversserver_uuidsysinfo)
+  - [ServerSysinfoRefresh (deprecated) (POST /servers/:server_uuid/sysinfo-refresh)](#serversysinforefresh-deprecated-post-serversserver_uuidsysinfo-refresh)
+  - [ServerDelete (DELETE /servers/:server_uuid)](#serverdelete-delete-serversserver_uuid)
+  - [ServerTaskHistory (GET /servers/:server_uuid/task-history)](#servertaskhistory-get-serversserver_uuidtask-history)
+  - [ServerPauseCnAgent (GET /servers/:server_uuid/cn-agent/pause)](#serverpausecnagent-get-serversserver_uuidcn-agentpause)
+  - [ServerResumeCnAgent (GET /servers/:server_uuid/cn-agent/resume)](#serverresumecnagent-get-serversserver_uuidcn-agentresume)
+  - [ServerEnsureImage (GET /servers/:server_uuid/ensure-image)](#serverensureimage-get-serversserver_uuidensure-image)
+  - [ServerInstallAgent (POST /servers/:server_uuid/install-agent)](#serverinstallagent-post-serversserver_uuidinstall-agent)
+  - [ServerUninstallAgents (POST /servers/:server_uuid/uninstall-agents)](#serveruninstallagents-post-serversserver_uuiduninstall-agents)
+  - [ServerRecoveryConfig (POST /servers/:server_uuid/recovery-config)](#serverrecoveryconfig-post-serversserver_uuidrecovery-config)
+- [Virtual Machine API](#virtual-machine-api)
+  - [VmList (GET /servers/:server_uuid/vms)](#vmlist-get-serversserver_uuidvms)
+  - [VmLoad (GET /servers/:server_uuid/vms/:uuid)](#vmload-get-serversserver_uuidvmsuuid)
+  - [VmInfo (GET /servers/:server_uuid/vms/:uuid/info)](#vminfo-get-serversserver_uuidvmsuuidinfo)
+  - [VmInfo (GET /servers/:server_uuid/vms/:uuid/vnc)](#vminfo-get-serversserver_uuidvmsuuidvnc)
+  - [VmUpdate (POST /servers/:server\_uuid/vms/:uuid/update)](#vmupdate-post-serversserver%5C_uuidvmsuuidupdate)
+  - [VmNicsUpdate (POST /servers/:server\_uuid/vms/nics/update)](#vmnicsupdate-post-serversserver%5C_uuidvmsnicsupdate)
+  - [VmStart (POST /servers/:server_uuid/vms/:uuid/start)](#vmstart-post-serversserver_uuidvmsuuidstart)
+  - [VmStop (POST /servers/:server\_uuid/vms/:uuid/stop)](#vmstop-post-serversserver%5C_uuidvmsuuidstop)
+  - [VmKill (POST /servers/:server_uuid/vms/:uuid/kill)](#vmkill-post-serversserver_uuidvmsuuidkill)
+  - [VmReboot (POST /servers/:server\_uuid/vms/:uuid/reboot)](#vmreboot-post-serversserver%5C_uuidvmsuuidreboot)
+  - [VmCreate (POST /servers/:server_uuid/vms)](#vmcreate-post-serversserver_uuidvms)
+  - [VmReprovision (POST /servers/:server_uuid/vms/:uuid/reprovision)](#vmreprovision-post-serversserver_uuidvmsuuidreprovision)
+  - [VmDestroy (DELETE /servers/:server_uuid/vms/:uuid)](#vmdestroy-delete-serversserver_uuidvmsuuid)
+  - [VmDockerExec (POST /servers/:server\_uuid/vms/:uuid/docker-exec)](#vmdockerexec-post-serversserver%5C_uuidvmsuuiddocker-exec)
+  - [VmDockerCopy (POST /servers/:server\_uuid/vms/:uuid/docker-copy)](#vmdockercopy-post-serversserver%5C_uuidvmsuuiddocker-copy)
+  - [VmDockerStats (POST /servers/:server\_uuid/vms/:uuid/docker-stats)](#vmdockerstats-post-serversserver%5C_uuidvmsuuiddocker-stats)
+  - [VmDockerBuild (POST /servers/:server\_uuid/vms/:uuid/docker-build)](#vmdockerbuild-post-serversserver%5C_uuidvmsuuiddocker-build)
+  - [VmMigrate (POST /servers/:server\_uuid/vms/:uuid/migrate)](#vmmigrate-post-serversserver%5C_uuidvmsuuidmigrate)
+- [Virtual Machine Images API](#virtual-machine-images-api)
+  - [VmImagesCreate (POST /servers/:server_uuid/vms/:uuid/images)](#vmimagescreate-post-serversserver_uuidvmsuuidimages)
+- [Virtual Machine Snapshots API](#virtual-machine-snapshots-api)
+  - [VmSnapshotCreate (PUT /servers/:server_uuid/vms/:uuid/snapshots)](#vmsnapshotcreate-put-serversserver_uuidvmsuuidsnapshots)
+  - [VmSnapshotRollback (PUT /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name/rollback)](#vmsnapshotrollback-put-serversserver_uuidvmsuuidsnapshotssnapshot_namerollback)
+  - [VmSnapshotDestroy (DELETE /servers/:server_uuid/vms/:uuid/snapshots/:snapshot_name)](#vmsnapshotdestroy-delete-serversserver_uuidvmsuuidsnapshotssnapshot_name)
+- [Waitlist API](#waitlist-api)
+  - [ServerWaitlistList (GET /servers/:server_uuid/tickets)](#serverwaitlistlist-get-serversserver_uuidtickets)
+  - [ServerWaitlistTicketCreate (POST /servers/:server_uuid/tickets)](#serverwaitlistticketcreate-post-serversserver_uuidtickets)
+  - [ServerWaitlistGetTicket (POST /tickets/:ticket_uuid)](#serverwaitlistgetticket-post-ticketsticket_uuid)
+  - [ServerWaitlistDeleteTicket (DELETE /tickets/:ticket_uuid)](#serverwaitlistdeleteticket-delete-ticketsticket_uuid)
+  - [ServerWaitlistTicketsDeleteAll (DELETE /servers/:server_uuid/tickets)](#serverwaitlistticketsdeleteall-delete-serversserver_uuidtickets)
+  - [ServerWaitlistTicketsWait (GET /tickets/:ticket_uuid/wait)](#serverwaitlistticketswait-get-ticketsticket_uuidwait)
+  - [ServerWaitlistTicketsRelease (GET /tickets/:ticket_uuid/release)](#serverwaitlistticketsrelease-get-ticketsticket_uuidrelease)
+- [ZFS API (deprecated)](#zfs-api-deprecated)
+  - [DatasetsList (GET /servers/:server_uuid/datasets)](#datasetslist-get-serversserver_uuiddatasets)
+  - [DatasetCreate (POST /servers/:server_uuid/datasets)](#datasetcreate-post-serversserver_uuiddatasets)
+  - [SnapshotCreate (POST /servers/:server_uuid/datasets/:dataset/snapshot)](#snapshotcreate-post-serversserver_uuiddatasetsdatasetsnapshot)
+  - [SnapshotRollback (POST /servers/:server_uuid/datasets/:dataset/rollback)](#snapshotrollback-post-serversserver_uuiddatasetsdatasetrollback)
+  - [SnapshotList (GET /servers/:server_uuid/datasets/:dataset/snapshots)](#snapshotlist-get-serversserver_uuiddatasetsdatasetsnapshots)
+  - [DatasetPropertiesGetAll (GET /servers/:server_uuid/dataset-properties)](#datasetpropertiesgetall-get-serversserver_uuiddataset-properties)
+  - [DatasetPropertiesGet (GET /servers/:server_uuid/datasets/:dataset/properties)](#datasetpropertiesget-get-serversserver_uuiddatasetsdatasetproperties)
+  - [DatasetPropertiesSet (POST /servers/:server_uuid/datasets/:dataset/properties)](#datasetpropertiesset-post-serversserver_uuiddatasetsdatasetproperties)
+  - [DatasetDestroy (DELETE /servers/:server_uuid/datasets/:dataset)](#datasetdestroy-delete-serversserver_uuiddatasetsdataset)
+  - [ZpoolList (GET /servers/:server_uuid/zpools)](#zpoollist-get-serversserver_uuidzpools)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <!--
     This Source Code Form is subject to the terms of the Mozilla Public
     License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,24 +112,9 @@ markdown2extras: tables, code-friendly
 -->
 
 <!--
-    Copyright 2019 Joyent, Inc.
+    Copyright 2020 Joyent, Inc.
 -->
 
-<!--
-
-    WARNING! index.md is generated from:
-
-        docs/index/index.md.ejs.
-        docs/static
-
-    Make your edits there or risk having them lost during the automatic
-    documentation generation.
-
--->
-
-
-
-<!-- Static component of documentation -->
 
 # Overview
 
@@ -233,52 +320,52 @@ There are a few artedi metrics that are exposed related to heartbeating. These
 will be available when polling the /metrics endpoint with prometheus. The
 available metrics are:
 
-## heartbeating_servers_count
+#### heartbeating_servers_count
 
 A gauge indicating how many servers have recently (within the heartbeat
 lifetime) heartbeated to this server.
 
-## reconciler_new_heartbeaters_total
+#### reconciler_new_heartbeaters_total
 
 A counter that indicates how many times this CNAPI has seen a heartbeat from a
 new server, or a server that it had forgotten (e.g. because it went stale).
 
-## reconciler_stale_heartbeaters_total
+#### reconciler_stale_heartbeaters_total
 
 A counter that indicates the number of times CNAPI noticed that a server had not
 heartbeated recently and the last_heartbeat was considered stale.
 
-## reconciler_usurped_heartbeaters_total
+#### reconciler_usurped_heartbeaters_total
 
 A counter that indicates the of times CNAPI went to update cnapi\_status but
 found that another server had updated it more recently.
 
-## reconciler_server_put_total
+#### reconciler_server_put_total
 
 A counter indicating the number of times CNAPI attempted to put cnapi\_servers
 objects into moray.
 
-## reconciler_server_put_etag_failures_total
+#### reconciler_server_put_etag_failures_total
 
 A counter indicating how many times there were Etag failures putting
 cnapi\_servers objects into moray because the data changed between get and put.
 
-## reconciler_server_put_failures_total
+#### reconciler_server_put_failures_total
 
 A counter indicating the total number of putObject calls to cnapi\_servers
 have failed.
 
-## reconciler_status_put_total
+#### reconciler_status_put_total
 
 A counter indicating the number of times CNAPI attempted to put cnapi\_status
 objects into moray.
 
-## reconciler_status_put_etag_failures_total
+#### reconciler_status_put_etag_failures_total
 
 A counter indicating how many times there were Etag failures putting
 cnapi\_status objects into moray because the data changed between get and put.
 
-## reconciler_status_failures_total
+#### reconciler_status_failures_total
 
 A counter indicating the total number of putObject calls to cnapi\_status
 have failed.
@@ -1265,17 +1352,16 @@ Initiate the server setup process for a newly started server.
 
 ### Inputs
 
-| Param              | Type   | Description                                                  |
-| ------------------ | ------ | ------------------------------------------------------------ |
-| nics               | Object | Nic parameters to update                                     |
-| postsetup_script   | String | Script to run after setup has completed                      |
-| hostname           | String | Hostname to set for the specified server                     |
-| disk_spares        | String | See `man disklayout` spares                                  |
-| disk_width         | String | See `man disklayout` width                                   |
-| disk_cache         | String | See `man disklayout` cache                                   |
-| disk_layout        | String | See `man disklayout` type      (single, mirror, raidz1, ...) |
-| encryption_enabled | String | See `man mkzpool -e`                                         |
-
+| Param              | Type   | Description                                                                                              |
+| ------------------ | ------ | -------------------------------------------------------------------------------------------------------- |
+| nics               | Object | Nic parameters to update                                                                                 |
+| postsetup_script   | String | Script to run after setup has completed                                                                  |
+| hostname           | String | Hostname to set for the specified server                                                                 |
+| disk_spares        | String | See `man disklayout` spares                                                                              |
+| disk_width         | String | See `man disklayout` width                                                                               |
+| disk_cache         | String | See `man disklayout` cache                                                                               |
+| disk_layout        | String | See `man disklayout` type      (single, mirror, raidz1, ...)                                             |
+| encryption_enabled | String | Whether the server will setup an      encrypted zpool. (Boolean String type) See `man mkzpool -e` option |
 
 ### Responses
 
@@ -1468,6 +1554,31 @@ Uninstall the given agents on the server.
 | 200  | Ok    | Uninstall task created successfully                                          |
 | 412  | Error | PreconditionFailed if the target server has a cn-agent      that is too old. |
 | 500  | Error | Could not process request                                                    |
+
+## ServerRecoveryConfig (POST /servers/:server_uuid/recovery-config)
+
+Stage/Activate the given Recovery Configuration on the server,
+only if the server is using EDAR (Zpool Encrypted: true).
+
+Requires cn-agent v2.13.0 or later
+
+### Inputs
+
+| Param         | Type   | Description                                                                                                                                                                                                           |
+| ------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| recovery_uuid | String | UUID of the recovery configuration to      stage or activate.                                                                                                                                                         |
+| action        | String | name of the action to execute: "stage" or      "activate". Cannot "activate" a recovery configuration not already      reported by the Server's sysinfo as staged through the `Zpool Recovery`      sysinfo property. |
+| template      | String | pivy-box recovery configuration template to      be staged into the CN.                                                                                                                                               |
+| token         | String | the recovery token to stage with the recovery      configuration.                                                                                                                                                     |
+| pivtoken      | String | GUID of the PIVToken the recovery token is      associated with.                                                                                                                                                      |
+
+
+### Responses
+
+| Code | Type  | Description                 |
+| ---- | ----- | --------------------------- |
+| 200  | Ok    | Task initiated successfully |
+| 500  | Error | Could not process request   |
 
 
 
@@ -1823,6 +1934,22 @@ None.
 | 404  | Error | No such server                                        |
 | 500  | Error | Error encountered while attempting to fulfill request |
 
+## VmMigrate (POST /servers/:server\_uuid/vms/:uuid/migrate)
+
+Start migrating the instance to a new server.
+
+### Inputs
+
+None.
+
+
+### Responses
+
+| Code | Type  | Description                                           |
+| ---- | ----- | ----------------------------------------------------- |
+| 204  | None  | Task was sent to server                               |
+| 404  | Error | No such server                                        |
+| 500  | Error | Error encountered while attempting to fulfill request |
 
 
 # Virtual Machine Images API
@@ -2254,9 +2381,3 @@ None.
 | Code | Type  | Description                  |
 | ---- | ----- | ---------------------------- |
 | 200  | Array | List of zpool detail objects |
-
-
-
-
-
-<!-- End of genererated API docs -->

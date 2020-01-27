@@ -5,7 +5,7 @@
 -->
 
 <!--
-    Copyright 2019 Joyent, Inc.
+    Copyright 2020 Joyent, Inc.
 -->
 
 # sdc-cnapi
@@ -29,8 +29,8 @@ To run the  API server:
     make all
     node bin/cnapi.js
 
-To update the guidelines, edit "docs/index.md" and run `make docs`
-to update "docs/index.html".
+To update docs, edit "docs/README.md" and run `make docs` if necessary in order
+to update the Table of Contents.
 
 Before commiting/pushing run `make prepush` and, if possible, get a code
 review.

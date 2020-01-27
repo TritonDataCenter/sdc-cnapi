@@ -12,7 +12,6 @@
     "bunyan": "1.8.5",
     "dapi": "git+https://github.com/joyent/sdc-designation.git#a9ab5e8e3bb7ec014946d0f0b170eb6162c22da5",
     "deep-object-diff": "1.1.0",
-    "dox": "0.9.0",
     "gc-stats": "1.2.0",
     "jsprim": "1.4.1",
     "libuuid": "0.2.1",
@@ -34,8 +33,8 @@
     "wf-shared": "git+https://github.com/joyent/sdc-wf-shared.git#f1f3453"
   },
   "devDependencies": {
-    "ejs": "^2.4.1",
-    "file": "0.2.2"
+    "file": "0.2.2",
+    "doctoc": "~1.3.0"
   },
   "sdcDependencies": {
     "config-agent": ">=1.1.0"

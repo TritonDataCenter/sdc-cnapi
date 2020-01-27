@@ -5,7 +5,7 @@
 #
 
 #
-# Copyright 2019 Joyent, Inc.
+# Copyright 2020 Joyent, Inc.
 #
 
 #
@@ -33,9 +33,6 @@ NODEUNIT	:= ./node_modules/nodeunit/bin/nodeunit
 # Files
 #
 REPO_ROOT	= $(shell pwd)
-DOC_FILES	= index.md
-EXTRA_DOC_DEPS += deps/restdown-brand-remora/.git
-RESTDOWN_FLAGS   = --brand-dir=deps/restdown-brand-remora
 JS_FILES	:= $(shell ls *.js 2>/dev/null) $(shell find bin lib test tools -name '*.js' 2>/dev/null)
 JSL_CONF_NODE	= $(REPO_ROOT)/tools/jsl.node.conf
 JSL_FILES_NODE	= $(JS_FILES)
@@ -132,8 +129,13 @@ release: all deps docs $(SMF_MANIFESTS)
 	(cd $(RELSTAGEDIR) && $(TAR) -I pigz -cf $(ROOT)/$(RELEASE_TARBALL) root site)
 	@rm -rf $(RELSTAGEDIR)
 
-regen_docs:
-	$(NODE) ./tools/gendocs.js docs/static.md lib/endpoints > docs/index.md
+./node_modules/.bin/doctoc:
+	$(NPM) install doctoc
+
+# Make a table of contents in Markdown docs that are setup to use it.  This
+# changes those files in-place, so one should do this before commit.
+docs:: | ./node_modules/.bin/doctoc
+	./node_modules/.bin/doctoc --notitle --maxlevel 2 docs/README.md
 
 .PHONY: publish
 publish: release
