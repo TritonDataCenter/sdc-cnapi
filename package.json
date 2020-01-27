@@ -34,7 +34,6 @@
     "wf-shared": "git+https://github.com/joyent/sdc-wf-shared.git#f1f3453"
   },
   "devDependencies": {
-    "ejs": "^2.4.1",
     "file": "0.2.2",
     "doctoc": "~1.3.0"
   },
