@@ -29,7 +29,7 @@ To run the  API server:
     make all
     node bin/cnapi.js
 
-To update docs, edit "docs/README.md" and run `make tocs` if necessary in order
+To update docs, edit "docs/README.md" and run `make docs` if necessary in order
 to update the Table of Contents.
 
 Before commiting/pushing run `make prepush` and, if possible, get a code
