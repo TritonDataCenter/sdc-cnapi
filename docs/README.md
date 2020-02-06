@@ -486,6 +486,26 @@ To completely overwrite values, use PUT instead of POST:
         -d '{ "kernel_args": { "alpha": "able" } }'
 
 
+It's also possible to set `boot_modules` either for a single compute node or
+by default for any compute node. `boot_modules` is a collection of module
+objects. Each member of this collection is expected to have the following
+structure:
+
+      {
+          "path": "boot module path to be used by booter",
+          "type": "Content type. Right now only base64 is supported",
+          "content": "File contents, if necessary encoded as specified"
+      }
+
+While it's possible that new content types could be added in the future, right
+now file contents are expected to be base64 encoded and max content length is
+of 4KB. When no value for `content` is specified, it's assumed to be the
+default.
+
+    -bash-4.1# sdc-cnapi /boot/ \
+        -X PUT \
+        -d '{ "boot_modules": [ { "path": "etc/ppt_aliases", "content": "cHB0ICIvcGNpQDAsMC9wY2k4MDg2LDE1MUAxL2Rpc3BsYXlAMCIK" } ] }'
+
 # Setting up a new Server
 
 Setting when a new server comes online its `status` should be be visible as
