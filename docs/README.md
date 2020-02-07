@@ -499,10 +499,10 @@ structure:
 
 While it's possible that new content types could be added in the future, right
 now file contents are expected to be base64 encoded and max content length is
-of 4KB. When no value for `content` is specified, it's assumed to be the
+of 4KB. When no value for `content` if specified, it's assumed to be the
 default.
 
-    -bash-4.1# sdc-cnapi /boot/ \
+    -bash-4.1# sdc-cnapi /boot/21306a50-9dad-11e3-9404-53f0c3de6cb8 \
         -X PUT \
         -d '{ "boot_modules": [ { "path": "etc/ppt_aliases", "content": "cHB0ICIvcGNpQDAsMC9wY2k4MDg2LDE1MUAxL2Rpc3BsYXlAMCIK" } ] }'
 
