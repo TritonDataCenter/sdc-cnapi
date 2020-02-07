@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2019, Joyent, Inc.
+ * Copyright 2020 Joyent, Inc.
  */
 
 /*
@@ -137,6 +137,28 @@ function testListServersWithAll2(t) {
                                         capacity: true, disk: true,
                                         memory: true });
         });
+
+        t.done();
+    });
+}
+
+
+function testListServersUsingFields(t) {
+    client.get('/servers?fields=uuid,status', function (err, req, res, body) {
+        t.ifError(err);
+        t.ok(body && Array.isArray(body) && body.length,
+            'Response body should be an array of at least one object');
+
+        if (body && body.length) {
+            body.forEach(function (server) {
+                var expectedServer = {
+                    status: server.status,
+                    uuid: server.uuid
+                };
+                t.deepEqual(server, expectedServer,
+                    'Server should only have uuid and status fields');
+            });
+        }
 
         t.done();
     });
@@ -895,6 +917,7 @@ module.exports = {
     'list servers with capacity': testListServersWithCapacity,
     'list servers with all 1': testListServersWithAll1,
     'list servers with all 2': testListServersWithAll2,
+    'list servers using fields': testListServersUsingFields,
     'list servers using unknown parameter': testListServersUnknownParam,
     'get server': testGetServer,
     'get default server': testGetDefaultServer,
