@@ -5,14 +5,11 @@
  */
 
 /*
- * Copyright (c) 2019, Joyent, Inc.
+ * Copyright 2020 Joyent, Inc.
  */
 
 var async = require('async');
-var vasync = require('vasync');
-var util = require('util');
 
-var common = require('../../lib/common');
 var mock = require('../lib/mock');
 var nodeunit = require('nodeunit');
 var sprintf = require('sprintf').sprintf;
@@ -65,7 +62,7 @@ function testListServersAll(test) {
 
         ModelServer.list(options, function (listError, servers) {
             test.equal(listError, null, 'should not encounter an error');
-            var expected =  [
+            var expected = [
                 {
                     last_heartbeat: null,
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
@@ -94,7 +91,6 @@ function testListServersAll(test) {
                 'moray history should match');
             test.done();
         });
-
     });
 }
 
@@ -129,7 +125,7 @@ function testListServersByUuids(test) {
         ModelServer.list(options, function (listError, servers) {
             test.equal(listError, null, 'should not encounter an error');
 
-            var expected =  [
+            var expected = [
                 {
                     last_heartbeat: null,
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
@@ -151,8 +147,7 @@ function testListServersByUuids(test) {
                expected,
                'Server results should match');
 
-            var filter
-                = expSearchResults
+            var filter = expSearchResults
                     .sort(function (a, b) {
                         return a.uuid > b.uuid;
                     })
@@ -210,7 +205,7 @@ function testListServersSetup(test) {
         ModelServer.list(options, function (listError, servers) {
             test.equal(listError, null, 'should not encounter an error');
 
-            var expected =  [
+            var expected = [
                 {
                     last_heartbeat: null,
                     uuid: '372bdb58-f8dd-11e1-8038-0b6dbddc5e58',
@@ -680,7 +675,12 @@ function testUpdateBootParameters(test) {
                 {
                     kernel_flags: kernelArgs,
                     boot_params: update,
-                    boot_modules: [ {}, {} ],
+                    boot_modules: [ {
+                        path: 'etc/ppt_aliases',
+                        content: Buffer.from(
+                            'ppt "/pci@0,0/pci8086,151@1/display@0"\n',
+                            'ascii').toString('base64')
+                    }],
                     boot_platform: 'newer'
                 },
                 function (modifyError) {
@@ -710,7 +710,12 @@ function testUpdateBootParameters(test) {
 
                                 setup: true,
                                 boot_platform: 'newer',
-                                boot_modules: [ {}, {} ],
+                                boot_modules: [ {
+                                    path: 'etc/ppt_aliases',
+                                    content: Buffer.from(
+                                    'ppt "/pci@0,0/pci8086,151@1/display@0"\n',
+                                    'ascii').toString('base64')
+                                }],
                                 hostname: 'testbox',
                                 sysinfo: { 'setup': true },
                                 default_console: 'serial',
@@ -728,7 +733,12 @@ function testUpdateBootParameters(test) {
                 boot_params: updatedBootParams,
                 setup: true,
                 boot_platform: 'newer',
-                boot_modules: [ {}, {} ],
+                boot_modules: [ {
+                    path: 'etc/ppt_aliases',
+                    content: Buffer.from(
+                        'ppt "/pci@0,0/pci8086,151@1/display@0"\n',
+                        'ascii').toString('base64')
+                }],
                 hostname: 'testbox',
                 sysinfo: { 'setup': true },
                 default_console: 'serial',
@@ -756,7 +766,12 @@ function testUpdateBootParameters(test) {
                         },
                         kernel_flags: updatedKernelArgs,
                         default_console: 'serial',
-                        boot_modules: [ {}, {} ],
+                        boot_modules: [ {
+                            path: 'etc/ppt_aliases',
+                            content: Buffer.from(
+                                'ppt "/pci@0,0/pci8086,151@1/display@0"\n',
+                                'ascii').toString('base64')
+                        }],
                         serial: 'ttyb'
                     });
 
