@@ -1264,6 +1264,7 @@ Returns Servers present in datacenter.
 | reservoir | Boolean | Return only reservoir servers                                                                                             |
 | hostname  | String  | Return machine with given hostname                                                                                        |
 | extras    | String  | Comma seperated values: agents, vms, memory, disk, sysinfo, capacity, all                                                 |
+| fields    | String  | Comma seperated property names that should be returned. E.g. 'uuid,status,headnode'. See [Server Properties](#server-properties) for the list of possible property names.
 | limit     | Integer | Maximum number of results to return. It must be between 1-1000, inclusive. Defaults to 1000 (the maxmimum allowed value). |
 | offset    | Integer | Offset the subset of results returned                                                                                     |
 
