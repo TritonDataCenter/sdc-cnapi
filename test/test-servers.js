@@ -664,7 +664,7 @@ function testServerSysinfo(t) {
             }, function _onPut(err, req, res) {
                 t.ok(err, 'expected encoding error');
                 t.notEqual(err.message.indexOf('base64 encoded'),
-                    -1, 'Unexpected format');
+                    -1, 'Unexpected encoding');
                 next();
             });
         }, function _bootModulesInvalidSize(next) {
@@ -677,7 +677,20 @@ function testServerSysinfo(t) {
             }, function _onPut(err, req, res) {
                 t.ok(err, 'expected size error');
                 t.notEqual(err.message.indexOf('maximum allowed size'),
-                    -1, 'Unexpected format');
+                    -1, 'Invalid size');
+                next();
+            });
+        }, function _bootModulesInvalidPath(next) {
+            client.put('/boot/' + uuid, {
+                boot_modules: [ {
+                    path: './etc/ppt_aliases',
+                    content:
+                        new Buffer(4 * 1024).toString('base64')
+                }]
+            }, function _onPut(err, req, res) {
+                t.ok(err, 'expected path error');
+                t.notEqual(err.message.indexOf('Invalid path'),
+                    -1, 'Invalid path');
                 next();
             });
         }, function _bootModulesOk(next) {
