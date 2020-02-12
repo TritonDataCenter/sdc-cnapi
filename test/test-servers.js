@@ -705,6 +705,18 @@ function testServerSysinfo(t) {
                 t.ok(!err, 'expected no error with correct boot modules');
                 next(err);
             });
+        }, function _bootModulesOkFancyPath(next) {
+            client.put('/boot/' + uuid, {
+                boot_modules: [ {
+                    path: 'etc/ppt..aliases/super...fancy.name',
+                    content: Buffer.from(
+                        'ppt "/pci@0,0/pci8086,151@1/display@0"\n',
+                        'ascii').toString('base64')
+                }]
+            }, function _onPut(err, req, res) {
+                t.ok(!err, 'expected no error with correct boot modules');
+                next(err);
+            });
         }
     ], function (err) {
         t.ok(!err, 'expected no errors when testing /sysinfo endpoint');
@@ -895,7 +907,7 @@ function validateServer(t, server, options) {
 
         var vmUuids = Object.keys(vms);
 
-        for (i = 0; i != vmUuids.length; i++) {
+        for (i = 0; i !== vmUuids.length; i++) {
             var vmUuid = vmUuids[i];
             var vm = vms[vmUuid];
 
