@@ -1200,16 +1200,61 @@ Returns available platform images in datacenter.
 
 ### Inputs
 
-None.
+| Param  | Type    | Description                                                           |
+| ------ | ------- | --------------------------------------------------------------------- |
+| os     | Boolean | Include or not the operating system into the list of platform images. |
 
 
 ### Responses
 
-| Code | Type  | Description          |
-| ---- | ----- | -------------------- |
-| 200  | Array | The returned servers |
+| Code | Type   | Description                         |
+| ---- | ------ | ----------------------------------- |
+| 200  | Object | Collection of platforms. See below. |
 
 
+```
+$ sdc-cnapi /platforms|json -H
+{
+  "20190523T221915Z": {},
+  "20190613T185529Z": {},
+  "20190710T121115Z": {},
+  "20191218T190857Z": {},
+  "20200220T122949Z": {
+    "latest": true
+  }
+}
+
+$ sdc-cnapi /platforms?os=false|json -H
+{
+  "20190523T221915Z": {},
+  "20190613T185529Z": {},
+  "20190710T121115Z": {},
+  "20191218T190857Z": {},
+  "20200220T122949Z": {
+    "latest": true
+  }
+}
+
+$ sdc-cnapi /platforms?os=true|json -H
+{
+  "20190523T221915Z": {
+    "os": "smartos"
+  },
+  "20190613T185529Z": {
+    "os": "smartos"
+  },
+  "20190710T121115Z": {
+    "os": "smartos"
+  },
+  "20191218T190857Z": {
+    "os": "smartos"
+  },
+  "20200220T122949Z": {
+    "os": "smartos",
+    "latest": true
+  }
+}
+```
 
 # Remote Execution API (deprecated)
 
