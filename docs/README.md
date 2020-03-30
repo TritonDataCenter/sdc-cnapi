@@ -1418,16 +1418,17 @@ Initiate the server setup process for a newly started server.
 
 ### Inputs
 
-| Param              | Type   | Description                                                                                              |
-| ------------------ | ------ | -------------------------------------------------------------------------------------------------------- |
-| nics               | Object | Nic parameters to update                                                                                 |
-| postsetup_script   | String | Script to run after setup has completed                                                                  |
-| hostname           | String | Hostname to set for the specified server                                                                 |
-| disk_spares        | String | See `man disklayout` spares                                                                              |
-| disk_width         | String | See `man disklayout` width                                                                               |
-| disk_cache         | String | See `man disklayout` cache                                                                               |
-| disk_layout        | String | See `man disklayout` type      (single, mirror, raidz1, ...)                                             |
-| encryption_enabled | String | Whether the server will setup an      encrypted zpool. (Boolean String type) See `man mkzpool -e` option |
+| Param              | Type   | Description                                                  |
+| ------------------ | ------ | ------------------------------------------------------------ |
+| nics               | Object | Nic parameters to update                                     |
+| postsetup_script   | String | Script to run after setup has completed                      |
+| hostname           | String | Hostname to set for the specified server                     |
+| disk_spares        | String | See `man disklayout` spares                                  |
+| disk_width         | String | See `man disklayout` width                                   |
+| disk_cache         | String | See `man disklayout` cache                                   |
+| disk_exclude       | String | See `man disklayout` -e option                               |
+| disk_layout        | String | See `man disklayout` type      (single, mirror, raidz1, ...) |
+| encryption_enabled | String | See `man mkzpool -e`                                         |
 
 ### Responses
 
