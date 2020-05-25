@@ -619,7 +619,8 @@ Or with sdc-server:
 
 A CNAPI server record looks like the following
 
-    -bash-4.1# sdc-cnapi /servers
+    # sdc-cnapi /servers/564d4374-d703-b97b-ca9f-7375f05f337c
+
     HTTP/1.1 200 OK
     Content-Type: application/json
     Content-Length: 9848
@@ -685,50 +686,60 @@ A CNAPI server record looks like the following
 
 ## Server properties
 
-| Param                                | Type             | Description                                                                |
-| ------------------------------------ | ---------------- | -------------------------------------------------------------------------- |
-| **boot_params**                      | *Object*         |
-| **boot_platform**                    | *String*         | The platform image to be booted from on next boot                          |
-| **current_platform**                 | *String*         | The platform image currently in use by server                              |
-| **comments**                         | *String*         | Description of server                                                      |
-| **created**                          | *String date*    | Date of server creation                                                    |
-| **datacenter**                       | *String*         | Datacenter in which server resides                                         |
-| **default_console**                  |                  |
-| **disk_cores_quota_bytes**           |                  |
-| **disk_installed_images_used_bytes** |                  |
-| **disk_kvm_quota_bytes**             |                  |
-| **disk_kvm_zvol_used_bytes**         |                  |
-| **disk_kvm_zvol_volsize_bytes**      |                  |
-| **disk_pool_size_bytes**             |                  |
-| **disk_zone_quota_bytes**            |                  |
-| **headnode**                         | *Boolean*        | Whether server is a headnode                                               |
-| **hostname**                         | *String*         | Hostname of server if any                                                  |
-| **kernel_flags**                     |                  |
-| **last_boot**                        | *ISODate String* | Time of last boot
-| **last_heartbeat**                   |                  | Timestamp indicating last-received heartbeat from compute node *DEPRECATED*
-| **memory_arc_bytes**                 |                  |
-| **memory_available_bytes**           |                  |
-| **memory_provisionable_bytes**       |                  |
-| **memory_total_bytes**               |                  |
-| **overprovision_ratios**             |                  |
-| **rack_identifier**                  |                  |
-| **ram**                              | *Number*         | Amount of ram                                                              |
-| **reservation_ratio**                |                  |
-| **reserved**                         | *Boolean*        |                                                                            |
-| **reservoir**                        | *Boolean*        |                                                                            |
-| **serial**                           | *String*         |                                                                            |
-| **setting_up**                       | *Boolean*        | Whether server is in the process of setting up                             |
-| **setup**                            | *Boolean*        | Whether server has been marked as set up                                   |
-| **status**                           | *String*         | Either 'running' or 'unknown' based on how recently CNAPI has heard from server |
-| **sysinfo**                          | *Object*         | The last given sysinfo payload for server                                  |
-| **traits**                           | *Object*         |                                                                            |
-| **transitional_status**              | *String*         | This field is an implementation detail and should not be used in any way by CNAPI clients. It is exposed only for debugging. It is optional and may be: a string (currently only 'rebooting'), an empty string, or undefined |
-| **unreserved_cpu**                   |                  |
-| **unreserved_disk**                  |                  |
-| **unreserved_ram**                   |                  |
-| **uuid**                             | *String*         | The server's unique identifier                                             |
-| **vms**                              | *Object*         | A object representing all the vms on server                                |
+| Param                                | Type             | Extras   | Description                                                                |
+| ------------------------------------ | ---------------- | -------- | -------------------------------------------------------------------------- |
+| **agents**                           | *Array of Object*| agents   | The installed agents on this server
+| **boot_params**                      | *Object*         |          |
+| **boot_platform**                    | *String*         |          | The platform image to be booted from on next boot                          |
+| **comments**                         | *String*         |          | Description of server                                                      |
+| **created**                          | *String date*    |          | Date of server creation                                                    |
+| **current_platform**                 | *String*         |          | The platform image currently in use by server                              |
+| **datacenter**                       | *String*         |          | Datacenter in which server resides                                         |
+| **default_console**                  | *String*         |          |
+| **disk_cores_quota_bytes**           | *Number*         | disk     |
+| **disk_cores_quota_used_bytes**      | *Number*         | disk     |
+| **disk_installed_images_used_bytes** | *Number*         | disk     |
+| **disk_kvm_quota_bytes**             | *Number*         | disk     |
+| **disk_kvm_quota_used_bytes**        | *Number*         | disk     |
+| **disk_kvm_zvol_used_bytes**         | *Number*         | disk     |
+| **disk_kvm_zvol_volsize_bytes**      | *Number*         | disk     |
+| **disk_pool_alloc_bytes**            | *Number*         | disk     |
+| **disk_pool_size_bytes**             | *Number*         | disk     |
+| **disk_system_used_bytes**           | *Number*         | disk     |
+| **disk_zone_quota_bytes**            | *Number*         | disk     |
+| **disk_zone_quota_used_bytes**       | *Number*         | disk     |
+| **headnode**                         | *Boolean*        |          | Whether server is a headnode                                               |
+| **hostname**                         | *String*         |          | Hostname of server if any                                                  |
+| **kernel_flags**                     | *Object*         |          |
+| **last_boot**                        | *ISODate String* |          | Time of last boot
+| **last_heartbeat**                   |                  | status   | Timestamp indicating last-received heartbeat from compute node *DEPRECATED*
+| **memory_arc_bytes**                 |                  | memory   |
+| **memory_available_bytes**           |                  | memory   |
+| **memory_provisionable_bytes**       |                  | memory   |
+| **memory_total_bytes**               |                  | memory   |
+| **overprovision_ratios**             |                  | all      |
+| **rack_identifier**                  | *String*         |          |
+| **ram**                              | *Number*         |          | Amount of ram                                                              |
+| **reservation_ratio**                |                  |          |
+| **reserved**                         | *Boolean*        |          |                                                                            |
+| **reservoir**                        | *Boolean*        |          |                                                                            |
+| **score**                            | *String*         | all      |                                                                            |
+| **serial**                           | *String*         |          |                                                                            |
+| **setting_up**                       | *Boolean*        |          | Whether server is in the process of setting up                             |
+| **setup**                            | *Boolean*        |          | Whether server has been marked as set up                                   |
+| **status**                           | *String*         |          | Either 'running' or 'unknown' based on how recently CNAPI has heard from server |
+| **sysinfo**                          | *Object*         | sysinfo  | The last given sysinfo payload for server                                  |
+| **traits**                           | *Object*         |          |                                                                            |
+| **transitional_status**              | *String*         |          | This field is an implementation detail and should not be used in any way by CNAPI clients. It is exposed only for debugging. It is optional and may be: a string (currently only 'rebooting'), an empty string, or undefined |
+| **unreserved_cpu**                   |                  | all      |
+| **unreserved_disk**                  |                  | all      |
+| **unreserved_ram**                   |                  | all      |
+| **uuid**                             | *String*         |          | The server's unique identifier                                             |
+| **vms**                              | *Object*         | vms      | An object representing all the vms on server                                |
 
+Note that the [ServerList](#serverlist-get-servers) API will only return a
+subset of these server properties - use the *extras* parameter to include
+more/all of the fields as necessary.
 
 # Waitlist
 
@@ -1308,8 +1319,8 @@ Returns Servers present in datacenter.
 | reserved  | Boolean | Return only reserved servers                                                                                              |
 | reservoir | Boolean | Return only reservoir servers                                                                                             |
 | hostname  | String  | Return machine with given hostname                                                                                        |
-| extras    | String  | Comma seperated values: agents, vms, memory, disk, sysinfo, capacity, all                                                 |
-| fields    | String  | Comma seperated property names that should be returned. E.g. 'uuid,status,headnode'. See [Server Properties](#server-properties) for the list of possible property names.
+| extras    | String  | Comma separated values: agents, vms, memory, disk, sysinfo, capacity, all                                                 |
+| fields    | String  | Comma separated property names that should be returned. E.g. 'uuid,status,headnode'. See [Server Properties](#server-properties) for the list of possible property names.
 | limit     | Integer | Maximum number of results to return. It must be between 1-1000, inclusive. Defaults to 1000 (the maxmimum allowed value). |
 | offset    | Integer | Offset the subset of results returned                                                                                     |
 
