@@ -1,7 +1,7 @@
 {
   "name": "cnapi",
   "description": "Triton Compute Node API",
-  "version": "1.26.2",
+  "version": "1.26.3",
   "author": "Joyent (joyent.com)",
   "private": true,
   "dependencies": {
