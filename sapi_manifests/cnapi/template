@@ -76,6 +76,7 @@
 		"allocationDescription": [
 			"pipe", "hard-filter-setup",
 			        "hard-filter-running",
+			        "hard-filter-os",
 			        "hard-filter-invalid-servers",
 			        "hard-filter-force-failure",
 			        "hard-filter-virtual-servers",
