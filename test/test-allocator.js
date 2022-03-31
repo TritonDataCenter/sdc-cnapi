@@ -5,7 +5,7 @@
  */
 
 /*
- * Copyright (c) 2018, Joyent, Inc.
+ * Copyright 2022 Joyent, Inc.
  */
 
 /*
@@ -113,7 +113,8 @@ function testMalformedNicTagRequirements1(t) {
     var data = deepCopy(allocData);
     data.nic_tag_requirements = [ 'external', 'admin' ];
 
-    var msg = 'property "0": string value found, but a array is required';
+    var msg = 'property "0": external - string value found, ' +
+        'but a array is required';
     callApiErr(t, '/allocate', data, 'nic_tag_requirements', msg);
 }
 
@@ -122,7 +123,8 @@ function testMalformedNicTagRequirements2(t) {
     var data = deepCopy(allocData);
     data.nic_tag_requirements = [ [ 'external' ], [ 5 ] ];
 
-    var msg = 'property "1[0]": number value found, but a string is required';
+    var msg = 'property "1[0]": 5 - number value found, ' +
+        'but a string is required';
     callApiErr(t, '/allocate', data, 'nic_tag_requirements', msg);
 }
 
