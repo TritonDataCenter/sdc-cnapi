@@ -1,8 +1,8 @@
 {
   "name": "cnapi",
   "description": "Triton Compute Node API",
-  "version": "1.26.5",
-  "author": "Joyent (joyent.com)",
+  "version": "1.26.6",
+  "author": "MNX Cloud (mnx.io)",
   "private": true,
   "dependencies": {
     "amqp": "^0.2.7",
@@ -10,7 +10,7 @@
     "async": "^1.5.2",
     "backoff": "^2.5.0",
     "bunyan": "^1.8.15",
-    "dapi": "git+https://github.com/joyent/sdc-designation.git#8110b5e",
+    "dapi": "git+https://github.com/TritonDataCenter/sdc-designation.git#8110b5e",
     "deep-object-diff": "^1.1.0",
     "gc-stats": "^1.2.0",
     "jsprim": "^1.4.1",
@@ -30,7 +30,7 @@
     "vasync": "^1.6.4",
     "verror": "^1.9.0",
     "wf-client": "^0.2.1",
-    "wf-shared": "git+https://github.com/joyent/sdc-wf-shared.git#f9ef781"
+    "wf-shared": "git+https://github.com/TritonDataCenter/sdc-wf-shared.git#f9ef781"
   },
   "devDependencies": {
     "file": "0.2.2",

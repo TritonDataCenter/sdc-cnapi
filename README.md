@@ -6,14 +6,15 @@
 
 <!--
     Copyright 2020 Joyent, Inc.
+    Copyright 2024 MNX Cloud, Inc.
 -->
 
 # sdc-cnapi
 
-This repository is part of the Joyent Triton project. See the [contribution
-guidelines](https://github.com/joyent/triton/blob/master/CONTRIBUTING.md)
+This repository is part of the Triton Data Center project. See the [contribution
+guidelines](https://github.com/TritonDataCenter/triton/blob/master/CONTRIBUTING.md)
 and general documentation at the main
-[Triton project](https://github.com/joyent/triton) page.
+[Triton project](https://github.com/TritonDataCenter/triton) page.
 
 CNAPI is responsible for maintaining the states and life-cycle stages of a
 compute node. It communicates with compute nodes for the purpose of creating
@@ -23,7 +24,7 @@ and destroying tasks, initiating tasks, etc.
 
 To run the  API server:
 
-    git clone git@github.com:joyent/sdc-cnapi.git
+    git clone git@github.com:TritonDataCenter/sdc-cnapi.git
     cd cnapi
     git submodule update --init
     make all
