@@ -113,6 +113,7 @@
 
 <!--
     Copyright 2020 Joyent, Inc.
+    Copyright 2024 MNX Cloud, Inc.
 -->
 
 
@@ -277,7 +278,7 @@ Use it as so:
 
 # Metrics
 
-CNAPI exposes metrics via [node-triton-metrics](https://github.com/joyent/node-triton-metrics) on `http://<ADMIN_IP>:8881/metrics.`
+CNAPI exposes metrics via [node-triton-metrics](https://github.com/TritonDataCenter/node-triton-metrics) on `http://<ADMIN_IP>:8881/metrics.`
 
 # Heartbeats
 
