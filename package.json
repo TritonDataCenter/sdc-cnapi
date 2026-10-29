@@ -10,7 +10,7 @@
     "async": "^1.5.2",
     "backoff": "^2.5.0",
     "bunyan": "^1.8.15",
-    "dapi": "git+https://github.com/TritonDataCenter/sdc-designation.git#6fa89c4",
+    "dapi": "git+https://github.com/TritonDataCenter/sdc-designation.git#7aab043",
     "deep-object-diff": "^1.1.0",
     "gc-stats": "^1.2.0",
     "jsprim": "^1.4.1",
