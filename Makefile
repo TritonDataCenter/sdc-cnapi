@@ -6,6 +6,7 @@
 
 #
 # Copyright 2022 Joyent, Inc.
+# Copyright 2026 Edgecast Cloud LLC.
 #
 
 #
@@ -89,6 +90,13 @@ all: | $(NPM_EXEC) sdc-scripts
 .PHONY: test
 test: $(NODEUNIT)
 	cd $(REPO_ROOT) && PATH=$(REPO_ROOT)/build/node/bin node ./node_modules/.bin/nodeunit test
+
+# Run DAPI's own test suite, for the dapi version pinned in package.json,
+# under the node that CNAPI ships. DAPI's devDependencies are not installed
+# with CNAPI, so install them inside node_modules/dapi first.
+.PHONY: test-dapi
+test-dapi: all
+	cd $(REPO_ROOT)/node_modules/dapi && $(NPM) install && $(NPM) test
 
 .PHONY: test-coal
 test-coal:
