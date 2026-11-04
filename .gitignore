@@ -10,5 +10,6 @@ smf/manifests/*.xml
 /make_stamps
 /node_modules
 /test-deps/node_modules
+/test-deps/package-lock.json
 cnapi-pkg-*.tar.gz
 describe
