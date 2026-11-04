@@ -42,6 +42,11 @@ pipeline {
                 sh('make test-dapi')
             }
         }
+        stage('test unit') {
+            steps {
+                sh('make test-unit')
+            }
+        }
         stage('check') {
             steps{
                 sh('make check')

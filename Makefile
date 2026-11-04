@@ -98,6 +98,15 @@ test: $(NODEUNIT)
 test-dapi: all
 	cd $(REPO_ROOT)/node_modules/dapi && $(NPM) install && $(NPM) test
 
+# Run the tests that need no Triton deployment, under the node that CNAPI
+# ships. Their own dependencies are installed into test-deps/, which `make
+# release` does not copy, so they cannot end up in the image.
+.PHONY: test-unit
+test-unit: all
+	cd $(REPO_ROOT)/test-deps && $(NPM) install
+	cd $(REPO_ROOT) && NODE_PATH=$(REPO_ROOT)/test-deps/node_modules \
+	    $(NODE) ./node_modules/.bin/nodeunit test/unit
+
 .PHONY: test-coal
 test-coal:
 	ssh $(COAL) 'zlogin $$(/opt/smartdc/bin/sdc-vmname cnapi) "cd /opt/smartdc/cnapi && ./test/runtests -r verbose $(TEST_ARGS)"'

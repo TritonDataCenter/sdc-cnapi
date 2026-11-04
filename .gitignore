@@ -9,5 +9,6 @@ cscope.out
 smf/manifests/*.xml
 /make_stamps
 /node_modules
+/test-deps/node_modules
 cnapi-pkg-*.tar.gz
 describe
