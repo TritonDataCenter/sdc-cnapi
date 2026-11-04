@@ -63,6 +63,7 @@
   - [VmLoad (GET /servers/:server_uuid/vms/:uuid)](#vmload-get-serversserver_uuidvmsuuid)
   - [VmInfo (GET /servers/:server_uuid/vms/:uuid/info)](#vminfo-get-serversserver_uuidvmsuuidinfo)
   - [VmInfo (GET /servers/:server_uuid/vms/:uuid/vnc)](#vminfo-get-serversserver_uuidvmsuuidvnc)
+  - [VmConsole (POST /servers/:server_uuid/vms/:uuid/console)](#vmconsole-post-serversserver_uuidvmsuuidconsole)
   - [VmUpdate (POST /servers/:server\_uuid/vms/:uuid/update)](#vmupdate-post-serversserver%5C_uuidvmsuuidupdate)
   - [VmNicsUpdate (POST /servers/:server\_uuid/vms/nics/update)](#vmnicsupdate-post-serversserver%5C_uuidvmsnicsupdate)
   - [VmStart (POST /servers/:server_uuid/vms/:uuid/start)](#vmstart-post-serversserver_uuidvmsuuidstart)
@@ -1737,6 +1738,43 @@ None.
 | 200  | Object | Request succeeded |
 | 404  | Object | No such VM        |
 | 404  | Object | No such server    |
+
+
+## VmConsole (POST /servers/:server\_uuid/vms/:uuid/console)
+
+Issue a single-use console ticket for a running VM. vmadmd on the server opens
+a listener for the ticket. The caller connects to `host`:`port`, sends `token`
+followed by a newline, and reads `OK` and a newline followed by the raw console
+stream, or `ERR <reason>` and a newline. The ticket expires after `expires_in`
+seconds.
+
+### Inputs
+
+None.
+
+### Responses
+
+| Code | Type   | Description       |
+| ---- | ------ | ----------------- |
+| 200  | Object | Ticket issued     |
+| 404  | Object | No such VM        |
+| 404  | Object | No such server    |
+| 409  | Object | VM is not running |
+
+### Example
+
+    POST /servers/8e9a0b2e-.../vms/7a1e0b16-.../console
+
+    {
+      "host": "10.99.99.7",
+      "port": 40123,
+      "token": "4f0c...",
+      "type": "zone",
+      "expires_in": 30
+    }
+
+`type` is `serial` for KVM and bhyve VMs and `zone` for joyent and lx VMs.
+Docker VMs are not supported.
 
 
 ## VmUpdate (POST /servers/:server\_uuid/vms/:uuid/update)
