@@ -6,6 +6,7 @@
 
 /*
  * Copyright 2022 Joyent, Inc.
+ * Copyright 2026 Edgecast Cloud LLC.
  */
 
 @Library('jenkins-joylib@v1.0.8') _
@@ -34,6 +35,13 @@ pipeline {
     }
 
     stages {
+        // DAPI runs inside CNAPI but has no CI of its own. Run its tests
+        // first so a failure here is not hidden by a later stage.
+        stage('test dapi') {
+            steps {
+                sh('make test-dapi')
+            }
+        }
         stage('check') {
             steps{
                 sh('make check')
