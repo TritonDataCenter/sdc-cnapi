@@ -335,7 +335,8 @@ function testUnsizedTicketSkipsServer(test) {
 /*
  * A ticket's image_size is copied from the image by VMAPI. If one ever holds
  * something other than a number, allocation must still complete: an exception
- * here is not caught before it reaches the process.
+ * here is not caught before it reaches the process. Its size cannot be
+ * determined, so its server is skipped.
  */
 function testMalformedTicketDoesNotThrow(test) {
     stubServerVms(test, function (done) {
@@ -355,9 +356,11 @@ function testMalformedTicketDoesNotThrow(test) {
 
             try {
                 allocate(servers, bhyveRequest(100 * 1024), tickets,
-                        function (err, chosen) {
+                        function (err, chosen, steps) {
                     test.ifError(err);
-                    test.ok(chosen, 'a server was chosen');
+                    test.deepEqual(findStep(steps, TICKETED_STEP).remaining,
+                        [ SERVER_B ]);
+                    test.strictEqual(chosen.uuid, SERVER_B);
                     done();
                 });
             } catch (e) {
