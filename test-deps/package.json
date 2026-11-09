@@ -1,0 +1,9 @@
+{
+  "name": "cnapi-test-deps",
+  "description": "Dependencies for `make test-unit` only. Kept out of CNAPI's package.json, whose devDependencies are installed into the image, and out of the directories that `make release` copies or `make check` lints.",
+  "private": true,
+  "dependencies": {
+    "hogan.js": "git+https://github.com/joyent/hogan.js#c5cb8e8"
+  },
+  "license": "MPL-2.0"
+}
